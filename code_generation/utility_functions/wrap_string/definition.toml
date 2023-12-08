@@ -1,0 +1,9 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "wrap_string"
+contributor = "svilupp"
+examples = ["wrap_string(\"This function will wrap words into lines\")", "wrap_string(\"This function will wrap words into lines\", 15)"]
+prompt = "Write a function `wrap_string`. It iterates over words and it will add a new line each time a maximum `text_width::Int=10` would be exceed. Provide an example"
+unit_tests = ["@test wrap_string(\"\", 10) == \"\" ", "@test wrap_string(\"Hi\", 10) == \"Hi\" ", "output = wrap_string(\"This function will wrap words into lines\", 10)\n@test maximum(length.(split(output, \"\n\"))) <= 10\n", "output = wrap_string(\"This function will wrap words into lines\", 20)\n@test maximum(length.(split(output, \"\n\"))) <= 20\n", "@test wrap_string(text, length(text)) == text "]
+imports = ["Test"]
+version = "1.0"
