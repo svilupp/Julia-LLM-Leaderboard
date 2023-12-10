@@ -4,10 +4,10 @@
 using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics, DataFramesMeta
 using MarkdownTables
-using Statistics: mean
+using Statistics: mean, median
 
 # # Load Results
-df = load_evals("code_generation")
+df = load_evals("code_generation"; max_history=1)
 
 # ## Table Output
 # By Model / Prompt
@@ -20,6 +20,7 @@ output = @chain df begin
     @aside average_ = @by _ :model :AverageScore = mean(:score) |> x -> round(x, digits=1)
     unstack(:model, :prompt_label, :score)
     leftjoin(average_, on=:model)
+    @orderby -:AverageScore
 end
 markdown_table(output, String) |> clipboard
 
@@ -37,6 +38,7 @@ save("assets/model-prompt-comparison.png", fig)
 # TODO: add more thorough analysis -- trade off speed vs score and cost vs score
 
 # ## Per prompt (same model)
+# Apply Median to elapsed
 # TODO: add more thorough analysis
 output = @chain df begin
     @by [:prompt_label] begin
@@ -44,6 +46,18 @@ output = @chain df begin
         :score = mean(:score)
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits=1)), renamecols=false)
+    @orderby -:score
     rename("elapsed" => "Elapsed (s)", "score" => "Avg. Score (Max 100 pts)")
 end
 markdown_table(output, String) |> clipboard
+
+# Show scatter plot elapsed / score, where prompt is a color
+@chain begin
+    @by df [:model, :prompt_label] begin
+        :score = mean(:score)
+        :elapsed = mean(:elapsed_seconds)
+        :cnt = $nrow
+        :name = unique(:name) |> Ref
+    end
+    @orderby :cnt
+end

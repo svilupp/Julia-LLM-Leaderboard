@@ -1,0 +1,1 @@
+{"name":"q_and_a_extractor","parsed":true,"executed":false,"unit_tests_count":5,"examples_count":3,"unit_tests_passed":0,"examples_executed":0,"tokens":[145,510],"elapsed_seconds":72.887845875,"cost":0.0,"model":"yi:34b-chat","timestamp":"20231208_211445__412","prompt_strategy":"1SHOT","prompt_label":"InJulia","device":"Apple-MacBook-Pro-M1"}

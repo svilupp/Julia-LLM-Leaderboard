@@ -1,0 +1,1 @@
+{"name":"q_and_a_extractor","parsed":true,"executed":false,"unit_tests_count":5,"examples_count":3,"unit_tests_passed":0,"examples_executed":0,"tokens":[223,751],"elapsed_seconds":29.056526375,"cost":0.0,"model":"stablelm-zephyr","timestamp":"20231210_133248__702","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertCoTTask","device":"Apple-MacBook-Pro-M1"}

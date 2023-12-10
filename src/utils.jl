@@ -9,7 +9,15 @@ function timestamp_now(; add_random::Bool=true)
     return timestamp
 end
 
-function get_query_cost(msg::AIMessage, model::AbstractString, model_costs=PT.MODEL_COSTS)
-    # divide by 1000 because the costs are stated for 1K tokens
-    cost = msg.tokens .* get(model_costs, model, (0.0, 0.0)) ./ 1000 |> sum
+function get_query_cost(msg::AIMessage, model::AbstractString,
+    cost_of_token_prompt::Number=get(PT.MODEL_REGISTRY,
+        model,
+        (; cost_of_token_prompt=0.0)).cost_of_token_prompt,
+    cost_of_token_generation::Number=get(PT.MODEL_REGISTRY, model,
+        (; cost_of_token_generation=0.0)).cost_of_token_generation)
+
+    cost = (msg.tokens[1] * cost_of_token_prompt +
+            msg.tokens[2] * cost_of_token_generation)
+
+    return cost
 end

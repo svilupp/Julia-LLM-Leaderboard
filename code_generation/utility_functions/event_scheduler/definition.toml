@@ -1,0 +1,21 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "event_scheduler"
+contributor = "svilupp"
+examples = [
+    "event_scheduler([(\"2023-12-01 09:00\", \"2023-12-01 11:00\"), (\"2023-12-01 11:30\", \"2023-12-01 12:30\")])",
+    "event_scheduler([(\"2023-12-02 10:00\", \"2023-12-02 11:00\"), (\"2023-12-02 10:30\", \"2023-12-02 12:00\")])",
+    "event_scheduler([])",
+    "event_scheduler([(\"2023-12-03 13:00\", \"2023-12-03 14:00\"), (\"2023-12-03 14:00\", \"2023-12-03 15:00\")])",
+    "event_scheduler([(\"2023-12-04 09:00\", \"2023-12-04 10:00\"), (\"2023-12-04 10:00\", \"2023-12-04 11:00\"), (\"2023-12-04 11:30\", \"2023-12-04 12:30\")])"
+]
+prompt = "You are given a list of events where each event is a tuple with a start and an end time (in the format 'YYYY-MM-DD HH:MM'). Write a function `event_scheduler` that checks for any scheduling conflicts among the events. The function should return 'No conflicts' if there are no overlapping events and 'Conflict' if any events overlap in time. If the list is empty, return 'No events'. Use package Dates for parsing. Provide an example."
+unit_tests = [
+    "# Test 1: No conflicts with separate events.\n@test event_scheduler([(\"2023-12-05 09:00\", \"2023-12-05 10:00\"), (\"2023-12-05 10:30\", \"2023-12-05 11:30\")]) == \"No conflicts\"\n",
+    "# Test 2: Detect conflict with overlapping events.\n@test event_scheduler([(\"2023-12-06 09:00\", \"2023-12-06 10:30\"), (\"2023-12-06 10:00\", \"2023-12-06 11:00\")]) == \"Conflict\"\n",
+    "# Test 3: Handle empty event list.\n@test event_scheduler([]) == \"No events\"\n",
+    "# Test 4: Check end-to-end event overlap.\n@test event_scheduler([(\"2023-12-07 12:00\", \"2023-12-07 13:00\"), (\"2023-12-07 12:30\", \"2023-12-07 14:00\")]) == \"Conflict\"\n",
+    "# Test 5: Check back-to-back events (no overlap).\n@test event_scheduler([(\"2023-12-08 14:00\", \"2023-12-08 15:00\"), (\"2023-12-08 15:00\", \"2023-12-08 16:00\")]) == \"No conflicts\"\n"
+]
+imports = ["Test", "Dates"]
+version = "1.0"

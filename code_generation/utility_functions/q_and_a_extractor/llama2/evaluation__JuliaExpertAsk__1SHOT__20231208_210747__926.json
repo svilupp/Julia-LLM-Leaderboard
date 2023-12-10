@@ -1,0 +1,1 @@
+{"name":"q_and_a_extractor","parsed":true,"executed":true,"unit_tests_count":5,"examples_count":3,"unit_tests_passed":0,"examples_executed":0,"tokens":[139,331],"elapsed_seconds":12.581291625,"cost":0.0,"model":"llama2","timestamp":"20231208_210747__926","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertAsk","device":"Apple-MacBook-Pro-M1"}

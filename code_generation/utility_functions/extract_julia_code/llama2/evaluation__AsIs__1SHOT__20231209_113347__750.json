@@ -1,0 +1,1 @@
+{"name":"extract_julia_code","parsed":true,"executed":false,"unit_tests_count":5,"examples_count":4,"unit_tests_passed":0,"examples_executed":0,"tokens":[72,394],"elapsed_seconds":13.891048791,"cost":0.0,"model":"llama2","timestamp":"20231209_113347__750","prompt_strategy":"1SHOT","prompt_label":"AsIs","device":"Apple-MacBook-Pro-M1"}

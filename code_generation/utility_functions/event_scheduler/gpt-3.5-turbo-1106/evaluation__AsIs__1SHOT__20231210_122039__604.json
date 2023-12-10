@@ -1,0 +1,1 @@
+{"name":"event_scheduler","parsed":true,"executed":false,"unit_tests_count":5,"examples_count":5,"unit_tests_passed":0,"examples_executed":0,"tokens":[112,264],"elapsed_seconds":4.605597833,"cost":0.0006399999999999999,"model":"gpt-3.5-turbo-1106","timestamp":"20231210_122039__604","prompt_strategy":"1SHOT","prompt_label":"AsIs","device":"Apple-MacBook-Pro-M1"}

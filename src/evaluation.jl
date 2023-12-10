@@ -42,13 +42,13 @@ end
 
 
 """
-    evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, device="UNKNOWN", timestamp=timestamp_now(), prompt_strategy="1SHOT", verbose::Bool=false)
+    evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, device="UNKNOWN", timestamp=timestamp_now(), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true)
 
 Runs evaluation for a single test case (parse, execute, run examples, run unit tests), including saving the files.
 
 It saves: `<model-name>/evaluation__PROMPTABC__1SHOT__TIMESTAMP.json` and `<model-name>/conversation__PROMPTABC__1SHOT__TIMESTAMP.json` into a sub-folder of where the definition file was stored.
 """
-function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, device="UNKNOWN", timestamp=timestamp_now(), prompt_strategy="1SHOT", verbose::Bool=false)
+function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, device="UNKNOWN", timestamp=timestamp_now(), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true)
 
     ## early exit
     if isnothing(conversation)
@@ -69,6 +69,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     else
         ""
     end
+
     cb = PT.AICode(msg; prefix=imports_required)
     # catching parsing errors is tricky between 1.9 and 1.10
     notparsed = isnothing(cb.expression) || cb.error isa Base.Meta.ParseError || (cb.error isa ErrorException && startswith(cb.error.msg, "syntax:"))
@@ -87,12 +88,14 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         elapsed_seconds=msg.elapsed, cost=get_query_cost(msg, model), model,
         timestamp, prompt_strategy, prompt_label, device)
 
-    ## Save Evaluation
-    JSON3.write(fn_evaluation, evaluation)
-    ## Save conversation
-    save_conversation(fn_conversation, conversation)
+    if auto_save
+        ## Save Evaluation
+        JSON3.write(fn_evaluation, evaluation)
+        ## Save conversation
+        save_conversation(fn_conversation, conversation)
+    end
 
-    return true
+    return evaluation
 end
 
 """
@@ -101,14 +104,17 @@ end
 Loads all evaluation JSONs from a given director loaded in a DataFrame as rows. 
 The directory is searched recursively, and all files starting with the prefix `evaluation__` are loaded.
 
-If `score=true`, the function will also call `score_eval` on the resulting DataFrame.
+# Keyword Arguments
+- `score::Bool=true`: If `score=true`, the function will also call `score_eval` on the resulting DataFrame.
+- `max_history::Int=5`: Only `max_history` most recent evaluations are loaded. If `max_history=0`, all evaluations are loaded.
 
 Returns: DataFrame
 """
-function load_evals(dir::AbstractString; score::Bool=true, kwargs...)
+function load_evals(dir::AbstractString; score::Bool=true, max_history::Int=5, kwargs...)
+    @assert max_history >= 0 "max_history must be >= 0 (0 means all evaluations are loaded)"
     output = []
     filenames = String[]
-    scores = []
+    scores = Float64[]
     for (dir, _, files) in walkdir(dir)
         for file in files
             if startswith(file, "evaluation__")
@@ -125,12 +131,22 @@ function load_evals(dir::AbstractString; score::Bool=true, kwargs...)
     df = DataFrame(output)
     df.filename = filenames
     score && (df.score = scores)
+    if max_history > 0
+        df = @chain df begin
+            @orderby(:device, :name, :model, :prompt_label, :prompt_strategy, :timestamp)
+            groupby([:device, :name, :model, :prompt_label, :prompt_strategy])
+            combine(_) do sdf
+                # take the last `max_history` rows in each group
+                last(sdf, max_history)
+            end
+        end
+    end
     return df
 end
 """
     score_eval(eval::AbstractDict; max_points::Int=100)
 
-    score_eval(parsed, executed, unit_tests, examples; max_points::Int=100)
+    score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points::Int=100)
 
 Scores the evaluation result `eval` by distributing `max_points` equally across the available criteria.
 Alternatively, you can provide the individual scores as arguments (see above) with values in the 0-1 range.
@@ -144,14 +160,14 @@ Eg, if all 4 criteria are available, each will be worth 25% of points:
 function score_eval(eval::AbstractDict; max_points::Int=100)
     parsed = get(eval, :parsed, missing)
     executed = get(eval, :executed, missing)
-    unit_tests = get(eval, :unit_tests_passed, missing) / get(eval, :unit_tests_count, missing)
-    examples = get(eval, :examples_executed, missing) / get(eval, :examples_count, missing)
+    unit_tests_success_ratio = get(eval, :unit_tests_passed, missing) / get(eval, :unit_tests_count, missing)
+    examples_success_ratio = get(eval, :examples_executed, missing) / get(eval, :examples_count, missing)
 
-    return score_eval(parsed, executed, unit_tests, examples; max_points)
+    return score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points)
 end
 
 """
-    score_eval(parsed, executed, unit_tests, examples; max_points::Int=100)
+    score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points::Int=100)
 
 Score the evaluation result by distributing `max_points` equally across the available criteria.
 
@@ -160,13 +176,13 @@ Score the evaluation result by distributing `max_points` equally across the avai
 df=@rtransform df :score = score_eval(:parsed, :executed, :unit_tests_passed / :unit_tests_count, :examples_executed / :examples_count)
 ```
 """
-function score_eval(parsed, executed, unit_tests, examples; max_points::Int=100)
-    count_categories = count(!ismissing, [parsed, executed, unit_tests, examples])
+function score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points::Int=100)
+    count_categories = count(!ismissing, [parsed, executed, unit_tests_success_ratio, examples_success_ratio])
     points_per_category = max_points / count_categories
-    total_score = zero(max_points)
-    for category_score in [parsed, executed, unit_tests, examples]
+    total_score = zero(Float64)
+    for category_score in [parsed, executed, unit_tests_success_ratio, examples_success_ratio]
         !ismissing(category_score) && (total_score += category_score * points_per_category)
     end
-    return total_score
+    return total_score::Float64
 end
 

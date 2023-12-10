@@ -36,25 +36,27 @@ Each model's and prompt's performance is evaluated based on several criteria:
 At the moment, all criteria are weighed equally and each test case can earn a maximum of 100 points. If a code passes all criteria, it gets 100/100 points. If it fails one criterion (eg, all unit tests), it gets 75/100 points. If it fails two criteria (eg, it runs but all examples and unit tests are broken), it gets 50 points, and so on.
 
 ## Results (Preview)
-To provide a glimpse of the repository's functionality, we have included example results for one test case. 
+To provide a glimpse of the repository's functionality, we have included example results for the first 5 test cases. 
 
 > [!WARNING]  
 > These scores will change soon as the smaller models were unfairly punished by their output format.
 
 
-The below table reflects the performance of different model+prompt combinations on the test case:
+The below table reflects the performance of different model+prompt combinations on the test cases:
 
-| model                  | AsIs | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | AverageScore |
-|------------------------|------|---------|----------------|--------------------|--------------|
-| codellama:13b-instruct | 25.0 |    62.5 |           25.0 |               85.0 |         49.4 |
-|   codellama:13b-python | 25.0 |    50.0 |           25.0 |               50.0 |         37.5 |
-|          gpt-3.5-turbo | 50.0 |    85.0 |           85.0 |               90.0 |         77.5 |
-|     gpt-3.5-turbo-1106 | 90.0 |    90.0 |           85.0 |               90.0 |         88.8 |
-|     gpt-4-1106-preview | 50.0 |    95.0 |           95.0 |               80.0 |         80.0 |
-|                 llama2 | 50.0 |    50.0 |            0.0 |               25.0 |         31.2 |
-|  openhermes2.5-mistral | 50.0 |    25.0 |           25.0 |               90.0 |         47.5 |
-|     starling-lm:latest | 50.0 |    85.0 |           95.0 |               25.0 |         63.8 |
-|            yi:34b-chat | 50.0 |    62.5 |           75.0 |               80.0 |         66.9 |
+| model                  | AsIs  | InJulia           | JuliaExpertAsk | JuliaExpertCoTTask | AverageScore |
+|------------------------|-------|-------------------|----------------|--------------------|--------------|
+|     gpt-4-1106-preview | 53.75 | 53.08333333333333 |          74.75 |               46.0 |         56.9 |
+|     gpt-3.5-turbo-1106 |  48.0 |              58.0 |           32.0 |              63.75 |         50.4 |
+|          gpt-3.5-turbo |  40.0 |              49.0 |           62.0 |               38.0 |         47.2 |
+|        stablelm-zephyr |  50.0 |              35.0 |           35.0 |               25.0 |         36.2 |
+|            yi:34b-chat |  40.0 |              27.5 |          30.75 |               41.0 |         34.8 |
+| codellama:13b-instruct |  35.0 |              37.5 |           25.0 |               39.0 |         34.1 |
+|   codellama:13b-python |  45.0 |              35.0 |           25.0 |               30.0 |         33.8 |
+|                 llama2 |  45.0 |              50.0 |           10.0 |               20.0 |         31.2 |
+|     starling-lm:latest |  40.0 |              27.0 |           34.0 | 23.333333333333332 |         31.1 |
+|              magicoder |  50.0 |              40.0 |           10.0 |               20.0 |         30.0 |
+|  openhermes2.5-mistral |  40.0 |              15.0 |           10.0 |               23.0 |         22.0 |
 
 
 Or we can display it as a bar chart:
@@ -63,12 +65,13 @@ Or we can display it as a bar chart:
 We hope to be able to provide some guidance around prompting strategies, eg, when is it better to use a "JuliaExpert*" prompt template vs an "In Julia, xyz" prompt.
 From the single test case, we can see that using prompts "as is" (ie, just throw the task in), did not work that well (the extra long elapsed time is probably a fluke)!
 
-| Prompt             | Elapsed (s) | Avg. Score (Max 100 pts) |
+| prompt_label       | Elapsed (s) | Avg. Score (Max 100 pts) |
 |--------------------|-------------|--------------------------|
-|               AsIs |        74.8 |                     48.9 |
-|            InJulia |        25.4 |                     67.2 |
-|     JuliaExpertAsk |        22.0 |                     56.7 |
-| JuliaExpertCoTTask |        21.0 |                     68.3 |
+|               AsIs |        27.8 |                     44.2 |
+|            InJulia |        19.7 |                     38.8 |
+| JuliaExpertCoTTask |        26.2 |                     33.6 |
+|     JuliaExpertAsk |        30.0 |                     31.7 |
+
 
 Make your own analysis with `examples/summarize_results.jl`!
 

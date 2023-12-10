@@ -1,0 +1,1 @@
+{"name":"wrap_string","parsed":true,"executed":true,"unit_tests_count":5,"examples_count":2,"unit_tests_passed":0,"examples_executed":0,"tokens":[47,260],"elapsed_seconds":9.060193167,"cost":0.0,"model":"stablelm-zephyr","timestamp":"20231210_133812__753","prompt_strategy":"1SHOT","prompt_label":"AsIs","device":"Apple-MacBook-Pro-M1"}

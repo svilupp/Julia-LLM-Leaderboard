@@ -1,0 +1,1 @@
+{"name":"extract_julia_code","parsed":true,"executed":true,"unit_tests_count":5,"examples_count":4,"unit_tests_passed":0,"examples_executed":0,"tokens":[116,79],"elapsed_seconds":3.466457083,"cost":0.00033200000000000005,"model":"gpt-3.5-turbo","timestamp":"20231209_112937__442","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertAsk","device":"Apple-MacBook-Pro-M1"}

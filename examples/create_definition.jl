@@ -64,7 +64,7 @@ d = Dict("code_generation" => Dict("name" => function_name,
     "contributor" => "svilupp",
     "version" => "1.0",
     # Notice that we refer to the function name in the prompt!
-    "prompt" => "Write a function `wrap_string`. It iterates over words and it will add a new line each time a maximum `text_width::Int=10` would be exceed. Provide an example"
+    "prompt" => "Write a function `wrap_string`. It iterates over words and it will add a new line each time a maximum `text_width::Int=10` would be exceed. Provide an example",
     "criteria" => ["parsed", "executed", "passed_unit_tests", "executed_examples"],
     "examples" => ["wrap_string(\"This function will wrap words into lines\")", "wrap_string(\"This function will wrap words into lines\", 15)"],
     "unit_tests" => [
@@ -79,6 +79,7 @@ d = Dict("code_generation" => Dict("name" => function_name,
         @test maximum(length.(split(output, "\n"))) <= 20
         """,
         """@test wrap_string(text, length(text)) == text """,
+        "imports" => ["Test"]
     ]))
 
 ## Save definition
@@ -88,3 +89,68 @@ save_definition(fn_definition, d)
 definition = load_definition(fn_definition)["code_generation"]
 
 # And you're done! Now run the benchmark for it...
+
+# # Working smart
+# Do you want help developing your test case? Use the best GenAI models to help you!
+#
+# Start with your prompt
+prompt = "Write a function `wrap_string`. It iterates over words and it will add a new line each time a maximum `text_width::Int=10` would be exceed. Provide an example"
+
+# make sure it's the same as in the prompt above!
+function_name = "wrap_string"
+fn_definition = joinpath("code_generation", "utility_functions", function_name, "definition.toml")
+mkpath(dirname(fn_definition)) # check that the path exists to avoid errors
+
+# Add some extras to also get the tests (and ideally not too verbose)
+prompt_extras = "Provide 3-5 unit tests with `@test`, make the unit tests as terse as possible while testing the correct functionality."
+msg = aigenerate(:JuliaExpertAsk; ask=prompt * prompt_extras, model="gpt4t")
+preview(msg)# show preview in REPL
+
+# Steps:
+# - Copy out the function definition, the examples and unit tests. 
+# - Make sure they run as expected (sometimes it takes 1-2 tweaks even for GPT-4)
+# - Add """ fences to create string inputs and create variables: examples, unit_tests
+
+
+d = Dict("code_generation" => Dict("name" => function_name,
+    "contributor" => "svilupp",
+    "version" => "1.0",
+    "prompt" => prompt,
+    "criteria" => ["parsed", "executed", "passed_unit_tests", "executed_examples"],
+    "examples" => examples,
+    "unit_tests" => unit_tests,
+    "imports" => ["Test"]
+))
+
+
+# Sense check that the examples work
+for example in d["examples"]
+    @eval(Main, $(Meta.parseall(example)))
+end
+
+# Sense check that the examples work
+for unit in d["unit_tests"]
+    @eval(Main, $(Meta.parseall(unit)))
+end
+
+# Now we can save it...
+save_definition(fn_definition, d)
+
+# # Test the definition
+# You should always test your definition before running the benchmark. Pass it to the best model (gpt4t) and see if it works.
+#
+# If GPT-4 fails, you're unlikely get any points for the other open source models! Perhaps tweak the prompt a bit to be more clear?
+
+msg = aigenerate(:JuliaExpertAsk; ask=prompt, model="gpt4t", return_all=true)
+@assert isvalid(AICode(last(msg))) "Code gen failed. Is the prompt okay? Or is it just that hard?"
+
+# Try evaluating it -- add auto_save=false not to polute our benchmark
+eval = evaluate_1shot(; conversation=msg, fn_definition, definition=d["code_generation"], model="gpt4t", prompt_label="JuliaExpertAsk", timestamp=timestamp_now(), device="Apple-MacBook-Pro-M1", prompt_strategy="1SHOT", verbose=true, auto_save=false)
+
+# # Feeling Ambitious?
+# Why not use `aiextract` and generate the whole TOML definition automatically by GPT-4?
+#
+# Note: You want to add some "thinking" opportunities for the model, otherwise it will just copy the examples and unit tests.
+
+
+# # The End

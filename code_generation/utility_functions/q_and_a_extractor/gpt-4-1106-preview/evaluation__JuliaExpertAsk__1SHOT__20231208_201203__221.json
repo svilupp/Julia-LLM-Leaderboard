@@ -1,0 +1,1 @@
+{"name":"q_and_a_extractor","parsed":true,"executed":false,"unit_tests_count":5,"examples_count":3,"unit_tests_passed":0,"examples_executed":0,"tokens":[151,300],"elapsed_seconds":30.234566,"cost":0.010509999999999999,"model":"gpt-4-1106-preview","timestamp":"20231208_201203__221","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertAsk","device":"Apple-MacBook-Pro-M1"}

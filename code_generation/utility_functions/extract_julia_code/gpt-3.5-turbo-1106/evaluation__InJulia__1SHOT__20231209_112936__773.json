@@ -1,0 +1,1 @@
+{"name":"extract_julia_code","parsed":true,"executed":true,"unit_tests_count":5,"examples_count":4,"unit_tests_passed":0,"examples_executed":0,"tokens":[81,124],"elapsed_seconds":2.623844625,"cost":0.00032900000000000003,"model":"gpt-3.5-turbo-1106","timestamp":"20231209_112936__773","prompt_strategy":"1SHOT","prompt_label":"InJulia","device":"Apple-MacBook-Pro-M1"}

@@ -11,28 +11,30 @@ const PT = PromptingTools
 
 # ## Run for a single test case
 device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
-fn_definition = joinpath("code_generation", "utility_functions", "wrap_string", "definition.toml")
 
-definition = load_definition(fn_definition)["code_generation"]
 # OpenAI models can be easily run in async
-model_options = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview"]
+# model_options = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview"]
 # When benchmarking local models, comment out the Threads.@spawn to run the generation sequentially
-# model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python"]
+model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr"]
 
 prompt_options = ["JuliaExpertCoTTask", "JuliaExpertAsk", "InJulia", "AsIs"]
 # needed if you use non-OpenAI models, provide a key for each model you use
-schema_lookup = Dict(["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python"] .=> Ref(PT.OllamaManagedSchema()))
-all_options = Iterators.product(model_options, prompt_options) |> collect |> vec
+schema_lookup = Dict(["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr"] .=> Ref(PT.OllamaManagedSchema()))
+all_options = Iterators.product(prompt_options, model_options) |> collect |> vec
 
 # for reference: aitemplates("Julia")
 
 # ## Run for all model/prompt combinations
+# if you want to run multiple, add one more loop with: fn_definitions = find_definitions("code_generation")
+fn_definition = joinpath("code_generation", "utility_functions", "wrap_string", "definition.toml")
+definition = load_definition(fn_definition)["code_generation"]
 tasks = let all_options = all_options
     tasks = []
     for option in all_options
-        task = Threads.@spawn begin
+        # task = Threads.@spawn begin
+        task = begin
             ## Setup
-            (model, prompt_label) = option
+            (prompt_label, model) = option
             # Lookup schema, default to OpenAI
             schema = get(schema_lookup, model, PT.OpenAISchema())
             ## Pick response generator based on the prompt_label
@@ -57,6 +59,7 @@ tasks = let all_options = all_options
 end
 
 # ## Debugging -- wait for all tasks to finish
+@info "Waiting for all tasks to finish... $(count(istaskdone,tasks))/$(length(all_options))"
 @assert all(istaskdone, tasks) "Not all tasks finished!"
 
 # Often, there can be failures (wrong model name etc.)

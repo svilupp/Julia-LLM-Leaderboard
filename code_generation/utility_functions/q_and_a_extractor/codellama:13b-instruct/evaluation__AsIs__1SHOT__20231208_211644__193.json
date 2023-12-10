@@ -1,0 +1,1 @@
+{"name":"q_and_a_extractor","parsed":true,"executed":true,"unit_tests_count":5,"examples_count":3,"unit_tests_passed":0,"examples_executed":0,"tokens":[110,385],"elapsed_seconds":21.716794,"cost":0.0,"model":"codellama:13b-instruct","timestamp":"20231208_211644__193","prompt_strategy":"1SHOT","prompt_label":"AsIs","device":"Apple-MacBook-Pro-M1"}
