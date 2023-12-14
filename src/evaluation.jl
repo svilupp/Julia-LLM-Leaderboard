@@ -46,9 +46,29 @@ end
 
 Runs evaluation for a single test case (parse, execute, run examples, run unit tests), including saving the files.
 
-It saves: `<model-name>/evaluation__PROMPTABC__1SHOT__TIMESTAMP.json` and `<model-name>/conversation__PROMPTABC__1SHOT__TIMESTAMP.json` into a sub-folder of where the definition file was stored.
+If `auto_save=true`, it saves the following files
+- `<model-name>/evaluation__PROMPTABC__1SHOT__TIMESTAMP.json`
+- `<model-name>/conversation__PROMPTABC__1SHOT__TIMESTAMP.json` 
+into a sub-folder of where the definition file was stored.
+
+# Keyword Arguments
+
+
+# Examples
+```julia
+using JuliaLLMLeaderboard
+using PromptingTools
+
+fn_definition = joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")
+d = load_definition(fn_definition)
+
+msg = aigenerate(:JuliaExpertAsk; ask=d["code_generation"]["prompt"], model="gpt4t", return_all=true)
+
+# Try evaluating it -- auto_save=false not to polute our benchmark
+evals = evaluate_1shot(; conversation=msg, fn_definition, definition=d["code_generation"], model="gpt4t", prompt_label="JuliaExpertAsk", timestamp=timestamp_now(), device="Apple-MacBook-Pro-M1", schema="-", prompt_strategy="1SHOT", verbose=true, auto_save=false)
+```
 """
-function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, device="UNKNOWN", timestamp=timestamp_now(), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true)
+function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, schema, device="UNKNOWN", timestamp=timestamp_now(), version_pt=string(pkgversion(PromptingTools)), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true)
 
     ## early exit
     if isnothing(conversation)
@@ -58,9 +78,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
 
     ## prepare output paths -- .../model/conversation__PROMPTABC__1SHOT__TIMESTAMP.json
     fn_evaluation = joinpath(splitpath(fn_definition)[1:end-1]..., model, "evaluation__$(prompt_label)__$(prompt_strategy)__$(timestamp).json")
-    mkpath(dirname(fn_evaluation))
     fn_conversation = joinpath(splitpath(fn_definition)[1:end-1]..., model, "conversation__$(prompt_label)__$(prompt_strategy)__$(timestamp).json")
-    mkpath(dirname(fn_conversation))
 
     ## Process the code
     msg = last(conversation)
@@ -70,9 +88,9 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         ""
     end
 
-    cb = PT.AICode(msg; prefix=imports_required)
-    # catching parsing errors is tricky between 1.9 and 1.10
-    notparsed = isnothing(cb.expression) || cb.error isa Base.Meta.ParseError || (cb.error isa ErrorException && startswith(cb.error.msg, "syntax:"))
+    # For ease of evaluation in "safe" mode (eg, inside a custom module), 
+    # but we skip any code lines with Pkg manipulation and importing unknown packages
+    cb = PT.AICode(msg; prefix=imports_required, skip_unsafe=true)
 
     ## Run all examples
     example_count = run_code_blocks(cb, definition["examples"]; verbose, prefix=imports_required)
@@ -81,17 +99,19 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     test_count = run_code_blocks(cb, definition["unit_tests"]; verbose, prefix=imports_required)
 
     ## Create eval dict
-    evaluation = (; name=definition["name"], parsed=!notparsed,
+    evaluation = (; name=definition["name"], parsed=PT.isparsed(cb),
         executed=isvalid(cb),
         unit_tests_count=length(definition["unit_tests"]), examples_count=length(definition["examples"]),
         unit_tests_passed=test_count, examples_executed=example_count, tokens=msg.tokens,
         elapsed_seconds=msg.elapsed, cost=get_query_cost(msg, model), model,
-        timestamp, prompt_strategy, prompt_label, device)
+        timestamp, prompt_strategy, prompt_label, device, version_prompt=definition["version"], schema=string(schema), version_pt)
 
     if auto_save
         ## Save Evaluation
+        mkpath(dirname(fn_evaluation))
         JSON3.write(fn_evaluation, evaluation)
         ## Save conversation
+        mkpath(dirname(fn_conversation))
         save_conversation(fn_conversation, conversation)
     end
 

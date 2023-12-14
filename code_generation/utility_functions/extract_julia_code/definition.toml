@@ -3,7 +3,8 @@ criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
 name = "extract_julia_code"
 contributor = "svilupp"
 examples = ["extract_julia_code(\"\"\"```julia\nprintln(\"hello world\")\n```\"\"\")", "extract_julia_code(strip(\"  TestSubstring   \"))", "extract_julia_code(\"\")", "extract_julia_code(\"\"\"```julia println(\"hello world\") ```\"\"\")"]
-imports = ["Test"]
+imports = []
 prompt = "You are provided a markdown document `md` with julia language code blocks. Write a function `extract_julia_code` that extracts all the code blocks, removes code fences and joins the code blocks (if there are multiple) together with a newline. Return a String. Do not provide any examples."
+reference_solution = "function extract_julia_code(md::AbstractString)\n    code_blocks = eachmatch(r\"```julia\n(.*?)\n```\"s, md)\n    join([code.captures[1] for code in code_blocks], \"\n\")\nend\n"
 unit_tests = ["# First unit test: Test extraction of single code block\n@test extract_julia_code(\"\"\"```julia\nx = 1\n```\"\"\") == \"x = 1\"\n", "# Second unit test: Test extraction of multiple code blocks\nmd_example = \"\"\"\nHere is some text.\n\n```julia\nprintln(\"Hello, World!\")\n```\nMore text here.\n\n```julia\nx = 1 + 1\n```\n\nEnd of document.\n\"\"\"\n@test extract_julia_code(md_example) == \"\"\"println(\"Hello, World!\")\nx = 1 + 1\"\"\"\n", "# Third unit test: Test with no Julia code blocks\n@test extract_julia_code(\"No code blocks here.\") == \"\"\n", "# Fourth unit test: Test with code blocks that don't belong to Julia\n@test extract_julia_code(\"\"\"```python\nprint('Hello')\n```\"\"\") == \"\"\n", "# Fifth unit test: Test preservation of newline within a Julia code block\n@test extract_julia_code(\"\"\"```julia\na = 3\nb = 4\na + b\n```\"\"\") == \"a = 3\nb = 4\na + b\"\n"]
-version = "1.0"
+version = "1.1"

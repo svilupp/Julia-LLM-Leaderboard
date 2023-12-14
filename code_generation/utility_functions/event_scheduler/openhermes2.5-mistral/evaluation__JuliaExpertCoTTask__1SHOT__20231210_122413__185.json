@@ -1,1 +1,0 @@
-{"name":"event_scheduler","parsed":false,"executed":false,"unit_tests_count":5,"examples_count":5,"unit_tests_passed":0,"examples_executed":0,"tokens":[271,473],"elapsed_seconds":18.775033292,"cost":0.0,"model":"openhermes2.5-mistral","timestamp":"20231210_122413__185","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertCoTTask","device":"Apple-MacBook-Pro-M1"}

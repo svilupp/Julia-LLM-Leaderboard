@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "count_model_rows"
+contributor = "svilupp"
+examples = ["df_cars = DataFrame(model=[\"a4\", \"a6\", \"a4\", \"q7\", \"a4\"])\ncount_model_rows(df_cars)", "count_model_rows(DataFrame(; model=String[]))"]
+imports = ["DataFrames"]
+prompt = "Given a DataFrame df_cars with column `model`, write a function `count_model_rows` that groups data by model and calculate how many rows there are for each."
+reference_solution = "using DataFrames\n\nfunction count_model_rows(df::DataFrame)\n    grouped_df = groupby(df, :model)\n    return combine(grouped_df, nrow => :count)\nend\n"
+unit_tests = ["# 1. Standard case with multiple models\ndf1 = DataFrame(model=[\"a4\", \"a6\", \"a4\", \"q7\", \"a4\"])\n@test count_model_rows(df1) == DataFrame(model=[\"a4\", \"a6\", \"q7\"], count=[3, 1, 1])\n", "# 2. Empty DataFrame\ndf2 = DataFrame(model=String[])\n@test isempty(count_model_rows(df2))\n", "# 3. DataFrame with a single row\ndf3 = DataFrame(model=[\"a4\"])\n@test count_model_rows(df3) == DataFrame(model=[\"a4\"], count=[1])\n", "# 4. DataFrame where all rows are the same model\ndf4 = DataFrame(model=fill(\"a4\", 5))  # 5 rows of \"a4\"\n@test count_model_rows(df4) == DataFrame(model=[\"a4\"], count=[5])\n", "# 5. DataFrame with models having different capitalization\ndf5 = DataFrame(model=[\"A4\", \"a4\", \"A4\", \"a4\"])\n@test count_model_rows(df5) == DataFrame(model=[\"A4\", \"a4\"], count=[2, 2])\n"]
+version = "1.0"

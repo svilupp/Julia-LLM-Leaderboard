@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "add_yearmonth"
+contributor = "svilupp"
+examples = ["df = DataFrame(dt=[DateTime(2020, 5, 24), DateTime(2021, 1, 15), DateTime(2022, 12, 5)])\nadd_yearmonth(df)", "add_yearmonth(DataFrame(;dt=DateTime[]))", "add_yearmonth(DataFrame(;dt=Date[Date(2023,1,1)]))", "add_yearmonth(DataFrame(;dt=Date[DateTime(2023,1,1)])).ym"]
+imports = ["DataFrames", "Dates"]
+prompt = "Given a DataFrame `df` with column `dt` representing DateTimes. Write a function `add_yearmonth` that creates a new column `ym` by extracting year and month from `dt` and concatenating them together as an integer in format: “yyyymm”."
+reference_solution = "using DataFrames, Dates\n\nfunction add_yearmonth(df::DataFrame)\n    return transform(df, :dt => ByRow(dt -> year(dt) * 100 + month(dt)) => :ym)\nend\n"
+unit_tests = ["# 1. Standard case with valid dates\ndf1 = DataFrame(dt=[DateTime(2020, 5, 24), DateTime(2021, 1, 15), DateTime(2022, 12, 5)])\n@test add_yearmonth(df1).ym == [202005, 202101, 202212]\n", "    # 2. Empty DataFrame\n    df2 = DataFrame(dt=DateTime[])\n    @test isempty(add_yearmonth(df2))\n", "    # 3. DataFrame with a single row\n    df3 = DataFrame(dt=[DateTime(2023, 3, 1)])\n    @test add_yearmonth(df3).ym == [202303]\n", "    # 4. DataFrame with different datetime formats\n    df4 = DataFrame(dt=[DateTime(2021, 1, 1), Date(2021, 1, 31), DateTime(2021, 2, 28)])\n    @test add_yearmonth(df4).ym == [202101, 202101, 202102]\n"]
+version = "1.0"

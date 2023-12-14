@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "keep_only_names"
+contributor = "svilupp"
+examples = ["keep_only_names([\"Apple\", \"banana\", \"Carrot\", \"dog\"])", "keep_only_names([\"Elephant\", \"fish\"])", "keep_only_names([\"giraffe\", \"Hippo\", \"iguana\"])", "keep_only_names([\"Jaguar\", \"koala\", \"Lion\"])"]
+imports = []
+prompt = "Write a function `keep_only_names` which iterates over the provided list of words (`words`) and removes all words that do not start with a capital letter (eg, remove \"dog\" but keep \"Dog\")."
+reference_solution = "function keep_only_names(words)\n    return filter(word -> isuppercase(first(word)), words)\nend\n"
+unit_tests = ["@test keep_only_names([\"Apple\", \"banana\", \"Carrot\", \"dog\"]) == [\"Apple\", \"Carrot\"]", "@test keep_only_names([\"Elephant\", \"fish\"]) == [\"Elephant\"]", "@test keep_only_names([]) == []", "@test keep_only_names([\"Jaguar\", \"KOALA\"]) == [\"Jaguar\", \"KOALA\"]", "@test keep_only_names([strip(\" Mouse\"), \"Nest\", \"owl\"]) == [\"Mouse\", \"Nest\"]"]
+version = "1.0"

@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "timezone_bumper"
+contributor = "svilupp"
+examples = ["timezone_bumper(DateTime(2023, 4, 10, 12, 0),3)", "timezone_bumper(DateTime(2023, 4, 10, 12, 0))", "timezone_bumper(DateTime(1, 1, 1, 1, 0),0)", "timezone_bumper(DateTime(2023, 4, 10),3)", "timezone_bumper(DateTime(2023, 4, 10),-1)"]
+imports = ["Dates"]
+prompt = "Write a function `timezone_bumper(dt,bump)` that increases any provided timestamp by `bump::Int` hours (defaults to +3 hours). Make sure it works only for DateTime types and throws an error for Date types."
+reference_solution = "using Dates\n\nfunction timezone_bumper(timestamp::DateTime, bump::Int=3)\n    return timestamp + Hour(bump)\nend\n\n"
+unit_tests = [" @test timezone_bumper(DateTime(2023, 1, 1, 10, 0), 3) == DateTime(2023, 1, 1, 13, 0)", "@test timezone_bumper(DateTime(2023, 6, 15, 23, 30)) == DateTime(2023, 6, 16, 2, 30)", "@test timezone_bumper(DateTime(2023, 12, 31), 0) == DateTime(2023, 12, 31)", "@test timezone_bumper(DateTime(2023, 7, 4), -1) == DateTime(2023, 7, 3, 23, 0)", "@test_throws Exception timezone_bumper(Date(2023, 7, 4), 1)"]
+version = "1.0"

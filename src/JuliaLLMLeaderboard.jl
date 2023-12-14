@@ -13,7 +13,7 @@ using Markdown, InteractiveUtils
 export timestamp_now, get_query_cost
 include("utils.jl")
 
-export save_definition, validate_definition, load_definition
+export save_definition, validate_definition, load_definition, find_definitions
 include("definitions.jl")
 
 export evaluate_1shot, load_evals, score_eval

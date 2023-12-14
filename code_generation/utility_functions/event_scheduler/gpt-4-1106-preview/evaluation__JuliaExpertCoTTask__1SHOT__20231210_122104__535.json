@@ -1,1 +1,0 @@
-{"name":"event_scheduler","parsed":false,"executed":false,"unit_tests_count":5,"examples_count":5,"unit_tests_passed":0,"examples_executed":0,"tokens":[225,430],"elapsed_seconds":24.21517125,"cost":0.01515,"model":"gpt-4-1106-preview","timestamp":"20231210_122104__535","prompt_strategy":"1SHOT","prompt_label":"JuliaExpertCoTTask","device":"Apple-MacBook-Pro-M1"}

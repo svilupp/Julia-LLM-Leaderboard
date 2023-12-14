@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "clean_column"
+contributor = "svilupp"
+examples = ["clean_column(\"My Column\")", "clean_column(\"Another-Column    \")", "clean_column(strip(\"Another-Column    \"))"]
+imports = []
+prompt = "Write a function `clean_column` that cleans a column name (`col`) by lowercasing it, stripping any leading or trailing whitespaces, and replacing any spaces and hyphens with an underscore, eg, \"My Column\" becomes \"my_column\"."
+reference_solution = "function clean_column(col)\n    return lowercase(col) |> strip |> x -> replace(x, r\"[\\s-]\" => \"_\")\nend\n"
+unit_tests = ["@test clean_column(\"My Column\") == \"my_column\"", "@test clean_column(strip(\"Another-Column  \")) == \"another_column\"", "@test clean_column(\" Data Set \") == \"data_set\"", "@test clean_column(\"Column-Name-\") == \"column_name_\"", "@test clean_column(\"CLEAN-COLUMN\") == \"clean_column\""]
+version = "1.0"

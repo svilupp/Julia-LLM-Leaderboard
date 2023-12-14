@@ -59,6 +59,8 @@ end
 # - `criteria` (required): the criteria to use for the test case. Must be a subset of `["parsed", "executed", "passed_unit_tests", "executed_examples"]`
 # - `examples` (required): the examples to use for the test case. Must be a vector of strings, which represent valid Julia expressions.
 # - `unit_tests` (required): the unit tests to use for the test case. Must be a vector of strings, which represent valid unit tests annotated with `@test`.
+# - `reference_solution` (required): the reference solution to use for the test case. Must be a string, which represent valid Julia code.
+# - `imports` (optional): the imports to use for the test cases. Must be a vector of strings, which represent valid Julia package (assumed to be available in the environment).
 
 d = Dict("code_generation" => Dict("name" => function_name,
     "contributor" => "svilupp",
@@ -79,7 +81,9 @@ d = Dict("code_generation" => Dict("name" => function_name,
         @test maximum(length.(split(output, "\n"))) <= 20
         """,
         """@test wrap_string(text, length(text)) == text """,
-        "imports" => ["Test"]
+        "reference_solution" => """
+        """,
+        "imports" => ["Test"],
     ]))
 
 ## Save definition

@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "ispersonal"
+contributor = "svilupp"
+examples = ["ispersonal(Car())", "ispersonal(Motorcycle())", "ispersonal(Truck())", "struct Skateboard <: AbstractVehicle end\nispersonal(Skateboard())\n"]
+imports = []
+prompt = "Write a function `ispersonal` that returns a trait if the provided Vehicle type is a personal vehicle for everyday driving. All vehicles are subtypes of AbstractVehicle. Function must work for types: Car, Motorcycle, Bus, Truck. The first two should return true, the latter two should return false . The function should default to false for any other subtype of AbstractVehicle. Provide an example."
+reference_solution = "abstract type AbstractVehicle end\n\nstruct Car <: AbstractVehicle end\nstruct Motorcycle <: AbstractVehicle end\nstruct Bus <: AbstractVehicle end\nstruct Truck <: AbstractVehicle end\n\nispersonal(vehicle::AbstractVehicle) = false\nispersonal(vehicle::Union{Car,Motorcycle}) = true\n"
+unit_tests = ["@test ispersonal(Car()) == true", "@test ispersonal(Motorcycle()) == true", "@test ispersonal(Bus()) == false", "@test ispersonal(Truck()) == false", "struct Boeing <: AbstractVehicle end  # Custom vehicle type for testing\n@test ispersonal(Boeing()) == false\n"]
+version = "1.0"

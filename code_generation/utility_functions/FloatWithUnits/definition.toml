@@ -1,0 +1,10 @@
+[code_generation]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+name = "FloatWithUnits"
+contributor = "svilupp"
+examples = ["FloatWithUnits(1.8, \"meters\")", "FloatWithUnits(0.0, \"litres\")"]
+imports = []
+prompt = "Given a struct `FloatWithUnits` with fields `value` and `unit` (make sure to define it!), write a `show` method for it that will concatenate the value and unit with a space like this \"1.8 meters\"."
+reference_solution = "struct FloatWithUnits\n    value::Float64\n    unit::String\nend\nBase.show(io::IO, f::FloatWithUnits) = print(io, f.value, \" \", f.unit)\n"
+unit_tests = ["# Test 1\nio1 = IOBuffer()\nshow(io1, FloatWithUnits(2.5, \"kilograms\"))\n@test String(take!(io1)) == \"2.5 kilograms\"\n", "# Test 2\nio2 = IOBuffer()\nshow(io2, FloatWithUnits(0.0, \"liters\"))\n@test String(take!(io2)) == \"0.0 liters\"\n", "# Test 3\nio3 = IOBuffer()\nshow(io3, FloatWithUnits(100.25, \"miles\"))\n@test String(take!(io3)) == \"100.25 miles\"\n"]
+version = "1.0"
