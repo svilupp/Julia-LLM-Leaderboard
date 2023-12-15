@@ -21,7 +21,7 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
 prompt_options = ["JuliaExpertCoTTask", "JuliaExpertAsk", "InJulia", "AsIs", "JuliaRecapTask", "JuliaRecapCoTTask"]
 # needed if you use non-OpenAI models, provide a key for each model you use
 schema_lookup = Dict{String,Any}(["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2"] .=> Ref(PT.OllamaManagedSchema()))
-merge!(schema_lookup, Dict(["mistral-tiny", "mistral-small", "mistral-medium"] .=> Ref(MistralOpenAISchema())))
+merge!(schema_lookup, Dict(["mistral-tiny", "mistral-small", "mistral-medium"] .=> Ref(PT.MistralOpenAISchema())))
 
 all_options = Iterators.product(prompt_options, model_options) |> collect |> vec
 
