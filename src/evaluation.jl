@@ -177,10 +177,6 @@ function load_evals(base_dir::AbstractString; score::Bool=true, max_history::Int
             end
         end
     end
-    # Unpack parameters column if present
-    if "parameters" in names(df) && !all(ismissing, df.parameters)
-        transform!(df, :parameters => AsTable)
-    end
     return df
 end
 """
