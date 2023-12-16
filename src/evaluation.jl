@@ -99,9 +99,25 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         ""
     end
 
+    ## Run the code
     # For ease of evaluation in "safe" mode (eg, inside a custom module), 
     # but we skip any code lines with Pkg manipulation and importing unknown packages
-    cb = PT.AICode(msg; prefix=imports_required, skip_unsafe=true)
+    # we skip invalid code blocks (in case some later example is poor)
+    # we don't capture stdout to be able to process in parallel
+    cb = PT.AICode(msg; prefix=imports_required, skip_unsafe=true, skip_invalid=true, capture_stdout=false)
+
+    if !isvalid(cb)
+        ## We want to measure function defintion separately from examples and test cases, 
+        # so we give it one more chance and grab only the code definition
+        raw_blocks = PT.extract_code_blocks(msg.content)
+        definition_mask = PT.is_julia_code.(raw_blocks) .&& (PT.extract_function_name.(raw_blocks) .== definition["name"])
+        definition_idx = findfirst(definition_mask)
+
+        if !isnothing(definition_idx)
+            # redefine the code block to be just the function definition
+            cb = AICode(raw_blocks[definition_idx]; prefix=imports_required, skip_unsafe=true, capture_stdout=false)
+        end
+    end
 
     ## Run all examples
     example_count = run_code_blocks(cb, definition["examples"]; verbose, prefix=imports_required)
@@ -177,6 +193,10 @@ function load_evals(base_dir::AbstractString; score::Bool=true, max_history::Int
             end
         end
     end
+    ## auto-expand parameters if not missing
+    if "parameters" in names(df) && all(!ismissing, df.parameters)
+        transform!(df, :parameters => AsTable)
+    end
     return df
 end
 """
@@ -201,6 +221,7 @@ function score_eval(eval::AbstractDict; max_points::Int=100)
 
     return score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points)
 end
+score_eval(eval::NamedTuple; kwargs...) = score_eval(Dict(k => v for (k, v) in zip(keys(eval), values(eval))); kwargs...)
 
 """
     score_eval(parsed, executed, unit_tests_success_ratio, examples_success_ratio; max_points::Int=100)
