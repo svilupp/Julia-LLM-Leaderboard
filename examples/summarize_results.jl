@@ -7,7 +7,11 @@ using MarkdownTables
 using Statistics: mean, median
 
 # ! Configuration
-PAID_MODELS = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-tiny", "mistral-small", "mistral-medium"];
+PAID_MODELS_DEFAULT = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-tiny", "mistral-small", "mistral-medium"];
+PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-tiny", "mistral-small", "mistral-medium",
+    "gpt-3.5-turbo--optim", "gpt-3.5-turbo-1106--optim", "gpt-4-1106-preview--optim", "mistral-tiny--optim", "mistral-small--optim", "mistral-medium--optim"];
+
+
 
 # # Load Results
 df = load_evals("code_generation"; max_history=1)
@@ -17,7 +21,7 @@ df = load_evals("code_generation"; max_history=1)
 # By Model / Prompt 
 # Table:
 output = @chain df begin
-    @rsubset :model in PAID_MODELS
+    @rsubset :model in PAID_MODELS_DEFAULT
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -33,7 +37,7 @@ markdown_table(output, String) |> clipboard
 
 # Plot:
 fig = @chain df begin
-    @rsubset :model in PAID_MODELS
+    @rsubset :model in PAID_MODELS_DEFAULT
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -49,7 +53,7 @@ save("assets/model-prompt-comparison-paid.png", fig)
 
 # Cost vs Score
 fig = @chain df begin
-    @rsubset :model in PAID_MODELS
+    @rsubset :model in PAID_MODELS_DEFAULT
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -67,7 +71,7 @@ save("assets/paid-cost-vs-score-scatter.png", fig)
 # By Model / Prompt 
 # Table:
 output = @chain df begin
-    @rsubset :model ∉ PAID_MODELS
+    @rsubset :model ∉ PAID_MODELS_ALL
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -83,7 +87,7 @@ markdown_table(output, String) |> clipboard
 
 # Plot:
 fig = @chain df begin
-    @rsubset :model ∉ PAID_MODELS
+    @rsubset :model ∉ PAID_MODELS_ALL
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -104,7 +108,7 @@ save("assets/model-prompt-comparison-oss.png", fig)
 # ## Per prompt (same model)
 # Apply Median to elapsed
 output = @chain df begin
-    # @rsubset :model in PAID_MODELS
+    # @rsubset :model in PAID_MODELS_ALL
     @by [:prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         # :elapsed_median = median(:elapsed_seconds)
