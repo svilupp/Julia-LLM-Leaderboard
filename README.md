@@ -53,13 +53,12 @@ Across the board, GPT-4 tends to be among the best-performing models. However, "
 
 | model              | AsIs | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
 |--------------------|------|---------|----------------|--------------------|-------------------|----------------|--------------|
-| gpt-4-1106-preview | 22.4 |    83.2 |           76.5 |               74.7 |              75.1 |           65.7 |         66.3 |
-| gpt-3.5-turbo-1106 | 25.4 |    72.9 |           77.4 |               80.2 |              27.5 |           66.4 |         58.3 |
-|      mistral-small | 33.0 |    65.1 |           66.2 |               57.3 |              45.4 |           31.1 |         49.7 |
-|     mistral-medium | 22.5 |    53.0 |           73.3 |               47.0 |              44.5 |           42.1 |         47.1 |
-|       mistral-tiny | 10.7 |    43.9 |           41.4 |               22.3 |              35.7 |           37.7 |         32.0 |
-|      gpt-3.5-turbo | 16.1 |    54.6 |           49.6 |               16.2 |              20.2 |           10.4 |         27.9 |
-
+| gpt-4-1106-preview | 20.6 |    85.0 |           76.5 |               74.7 |              80.1 |           79.6 |         69.4 |
+| gpt-3.5-turbo-1106 | 23.6 |    75.3 |           77.4 |               80.2 |              32.9 |           72.0 |         60.2 |
+|     mistral-medium | 18.9 |    63.0 |           73.3 |               66.6 |              62.9 |           67.9 |         58.8 |
+|      mistral-small | 36.3 |    71.2 |           66.2 |               64.8 |              62.6 |           46.2 |         57.9 |
+|       mistral-tiny |  1.8 |    55.0 |           43.2 |               41.1 |              57.0 |           46.1 |         40.7 |
+|      gpt-3.5-turbo | 20.0 |    67.7 |           53.9 |               22.9 |              27.7 |           14.0 |         34.4 |
 
 Same information, but as a bar chart:
 
@@ -71,23 +70,22 @@ In addition, we can consider the performance (score) versus the cost (measured i
 
 ### OSS Models
 
-Open-source models are generally not as good as the paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future fine-tunes!
+Open-source models are generally not as good as the paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
 
-The best-performing model is "yi:34b-chat", followed closely by the recently released "orca2:13b" model.
+The best-performing model is "orca2:13b", which is impressive given its size!
 
 | model                  | AsIs | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
 |------------------------|------|---------|----------------|--------------------|-------------------|----------------|--------------|
-|            yi:34b-chat | 17.9 |    25.0 |           24.3 |               16.4 |              27.5 |           23.9 |         22.5 |
-|              orca2:13b | 12.5 |    23.9 |           36.4 |               20.0 |              27.5 |           10.7 |         21.8 |
-| phind-codellama:34b-v2 | 12.5 |    25.0 |           29.3 |               28.2 |              20.0 |           15.2 |         21.7 |
-|     starling-lm:latest | 16.1 |    22.9 |           35.4 |                7.1 |              18.4 |           23.2 |         20.5 |
-|              magicoder | 17.9 |    31.1 |           34.4 |                5.4 |              16.1 |           16.4 |         20.2 |
-|  openhermes2.5-mistral | 12.5 |    25.0 |           31.1 |                8.9 |              16.8 |           19.6 |         19.0 |
-| codellama:13b-instruct |  8.9 |    21.0 |           35.0 |               12.5 |              23.2 |           12.5 |         18.8 |
-|   codellama:13b-python | 14.3 |    19.6 |           12.9 |               20.2 |              20.9 |           20.5 |         18.1 |
-|                 llama2 | 10.7 |    22.1 |           27.5 |               14.3 |              16.1 |           14.3 |         17.5 |
-|        stablelm-zephyr |  8.9 |    16.1 |           24.5 |               17.9 |              10.7 |           26.8 |         17.5 |
-
+|              orca2:13b | 12.5 |    25.7 |           40.0 |               36.1 |              31.1 |           26.1 |         28.6 |
+| phind-codellama:34b-v2 | 12.5 |    34.6 |           35.4 |               33.9 |              23.6 |           30.2 |         28.4 |
+|            yi:34b-chat | 14.3 |    27.5 |           32.0 |               27.4 |              31.4 |           34.5 |         27.9 |
+|   codellama:13b-python | 10.7 |    23.2 |           23.9 |               42.7 |              37.3 |           28.0 |         27.7 |
+|              magicoder | 16.1 |    32.9 |           40.1 |               17.3 |              30.7 |           27.9 |         27.5 |
+|     starling-lm:latest | 14.3 |    28.2 |           42.9 |               20.4 |              20.2 |           36.4 |         27.1 |
+| codellama:13b-instruct |  7.1 |    26.3 |           40.4 |               28.9 |              36.1 |           17.9 |         26.1 |
+|  openhermes2.5-mistral | 10.7 |    27.9 |           36.4 |               29.8 |              22.1 |           27.1 |         25.7 |
+|        stablelm-zephyr |  7.1 |    20.0 |           34.1 |               32.9 |              23.2 |           36.8 |         25.7 |
+|                 llama2 |  8.9 |    23.9 |           32.9 |               37.2 |              25.0 |           16.1 |         24.0 |
 
 
 Same information, but as a bar chart:
@@ -109,16 +107,16 @@ We hope to be able to provide some guidance around prompting strategies, eg, whe
 Learnings so far: 
 
 - Never use the "AsIs" prompt (ie, raw task definition). ALWAYS add some context around the language, situation, etc.
-- Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts might be confusing the smaller models, hence why this prompt is so effective on average.
+- Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts ("CoT" stands for Chain of Thought) might be confusing the smaller models, hence why this prompt is so effective on average.
 
-| Prompt Template    | Elapsed (s) | Avg. Score (Max 100 pts) |
-|--------------------|-------------|--------------------------|
-|     JuliaExpertAsk |         9.4 |                     42.2 |
-|            InJulia |        14.7 |                     37.8 |
-| JuliaExpertCoTTask |        16.4 |                     28.0 |
-|  JuliaRecapCoTTask |        18.0 |                     27.8 |
-|     JuliaRecapTask |        20.9 |                     27.3 |
-|               AsIs |        14.1 |                     16.4 |
+| Prompt Template    | Elapsed (s, median) | Avg. Score (Max 100 pts) |
+|--------------------|---------------------|--------------------------|
+|     JuliaExpertAsk |                 6.9 |                     53.6 |
+|            InJulia |                11.3 |                     50.6 |
+| JuliaExpertCoTTask |                13.9 |                     46.4 |
+|     JuliaRecapTask |                19.3 |                     43.9 |
+|  JuliaRecapCoTTask |                16.0 |                     42.1 |
+|               AsIs |                10.4 |                     16.2 |
 
 
 Make your own analysis with `examples/summarize_results.jl`!

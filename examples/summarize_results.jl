@@ -4,7 +4,7 @@
 using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics, DataFramesMeta
 using MarkdownTables
-using Statistics: mean, median
+using Statistics: mean, median, quantile
 
 # ! Configuration
 PAID_MODELS_DEFAULT = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-tiny", "mistral-small", "mistral-medium"];
@@ -14,6 +14,7 @@ PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", 
 
 
 # # Load Results
+# Use only the latest evaluation available for each definition/model/prompt
 df = load_evals("code_generation"; max_history=1)
 
 # ## Paid Models
@@ -110,18 +111,19 @@ save("assets/model-prompt-comparison-oss.png", fig)
 output = @chain df begin
     # @rsubset :model in PAID_MODELS_ALL
     @by [:prompt_label] begin
-        :elapsed = mean(:elapsed_seconds)
-        # :elapsed_median = median(:elapsed_seconds)
+        # :elapsed = mean(:elapsed_seconds)
+        :elapsed_median = median(:elapsed_seconds)
         :score = mean(:score)
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits=1)), renamecols=false)
     @orderby -:score
-    rename("prompt_label" => "Prompt Template", "elapsed" => "Elapsed (s)", "score" => "Avg. Score (Max 100 pts)")
+    rename("prompt_label" => "Prompt Template", "elapsed_median" => "Elapsed (s, median)", "score" => "Avg. Score (Max 100 pts)")
 end
 markdown_table(output, String) |> clipboard
 
 # Show scatter plot elapsed / score, where model is a color
 fig = @chain df begin
+    @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
@@ -130,6 +132,6 @@ fig = @chain df begin
         :cnt = $nrow
     end
     data(_) * mapping(:elapsed => "Avg. Elapsed Time (s)", :score => "Avg. Score (Max 100 pts)", color=:model => "Model")
-    draw(; axis=(xticklabelrotation=45, title="Elapsed Time vs Score [PRELIMINARY]"))
+    draw(; figure=(size=(600, 600),), axis=(xticklabelrotation=45, title="Elapsed Time vs Score [PRELIMINARY]", limits=(xlims..., nothing, nothing)))
 end
 save("assets/all-elapsed-vs-score-scatter.png", fig)

@@ -195,7 +195,8 @@ function load_evals(base_dir::AbstractString; score::Bool=true, max_history::Int
     end
     ## auto-expand parameters if not missing
     if "parameters" in names(df) && all(!ismissing, df.parameters)
-        transform!(df, :parameters => AsTable)
+        unique_params = df.parameters .|> keys .|> collect |> Base.Splat(vcat) |> unique
+        @rtransform! df $AsTable = Dict(param => get(:parameters, param, missing) for param in unique_params)
     end
     return df
 end

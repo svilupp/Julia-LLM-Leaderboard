@@ -81,7 +81,7 @@ fn_definitions = find_definitions("code_generation")
                 end
                 ## Evaluate 1SHOT, including saving the files (and randint to prevent overrides)
                 experiment = "hyperparams__$(model)__grid_search2"
-                eval_ = evaluate_1shot(; parameters=(; top_p, temperature), timestamp, experiment, conversation, fn_definition, definition, model, prompt_label, device, schema, save_dir, prompt_strategy="1SHOT", verbose=false)
+                eval_ = evaluate_1shot(; parameters=(; top_p, temperature), experiment, conversation, fn_definition, definition, model, prompt_label, device, schema, save_dir, prompt_strategy="1SHOT", verbose=false)
                 push!(evals, eval_)
             catch e
                 @error "Failed for $option with error: $e"
