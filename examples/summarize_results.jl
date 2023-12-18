@@ -124,6 +124,7 @@ markdown_table(output, String) |> clipboard
 # Show scatter plot elapsed / score, where model is a color
 fig = @chain df begin
     @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
+    @rsubset !occursin("--optim", :model)
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
@@ -132,6 +133,7 @@ fig = @chain df begin
         :cnt = $nrow
     end
     data(_) * mapping(:elapsed => "Avg. Elapsed Time (s)", :score => "Avg. Score (Max 100 pts)", color=:model => "Model")
-    draw(; figure=(size=(600, 600),), axis=(xticklabelrotation=45, title="Elapsed Time vs Score [PRELIMINARY]", limits=(xlims..., nothing, nothing)))
+    draw(; figure=(size=(600, 600),), axis=(xticklabelrotation=45, title="Elapsed Time vs Score [PRELIMINARY]", limits=(xlims..., nothing, nothing)),
+        palettes=(; color=Makie.ColorSchemes.tab20.colors))
 end
 save("assets/all-elapsed-vs-score-scatter.png", fig)

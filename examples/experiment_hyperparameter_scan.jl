@@ -51,7 +51,7 @@ all_options = Iterators.product(prompt_options, model_options, temp_top_p_option
 fn_definitions = find_definitions("code_generation")
 @time for fn_definition in fn_definitions
     definition = load_definition(fn_definition)["code_generation"]
-    save_dir = joinpath("experiment", "hyperparams-search-paid-apis", definition["name"])
+    save_dir = joinpath("experiment", "hyperparams-search-paid-apis-v01", definition["name"])
 
     evals = let all_options = all_options
         evals = []
@@ -93,22 +93,39 @@ end
 
 # # Analysis
 
-df = load_evals(joinpath("experiments", "hyperparams-search-paid-apis"); max_history=0)
-# Unpack parameters column if present (and homogenous)
-transform!(df, :parameters => AsTable)
+## Load data
+df = load_evals("experiments/hyperparams-search-paid-apis-v01"; max_history=0)
 
 # Overall summary by test case
 @chain df begin
+    # @rsubset :model == "mistral-medium"
     @by [:model, :name] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
-        :cnt = $nrow
+        :count = $nrow
     end
-    @orderby -:cnt
+    @orderby -:score
+    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits=1)), renamecols=false)
+    rename("model" => "Model", "count_zeros" => "# of Zero Scores", "score" => "Avg. Score",
+        "count" => "Count", "name" => "Name")
 end
+markdown_table(ans, String) |> clipboard
+
 
 # Summary by model
-@by df :model :score = mean(:score) :cnt = $nrow
+@chain df begin
+    # @rsubset :model == "mistral-medium"
+    @by [:model] begin
+        :score = mean(:score)
+        :count_zeros = count(==(0), :score)
+        :count = $nrow
+    end
+    @orderby -:score
+    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits=1)), renamecols=false)
+    rename("model" => "Model", "count_zeros" => "# of Zero Scores", "score" => "Avg. Score",
+        "count" => "Count")
+end
+markdown_table(ans, String) |> clipboard
 
 # Check model hyperparameters
 @chain df begin
@@ -121,7 +138,46 @@ end
     @orderby -:score
 end
 
-# Display a heatmap
+# Plots heatmaps
+for model in ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-medium", "mistral-small", "mistral-tiny"]
+    model = "mistral-medium"
+    fig = let dfx = df, model = model
+        # model = "mistral-tiny"
+        # model = "mistral-small"
+        # model = "mistral-medium"
+        # model = "gpt-4-1106-preview"
+        # model = "gpt-3.5-turbo-1106"
+        # model = "gpt-3.5-turbo"
+        dfx = @chain dfx begin
+            @rsubset :model == model
+            @orderby :temperature :top_p
+            unstack(:temperature, :top_p, :score; fill=0.0, combine=mean)
+        end
+
+        temp_labels = dfx.temperature .|> string
+        top_p_labels = names(dfx, Not(:temperature))
+        data = Matrix(dfx[:, names(dfx, Not(:temperature))])
+
+        fig = Figure()
+        ax = Axis(fig[1, 1], title="$(titlecase(model)) API Parameter Search",
+            ylabel="Temperature", xlabel="Top-p",
+            yticks=(1:length(temp_labels), temp_labels),
+            xticks=(1:length(top_p_labels), top_p_labels),
+        )
+        hm = heatmap!(ax, data')
+        Colorbar(fig[1, 2], hm)
+        for i in 1:size(data, 1)
+            for j in 1:size(data, 2)
+                value = data[i, j]
+                text!(ax, j, i; text=string(round(value, digits=2)), align=(:center, :center), color=:black)
+            end
+        end
+        fig
+    end
+    save(joinpath("experiments", "hyperparams-search-paid-apis-v01", "$(model)-parameter-search.png"), fig)
+end
+
+## Single model inspection
 fig = let dfx = df, model = "mistral-medium"
     dfx = @chain dfx begin
         @rsubset :model == model
@@ -134,7 +190,7 @@ fig = let dfx = df, model = "mistral-medium"
     data = Matrix(dfx[:, names(dfx, Not(:temperature))])
 
     fig = Figure()
-    ax = Axis(fig[1, 1], title="$(titlecase(model)) API Parameter Search",
+    ax = Axis(fig[1, 1], title="$(model) API Parameter Search",
         ylabel="Temperature", xlabel="Top-p",
         yticks=(1:length(temp_labels), temp_labels),
         xticks=(1:length(top_p_labels), top_p_labels),
@@ -149,4 +205,3 @@ fig = let dfx = df, model = "mistral-medium"
     end
     fig
 end
-save("assets/experiment-hyperparams-mistral-medium.png", fig)

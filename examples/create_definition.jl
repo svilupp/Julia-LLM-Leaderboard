@@ -80,11 +80,13 @@ d = Dict("code_generation" => Dict("name" => function_name,
         output = wrap_string("This function will wrap words into lines", 20)
         @test maximum(length.(split(output, "\n"))) <= 20
         """,
-        """@test wrap_string(text, length(text)) == text """,
-        "reference_solution" => """
-        """,
-        "imports" => ["Test"],
-    ]))
+        """@test wrap_string(text, length(text)) == text """],
+    "reference_solution" => "function wrap_string(text::AbstractString, text_width::Int=10)\n    words = split(text)\n    line_length = 0\n    wrapped_text = \"\"\n    num_words = length(words)\n    for i in eachindex(words)\n        word = words[i]\n        # +1 for separator length for all but the last word\n        sep_length = (i == num_words) ? 0 : 1\n        if line_length + length(word) + sep_length > text_width\n            wrapped_text *= \"\n\"\n            line_length = 0\n        end\n        wrapped_text *= word * \" \"\n        line_length += length(word) + 1\n    end\n    return strip(wrapped_text)\nend\n",
+    "imports" => ["Test"],
+))
+
+## Validate the definition that it's correct:
+validate_definition(d, evaluate=true)
 
 ## Save definition
 save_definition(fn_definition, d)
@@ -137,10 +139,13 @@ for unit in d["unit_tests"]
     @eval(Main, $(Meta.parseall(unit)))
 end
 
+## Validate the definition that it's correct:
+validate_definition(d, evaluate=true)
+
 # Now we can save it...
 save_definition(fn_definition, d)
 
-# # Test the definition
+# # Test the definition with GPT-4 Turbo
 # You should always test your definition before running the benchmark. Pass it to the best model (gpt4t) and see if it works.
 #
 # If GPT-4 fails, you're unlikely get any points for the other open source models! Perhaps tweak the prompt a bit to be more clear?

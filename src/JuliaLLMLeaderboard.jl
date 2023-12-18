@@ -22,7 +22,8 @@ include("evaluation.jl")
 export load_conversation_from_eval, preview
 include("conversations.jl")
 
-# export run_benchmark #not ready yet
+# The main interface for the benchmark
+export run_benchmark
 include("workflow.jl")
 
 end # module JuliaLLMLeaderboard

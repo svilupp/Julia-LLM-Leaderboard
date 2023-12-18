@@ -14,9 +14,10 @@ Comparison of Julia language generation capabilities of various Large Language M
     - [OSS Models](#oss-models)
     - [Overall Time to Run vs Score](#overall-time-to-run-vs-score)
     - [Prompting Templates](#prompting-templates)
+  - [Running Evaluation / Adding More Results](#running-evaluation--adding-more-results)
+  - [Debugging](#debugging)
   - [Contributing Your Test Case](#contributing-your-test-case)
     - [Anatomy of `definition.toml`](#anatomy-of-definitiontoml)
-  - [Running Evaluation / Adding More Results](#running-evaluation--adding-more-results)
   - [Feedback and Improvements](#feedback-and-improvements)
 
 
@@ -26,6 +27,8 @@ Welcome to the Julia Code Generation Benchmark Repository!
 This project is designed for the Julia community to compare the code generation capabilities of various AI models. Unlike academic benchmarks, our focus is practicality and simplicity: "Generate code, run it, and see if it works(-ish)."
 
 This repository aims to understand how different AI models and prompting strategies perform in generating syntactically correct Julia code to guide users in choosing the best model for their needs.
+
+Itchy fingers? Jump to `examples/` or just run your own benchmark with `run_benchmark()` (eg, `examples/code_gen_benchmark.jl`).
 
 ## Test Cases
 Test cases are defined in a `definition.toml` file, providing a standard structure for each test. If you want to contribute a test case, please follow the instructions in the [Contributing Your Test Case](#contributing-your-test-case) section.
@@ -94,11 +97,9 @@ Same information, but as a bar chart:
 
 ### Overall Time to Run vs Score
 
-Clearly, the paid APIs win (the latest GPT-3.5-Turbo release), but that's not the whole story.
+Clearly, the paid APIs win (the latest release: GPT-3.5-Turbo-1106), but that's not the whole story.
 
 ![Elapsed-vs-Score](assets/all-elapsed-vs-score-scatter.png)
-
-TODO: Improve color scheme
 
 ### Prompting Templates
 
@@ -121,6 +122,18 @@ Learnings so far:
 
 Make your own analysis with `examples/summarize_results.jl`!
 
+## Running Evaluation / Adding More Results
+1. **Existing Evaluations**: Check `scripts/code_gen_benchmark.jl` for the example of previous evaluations.
+2. **Run Your Evaluation**: Choose your model and prompt, and run the test.
+3. **Save Results**: Store both the conversation and the evaluation.
+4. **Open a PR**: Include the part of the code snippet you changed in the PR comments. We generally require 1-2 independent verifications of your result.
+
+Want to run some experiments and save the results? Check out `examples/experiment_hyperparameter_scan.jl`!
+
+## Debugging
+
+Want to review some of the past benchmark runs? Check out `examples/summarize_results.jl` for overall statistics and `examples/debugging_results.jl` for reviewing the individual conversations/model responses.
+
 ## Contributing Your Test Case
 To contribute a test case:
 
@@ -136,16 +149,11 @@ Required fields in `definition.toml` include:
 - **version**: The version of the test case. Starts at "1.0".
 - **examples**: Example scenarios for testing, provided as a vector of executable statements using the function name (eg, `my_function(1, 2)`).
 - **unit_tests**: Tests to validate the code, provided as a vector of `@test X = Z` statements.
-- **packages**: Packages that are made available to the model (to avoid failures due to a failed dependency).
+- **imports**: Packages that are made available to the model (to avoid failures due to a failed dependency).
 - **reference_solution**: A reference solution to the problem, provided as a string of Julia code (no code fences).
 
-See an example in `examples/create_definition.jl`.
-
-## Running Evaluation / Adding More Results
-1. **Existing Evaluations**: Check `scripts/code_gen_benchmark.jl` for the example of previous evaluations.
-2. **Run Your Evaluation**: Choose your model and prompt, and run the test.
-3. **Save Results**: Store both the conversation and the evaluation.
-4. **Open a PR**: Include the part of the code snippet you changed in the PR comments. We generally require 1-2 independent verifications of your result.
+See an example in `examples/create_definition.jl`. 
+You can validate your test case definitions with `validate_definition()`.
 
 ## Feedback and Improvements
 We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!
