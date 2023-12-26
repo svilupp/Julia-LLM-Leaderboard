@@ -17,12 +17,12 @@ include("generate_examples.jl")
 makedocs(;
     modules = [JuliaLLMLeaderboard],
     authors = "J S <49557684+svilupp@users.noreply.github.com> and contributors",
-    repo = "https://github.com/svilupp/JuliaLLMLeaderboard.jl/blob/{commit}{path}#{line}",
+    repo = "https://github.com/svilupp/Julia-LLM-Leaderboard/blob/{commit}{path}#{line}",
     sitename = "JuliaLLMLeaderboard.jl",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        repolink = "https://github.com/svilupp/JuliaLLMLeaderboard.jl",
-        canonical = "https://svilupp.github.io/JuliaLLMLeaderboard.jl",
+        repolink = "https://github.com/svilupp/Julia-LLM-Leaderboard",
+        canonical = "https://svilupp.github.io/Julia-LLM-Leaderboard.jl",
         edit_link = "main",
         assets = String[],
         size_threshold = nothing),
@@ -38,5 +38,5 @@ makedocs(;
     ])
 
 deploydocs(;
-    repo = "github.com/svilupp/JuliaLLMLeaderboard.jl",
+    repo = "github.com/svilupp/Julia-LLM-Leaderboard.jl",
     devbranch = "main")

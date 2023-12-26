@@ -24,7 +24,7 @@ PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview",
 
 # # Load Results
 # Use only the latest evaluation available for each definition/model/prompt
-df = load_evals(DIR_RESULTS; max_history = 1);
+df = load_evals(DIR_RESULTS; max_history = 3);
 
 # ## Paid Models
 
@@ -126,8 +126,9 @@ fig = @chain df begin
         :score => "Avg. Score (Max 100 pts)",
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
-    draw(;
-        axis = (xticklabelrotation = 45, title = "Comparison for OSS Models [PRELIMINARY]"))
+    draw(; figure = (size = (900, 600),),
+        axis = (xticklabelrotation = 45, title = "Comparison for OSS Models [PRELIMINARY]"),
+        legend = (; position = :bottom))
 end
 SAVE_PLOTS && save("assets/model-prompt-comparison-oss.png", fig)
 fig
