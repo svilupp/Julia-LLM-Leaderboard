@@ -4,5 +4,6 @@
 ```
 
 ```@autodocs
-Modules = [PromptingTools]
+Modules = [JuliaLLMLeaderboard]
 ```
+

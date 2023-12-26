@@ -24,12 +24,14 @@ makedocs(;
         repolink = "https://github.com/svilupp/JuliaLLMLeaderboard.jl",
         canonical = "https://svilupp.github.io/JuliaLLMLeaderboard.jl",
         edit_link = "main",
-        assets = String[]),
+        assets = String[],
+        size_threshold = nothing),
     pages = [
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
         "Results" => [
             "Paid APIs" => "examples/example1.md",
+            "Summary" => "examples/summarize_results.md",
         ],
         "F.A.Q." => "frequently_asked_questions.md",
         "Reference" => "reference.md",

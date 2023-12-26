@@ -1,4 +1,4 @@
-# # Example To Summarize Results
+# # Summary of Benchmark Results
 
 ## Imports
 using JuliaLLMLeaderboard
@@ -24,7 +24,7 @@ PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview",
 
 # # Load Results
 # Use only the latest evaluation available for each definition/model/prompt
-df = load_evals(DIR_RESULTS; max_history = 1)
+df = load_evals(DIR_RESULTS; max_history = 1);
 
 # ## Paid Models
 
@@ -139,7 +139,7 @@ fig
 # ## Per prompt (same model)
 # Apply Median to elapsed
 output = @chain df begin
-    # @rsubset :model in PAID_MODELS_ALL
+    ## @rsubset :model in PAID_MODELS_ALL
     @by [:prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
