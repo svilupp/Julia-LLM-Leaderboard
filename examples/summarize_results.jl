@@ -44,7 +44,7 @@ output = @chain df begin
     @orderby -:AverageScore
 end
 formatted = markdown_table(output, String)
-formatted |> clipboard
+## formatted |> clipboard
 formatted
 
 # Plot:
@@ -106,7 +106,7 @@ output = @chain df begin
     @orderby -:AverageScore
 end
 formatted = markdown_table(output, String)
-formatted |> clipboard
+## formatted |> clipboard
 formatted
 
 # Plot:
@@ -152,7 +152,7 @@ output = @chain df begin
         "score" => "Avg. Score (Max 100 pts)")
 end
 formatted = markdown_table(output, String)
-formatted |> clipboard
+## formatted |> clipboard
 formatted
 
 # Show scatter plot elapsed / score, where model is a color
