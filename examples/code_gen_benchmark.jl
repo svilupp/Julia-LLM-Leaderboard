@@ -16,39 +16,36 @@ device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti",
 model_options = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview", "mistral-tiny", "mistral-small", "mistral-medium"]
 
 # Or OSS models:
-model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2"]
-# TODO: add deepseek-coder:33b-instruct-q4_K_M, solar:10.7b-instruct-v1-q4_K_M, mistral:7b-instruct-q4_K_M
+model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2",
+    "deepseek-coder:33b-instruct-q4_K_M", "solar:10.7b-instruct-v1-q4_K_M", "mistral:7b-instruct-q4_K_M", "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K", "mistral:7b-instruct-v0.2-q6_K"]
 
 prompt_options = ["JuliaExpertCoTTask", "JuliaExpertAsk", "InJulia", "AsIs", "JuliaRecapTask", "JuliaRecapCoTTask"]
-# needed if you use non-OpenAI models, provide a key for each model you use
-schema_lookup = Dict{String,Any}(["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2"] .=> Ref(PT.OllamaManagedSchema()))
-merge!(schema_lookup, Dict(["mistral-tiny", "mistral-small", "mistral-medium"] .=> Ref(PT.MistralOpenAISchema())))
 
-all_options = Iterators.product(prompt_options, model_options) |> collect |> vec
+# needed if you use non-OpenAI models, provide a key for each model you use
+schema_lookup = Dict{String,Any}(["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat", "codellama:13b-instruct", "codellama:13b-python", "magicoder", "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2",
+    "deepseek-coder:33b-instruct-q4_K_M", "solar:10.7b-instruct-v1-q4_K_M", "mistral:7b-instruct-q4_K_M", "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K", "mistral:7b-instruct-v0.2-q6_K"] .=> Ref(PT.OllamaSchema()))
 
 # for reference: aitemplates("Julia")
 
-fn_definition = joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")
-definition = load_definition(fn_definition)
-validate_definition(definition)
-definition["code_generation"]["criteria"]
-
-
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
+
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
 
-evals = run_benchmark(; fn_definitions, models=["gpt-3.5-turbo-1106"], prompt_labels=["JuliaExpertAsk"],
-    api_kwargs=NamedTuple(), experiment="my-first-run", save_dir="temp", auto_save=true, verbose=true, device,
-    num_samples=1, schema_lookup);
+evals = run_benchmark(; fn_definitions, models=["mistral:7b-instruct-v0.2-q6_K"], prompt_labels=prompt_options,
+    experiment="", auto_save=true, verbose=true, device,
+    num_samples=2, schema_lookup, http_kwargs=(; readtimeout=150), api_kwargs=(; options=(; num_gpu=99)));
+# Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
 
 # ## Low-level interface
 #
 # This is more low-level interface where you can experiment with prompts and various parameters.
-# 
+
+all_options = Iterators.product(prompt_options, model_options) |> collect |> vec
+
 # if you want to run multiple, add one more loop with: fn_definitions = find_definitions("code_generation")
 fn_definition = joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")
 # fn_definition = joinpath("code_generation", "data_analysis", "weather_data_analyzer", "definition.toml")

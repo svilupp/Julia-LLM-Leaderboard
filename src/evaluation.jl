@@ -1,6 +1,7 @@
 
 """
-    run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString}; verbose::Bool=false)
+    run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString}; verbose::Bool=false, prefix::AbstractString="",
+    capture_stdout::Bool=true, execution_timeout::Int=60)
 
 Runner for provided `code_blocks` (can be either unit tests or examples), returns count of examples executed without an error. 
 
@@ -9,6 +10,9 @@ Each successful run (no error thrown) is counted as a successful example.
     
 # Keyword Arguments
 - `verbose=true` will provide more information about the test failures.
+- `prefix` is a string that will be prepended to each code block before it's evaluated. Useful for importing packages.
+- `capture_stdout` is a boolean whether to capture the stdout of the code execution. Set to `false` if you're evaluating with multithreading (stdout capture is not thread-safe).
+- `execution_timeout` is the timeout for the AICode code execution in seconds. Defaults to 60s.
 
 # Returns
 - `count_successful` the number of examples that were executed without an error thrown.
@@ -24,16 +28,22 @@ run_code_blocks(cb, [code])
 # Output: 1 (= 1 example executed without an error thrown)
 ```
 """
-function run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString}; verbose::Bool=false, prefix::AbstractString="")
+function run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString}; verbose::Bool=false, prefix::AbstractString="",
+    capture_stdout::Bool=true, execution_timeout::Int=60)
+    ##
     count_successful = 0
     cb_copy = copy(cb)
     for (i, code) in enumerate(code_blocks)
         # Inject the code to evaluate into the AICode object before we parse & eval it
         # suffix means we put it at the end of the code block
-        eval!(cb_copy; prefix, suffix=code)
+        # We run with timeout to avoid infinite loops
+        @timeout execution_timeout begin
+            eval!(cb_copy; prefix, suffix=code, capture_stdout)
+        end nothing
+
         success = isvalid(cb_copy)
         if verbose && !success
-            @info "Run Failure (i: $i): $(cb_copy.stdout)"
+            @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)"
         end
         count_successful += success
     end
@@ -42,7 +52,9 @@ end
 
 
 """
-    evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, schema, parameters::NamedTuple=NamedTuple(), device="UNKNOWN", timestamp=timestamp_now(), version_pt=string(pkgversion(PromptingTools)), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true, save_dir::AbstractString=dirname(fn_definition), experiment::AbstractString="")
+    evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, schema, parameters::NamedTuple=NamedTuple(), device="UNKNOWN", timestamp=timestamp_now(), version_pt=string(pkgversion(PromptingTools)), prompt_strategy="1SHOT", verbose::Bool=false,
+    auto_save::Bool=true, save_dir::AbstractString=dirname(fn_definition), experiment::AbstractString="",
+    execution_timeout::Int=60, capture_stdout::Bool=true)
 
 Runs evaluation for a single test case (parse, execute, run examples, run unit tests), including saving the files.
 
@@ -67,6 +79,8 @@ into a sub-folder of where the definition file was stored.
 - `auto_save`: if `auto_save=true`, it will save the evaluation and conversation files into a sub-folder of where the definition file was stored.
 - `save_dir`: the directory where the evaluation and conversation files are saved. Defaults to `dirname(fn_definition)`.
 - `experiment`: the experiment name, eg, `experiment="my_experiment"` (eg, when you're doing a parameter search). Defaults to `""` for standard benchmark run.
+- `execution_timeout`: the timeout for the AICode code execution in seconds. Defaults to 60s.
+- `capture_stdout`: if `capture_stdout=true`, AICode will capture the stdout of the code execution. Set to `false` if you're evaluating with multithreading (stdout capture is not thread-safe). Defaults to `true` to avoid poluting the benchmark.
 
 
 # Examples
@@ -83,7 +97,11 @@ msg = aigenerate(:JuliaExpertAsk; ask=d["code_generation"]["prompt"], model="gpt
 evals = evaluate_1shot(; conversation=msg, fn_definition, definition=d["code_generation"], model="gpt4t", prompt_label="JuliaExpertAsk", timestamp=timestamp_now(), device="Apple-MacBook-Pro-M1", schema="-", prompt_strategy="1SHOT", verbose=true, auto_save=false)
 ```
 """
-function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, schema, parameters::NamedTuple=NamedTuple(), device="UNKNOWN", timestamp=timestamp_now(), version_pt=string(pkgversion(PromptingTools)), prompt_strategy="1SHOT", verbose::Bool=false, auto_save::Bool=true, save_dir::AbstractString=dirname(fn_definition), experiment::AbstractString="")
+function evaluate_1shot(; conversation, fn_definition, definition, model, prompt_label, schema, parameters::NamedTuple=NamedTuple(), device="UNKNOWN", timestamp=timestamp_now(), version_pt=string(pkgversion(PromptingTools)), prompt_strategy="1SHOT", verbose::Bool=false,
+    auto_save::Bool=true, save_dir::AbstractString=dirname(fn_definition), experiment::AbstractString="",
+    execution_timeout::Int=60, capture_stdout::Bool=true)
+
+    @assert execution_timeout > 0 "execution_timeout must be positive"
 
     ## early exit
     if isnothing(conversation)
@@ -103,8 +121,11 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     # For ease of evaluation in "safe" mode (eg, inside a custom module), 
     # but we skip any code lines with Pkg manipulation and importing unknown packages
     # we skip invalid code blocks (in case some later example is poor)
-    # we don't capture stdout to be able to process in parallel
-    cb = PT.AICode(msg; prefix=imports_required, skip_unsafe=true, skip_invalid=true, capture_stdout=false)
+    # we do capture stdout, disabled to be able to process in parallel
+    # execution is set to timeout in 60s
+    cb = @timeout execution_timeout begin
+        PT.AICode(msg; prefix=imports_required, skip_unsafe=true, skip_invalid=true, capture_stdout)
+    end PT.AICode(msg; auto_eval=false, prefix=imports_required, skip_unsafe=true, skip_invalid=true, capture_stdout)
 
     if !isvalid(cb)
         ## We want to measure function defintion separately from examples and test cases, 
@@ -115,15 +136,17 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
 
         if !isnothing(definition_idx)
             # redefine the code block to be just the function definition
-            cb = AICode(raw_blocks[definition_idx]; prefix=imports_required, skip_unsafe=true, capture_stdout=false)
+            cb = @timeout execution_timeout begin
+                AICode(raw_blocks[definition_idx]; prefix=imports_required, skip_unsafe=true, capture_stdout)
+            end PT.AICode(raw_blocks[definition_idx]; auto_eval=false, prefix=imports_required, skip_unsafe=true, skip_invalid=true, capture_stdout)
         end
     end
 
     ## Run all examples
-    example_count = run_code_blocks(cb, definition["examples"]; verbose, prefix=imports_required)
+    example_count = run_code_blocks(cb, definition["examples"]; verbose, prefix=imports_required, capture_stdout, execution_timeout)
 
     ## Run all unit tests
-    test_count = run_code_blocks(cb, definition["unit_tests"]; verbose, prefix=imports_required)
+    test_count = run_code_blocks(cb, definition["unit_tests"]; verbose, prefix=imports_required, capture_stdout, execution_timeout)
 
     ## Create eval dict
     evaluation = (; name=definition["name"], parsed=PT.isparsed(cb),
