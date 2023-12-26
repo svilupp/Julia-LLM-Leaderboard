@@ -141,7 +141,7 @@ fig
 output = @chain df begin
     # @rsubset :model in PAID_MODELS_ALL
     @by [:prompt_label] begin
-        # :elapsed = mean(:elapsed_seconds)
+        :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
         :score = mean(:score)
     end
