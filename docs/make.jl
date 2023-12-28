@@ -22,7 +22,7 @@ makedocs(;
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
         repolink = "https://github.com/svilupp/Julia-LLM-Leaderboard",
-        canonical = "https://svilupp.github.io/Julia-LLM-Leaderboard.jl",
+        canonical = "https://svilupp.github.io/Julia-LLM-Leaderboard",
         edit_link = "main",
         assets = String[],
         size_threshold = nothing),
@@ -33,7 +33,7 @@ makedocs(;
         "Test Definitions" => "test_definitions.md",
         "Results" => [
             "Paid APIs" => "examples/summarize_results_paid.md",
-            "Open Source Models" => "examples/summarize_results_oss.md",
+            "Open-Source Models" => "examples/summarize_results_oss.md",
             "Prompts" => "examples/summarize_results_prompts.md",
         ],
         "F.A.Q." => "frequently_asked_questions.md",

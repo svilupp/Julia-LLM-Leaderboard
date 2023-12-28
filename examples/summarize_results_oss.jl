@@ -39,7 +39,7 @@ df = load_evals(DIR_RESULTS; max_history = 5);
 # ## Model Comparison
 
 # Highest average score by model:
-output = @chain df begin
+fig = @chain df begin
     @rsubset :model ∉ PAID_MODELS_ALL
     @rsubset :prompt_label in PROMPTS
     @by [:model] begin
@@ -60,6 +60,7 @@ output = @chain df begin
             xticklabelrotation = 45,
             title = "Open-Source LLM Model Performance [PRELIMINARY]"))
 end
+fig
 
 # Table:
 output = @chain df begin
