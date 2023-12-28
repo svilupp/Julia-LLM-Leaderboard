@@ -1,6 +1,8 @@
-# # Summary of Various Prompt Templates
+# # Results by Prompt Templates
 # What prompt you use can sometimes matter more than the model. 
 # Here we compare the performance of various prompt templates in PromptingTools.jl package.
+#
+# Reminder: The below scores are on a scale 0-100, where 100 is the best possible score and 0 means the generated code was not even parseable.
 
 ## Imports
 using JuliaLLMLeaderboard
@@ -19,10 +21,6 @@ PAID_MODELS_DEFAULT = [
     "mistral-small",
     "mistral-medium",
 ];
-PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview",
-    "mistral-tiny", "mistral-small", "mistral-medium",
-    "gpt-3.5-turbo--optim", "gpt-3.5-turbo-1106--optim", "gpt-4-1106-preview--optim",
-    "mistral-tiny--optim", "mistral-small--optim", "mistral-medium--optim"];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -40,7 +38,7 @@ df = load_evals(DIR_RESULTS; max_history = 5);
 # As you can see below, it's pretty bad, because the models fail to detect from the context that they should produce Julia code.
 # In short, always use a prompt template, even if it's just a simple one.
 
-# Show scatter plot elapsed / score, where model is a color
+# Show scatter plot elapsed / score, where prompts are separated by different colors.
 fig = @chain df begin
     @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
     @rsubset !occursin("--optim", :model)
@@ -53,14 +51,14 @@ fig = @chain df begin
     end
     data(_) * mapping(:elapsed => "Avg. Elapsed Time (s)",
         :score => "Avg. Score (Max 100 pts)",
-        color = :model => "Model")
+        color = :prompt_label => "Prompt")
     draw(; figure = (size = (600, 600),),
         axis = (xticklabelrotation = 45,
-            title = "Elapsed Time vs Score [PRELIMINARY]",
+            title = "Elapsed Time vs Score by Prompt [PRELIMINARY]",
             limits = (xlims..., nothing, nothing)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
 end
-SAVE_PLOTS && save("assets/all-elapsed-vs-score-scatter.png", fig)
+SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-prompts.png", fig)
 fig
 
 # A few learnings so far: 
@@ -79,9 +77,10 @@ output = @chain df begin
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
     rename("prompt_label" => "Prompt Template",
+        "score" => "Avg. Score (Max 100 pts)",
         "elapsed_median" => "Elapsed (s, median)",
-        "score" => "Avg. Score (Max 100 pts)")
+        "elapsed" => "Elapsed (s, average)",
+        "score_median" => "Median Score (Max 100 pts)")
 end
-formatted = markdown_table(output, String)
-## formatted |> clipboard
-formatted
+## markdown_table(output, String) |> clipboard
+markdown_table(output)

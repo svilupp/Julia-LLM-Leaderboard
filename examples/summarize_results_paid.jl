@@ -1,9 +1,12 @@
-# # Summary of Paid LLM APIs
+# # Results for Paid LLM APIs
 #
-# The below captures the performance of 3 models from two commercial LLM APIs: OpenAI (GPT-3.5, GPT-4, ...) and MistralAI (tiny, small, medium).
+# The below captures the performance of 3 models from two commercial LLM APIs: OpenAI (GPT-3.5 Turbo, GPT-4, ...) and MistralAI (tiny, small, medium).
+#
 # There are many other providers, but OpenAI is the most commonly used. 
 # MistralAI commercial API has launched recently and has a very good relationship with the Open-Source community, so we've added it as a challenger
 # to compare OpenAI's cost effectiveness ("cost per point", ie, how many cents would you pay for 1pt in this benchmark)
+#
+# Reminder: The below scores are on a scale 0-100, where 100 is the best possible score and 0 means the generated code was not even parseable.
 
 ## Imports
 using JuliaLLMLeaderboard
@@ -22,10 +25,6 @@ PAID_MODELS_DEFAULT = [
     "mistral-small",
     "mistral-medium",
 ];
-PAID_MODELS_ALL = ["gpt-3.5-turbo", "gpt-3.5-turbo-1106", "gpt-4-1106-preview",
-    "mistral-tiny", "mistral-small", "mistral-medium",
-    "gpt-3.5-turbo--optim", "gpt-3.5-turbo-1106--optim", "gpt-4-1106-preview--optim",
-    "mistral-tiny--optim", "mistral-small--optim", "mistral-medium--optim"];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -36,14 +35,15 @@ PROMPTS = [
 
 # ## Load Latest Results
 # Use only the 5 most recent evaluations available for each definition/model/prompt
-df = load_evals(DIR_RESULTS; max_history = 5);
+df = @chain begin
+    load_evals(DIR_RESULTS; max_history = 5)
+    @rsubset :model in PAID_MODELS_DEFAULT && :prompt_label in PROMPTS
+end
 
 # ## Model Comparison
 
 # Highest average score by model:
 output = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -64,8 +64,6 @@ end
 
 # Table:
 output = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -80,16 +78,13 @@ output = @chain df begin
     select(Not(:cost))
     @orderby -:score
 end
-formatted = markdown_table(output, String)
-## formatted |> clipboard
-formatted
+## markdown_table(output, String) |> clipboard
+markdown_table(output)
 
 # ## Overview by Prompt Template
 
 # Bar chart with all paid models and various prompt templates
 fig = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -112,8 +107,6 @@ fig
 
 # Table:
 output = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -125,16 +118,13 @@ output = @chain df begin
     leftjoin(average_, on = :model)
     @orderby -:AverageScore
 end
-formatted = markdown_table(output, String)
-## formatted |> clipboard
-formatted
+## markdown_table(output, String) |> clipboard
+markdown_table(output)
 
 # ## Other Considerations
 
 # Comparison of Cost vs Average Score
 fig = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -145,15 +135,15 @@ fig = @chain df begin
     data(_) * mapping(:cost => (x -> x * 100) => "Avg. Cost (US Cents/query)",
         :score => "Avg. Score (Max 100 pts)",
         color = :model => "Model")
-    draw(; axis = (xticklabelrotation = 45, title = "Cost vs Score [PRELIMINARY]"))
+    draw(;
+        axis = (xticklabelrotation = 45,
+            title = "Cost vs Score for Paid APIs [PRELIMINARY]"))
 end
-SAVE_PLOTS && save("assets/paid-cost-vs-score-scatter.png", fig)
+SAVE_PLOTS && save("assets/cost-vs-score-scatter-paid.png", fig)
 fig
 
 # Table:
 fig = @chain df begin
-    @rsubset :model in PAID_MODELS_DEFAULT
-    @rsubset :prompt_label in PROMPTS
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -170,6 +160,27 @@ fig = @chain df begin
     @rtransform :cost_cents = round(:cost * 100; digits = 2)
     select(Not(:cost))
 end
-formatted = markdown_table(output, String)
-## formatted |> clipboard
-formatted
+## markdown_table(output, String) |> clipboard
+markdown_table(output)
+
+# Comparison of Time-to-generate vs Average Score
+fig = @chain df begin
+    @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
+    @by [:model, :prompt_label] begin
+        :elapsed = mean(:elapsed_seconds)
+        :elapsed_median = median(:elapsed_seconds)
+        :score = mean(:score)
+        :score_median = median(:score)
+        :cnt = $nrow
+    end
+    data(_) * mapping(:elapsed => "Avg. Elapsed Time (s)",
+        :score => "Avg. Score (Max 100 pts)",
+        color = :model => "Model")
+    draw(; figure = (size = (600, 600),),
+        axis = (xticklabelrotation = 45,
+            title = "Elapsed Time vs Score for Paid APIs [PRELIMINARY]",
+            limits = (xlims..., nothing, nothing)),
+        palettes = (; color = Makie.ColorSchemes.tab20.colors))
+end
+SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
+fig

@@ -58,14 +58,14 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 
 Across the board, GPT-4 tends to be among the best-performing models. However, "mistral-small" (the recently released "Mixtral 8x7B" model) is quite impressive and it beats the default GPT-3.5 Turbo model in most cases.
 
-| model              | AsIs | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
-|--------------------|------|---------|----------------|--------------------|-------------------|----------------|--------------|
-| gpt-4-1106-preview | 25.4 |    81.6 |           79.3 |               75.5 |              76.5 |           79.7 |         69.6 |
-|     mistral-medium | 21.4 |    66.1 |           72.7 |               70.9 |              59.5 |           69.0 |         59.9 |
-|      mistral-small | 25.7 |    68.2 |           66.2 |               58.0 |              57.5 |           54.2 |         55.0 |
-| gpt-3.5-turbo-1106 | 24.7 |    76.7 |           69.6 |               76.3 |              18.7 |           58.3 |         54.0 |
-|       mistral-tiny |  3.6 |    56.7 |           43.5 |               37.0 |              50.1 |           47.8 |         39.8 |
-|      gpt-3.5-turbo | 24.4 |    72.0 |           59.9 |               29.9 |              22.6 |           13.1 |         37.0 |
+| model              | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
+|--------------------|---------|----------------|--------------------|-------------------|----------------|--------------|
+| gpt-4-1106-preview |    77.5 |           76.7 |               74.3 |              77.6 |           72.9 |         75.8 |
+|     mistral-medium |    66.6 |           70.0 |               68.9 |              61.0 |           65.6 |         66.4 |
+|      mistral-small |    69.6 |           64.2 |               61.1 |              57.1 |           58.0 |         62.0 |
+| gpt-3.5-turbo-1106 |    76.7 |           74.6 |               73.8 |              15.9 |           56.5 |         59.5 |
+|       mistral-tiny |    54.8 |           46.2 |               41.9 |              52.2 |           46.6 |         48.3 |
+|      gpt-3.5-turbo |    72.8 |           61.4 |               33.0 |              26.4 |           16.8 |         42.1 |
 
 Same information, but as a bar chart:
 
@@ -73,33 +73,37 @@ Same information, but as a bar chart:
 
 In addition, we can consider the performance (score) versus the cost (measured in US cents):
 
-![Cost-vs-Score](assets/paid-cost-vs-score-scatter.png)
+![Cost-vs-Score](assets/cost-vs-score-scatter-paid.png)
 
 ### OSS Models
 
 Open-source models are generally not as good as the paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
 
-The best-performing models are around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder. Magicoder and OpenChat-1210 from the 7Bn parameter class are also quite good.
+The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, they get defeated by a 7Bn Magicoder (if we use Q6 quantization).
 
-| model                              | AsIs | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
-|------------------------------------|------|---------|----------------|--------------------|-------------------|----------------|--------------|
-|             phind-codellama:34b-v2 | 18.1 |    60.5 |           65.6 |               55.1 |              53.7 |           55.4 |         51.4 |
-| deepseek-coder:33b-instruct-q4_K_M | 25.4 |    59.4 |           41.4 |               49.8 |              62.1 |           61.0 |         49.8 |
-|                          magicoder | 10.1 |    56.5 |           46.2 |               43.4 |              55.3 |           48.1 |         43.3 |
-|       openchat:7b-v3.5-1210-q4_K_M |  5.0 |    56.4 |           46.0 |               46.9 |              49.0 |           51.4 |         42.4 |
-|             codellama:13b-instruct | 13.4 |    49.1 |           45.3 |               44.8 |              44.9 |           47.6 |         40.9 |
-|                 starling-lm:latest | 11.0 |    49.6 |           54.2 |               37.9 |              41.8 |           51.0 |         40.9 |
-|                        yi:34b-chat | 13.8 |    46.4 |           50.3 |               42.0 |              42.7 |           49.0 |         40.7 |
-|              openhermes2.5-mistral |  7.4 |    44.9 |           50.1 |               49.9 |              42.8 |           48.0 |         40.5 |
-|      mistral:7b-instruct-v0.2-q6_K |  4.5 |    43.3 |           38.1 |               53.4 |              46.4 |           53.1 |         39.8 |
-|     solar:10.7b-instruct-v1-q4_K_M |  7.2 |    42.8 |           37.9 |               20.0 |              30.4 |           35.6 |         29.0 |
-|         mistral:7b-instruct-q4_K_M |  6.7 |    34.7 |           34.0 |               26.6 |              35.2 |           34.3 |         28.6 |
-|                             llama2 | 11.9 |    24.0 |           32.5 |               33.2 |              28.6 |           24.5 |         25.8 |
-|                          orca2:13b |  4.2 |    26.0 |           19.2 |               29.8 |              24.1 |           24.2 |         21.2 |
-|                    stablelm-zephyr |  3.0 |    22.7 |           18.7 |               21.8 |              19.5 |           26.1 |         18.6 |
-|               codellama:13b-python | 10.0 |    11.9 |           15.1 |               14.0 |              11.5 |           14.7 |         12.9 |
-|              phi:2.7b-chat-v2-q6_K |  3.6 |     7.1 |            8.1 |                7.1 |               8.7 |            9.4 |          7.4 |
-
+|| model                              | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
+|------------------------------------|---------|----------------|--------------------|-------------------|----------------|--------------|
+|             magicoder:7b-s-cl-q6_K |    63.3 |           61.8 |               54.5 |              62.6 |           67.4 |         61.9 |
+|             phind-codellama:34b-v2 |    60.6 |           69.7 |               59.1 |              59.1 |           57.8 |         61.2 |
+|                          magicoder |    59.6 |           51.0 |               46.4 |              57.0 |           54.5 |         53.7 |
+| deepseek-coder:33b-instruct-q4_K_M |    58.9 |           39.8 |               48.7 |              61.6 |           58.1 |         53.4 |
+|         nous-hermes2:34b-yi-q4_K_M |    58.8 |           37.7 |               52.8 |              46.2 |           58.8 |         50.8 |
+|             codellama:13b-instruct |    55.5 |           51.8 |               45.6 |              47.9 |           51.7 |         50.5 |
+|              openhermes2.5-mistral |    50.3 |           52.3 |               54.6 |              42.2 |           52.6 |         50.4 |
+|                 starling-lm:latest |    53.6 |           57.9 |               38.2 |              46.9 |           53.5 |         50.0 |
+|       openchat:7b-v3.5-1210-q4_K_M |    49.8 |           47.8 |               44.3 |              47.6 |           49.1 |         47.7 |
+|                        yi:34b-chat |    46.1 |           52.4 |               41.1 |              42.9 |           49.1 |         46.3 |
+|      mistral:7b-instruct-v0.2-q4_0 |    50.3 |           41.4 |               45.6 |              45.6 |           45.9 |         45.8 |
+|      mistral:7b-instruct-v0.2-q6_K |    42.6 |           39.8 |               48.1 |              48.8 |           49.3 |         45.7 |
+|    mistral:7b-instruct-v0.2-q4_K_M |    41.0 |           49.3 |               41.4 |              43.8 |           47.5 |         44.6 |
+|     solar:10.7b-instruct-v1-q4_K_M |    42.0 |           36.0 |               17.6 |              32.5 |           35.8 |         32.8 |
+|         mistral:7b-instruct-q4_K_M |    34.7 |           31.6 |               31.3 |              31.6 |           32.3 |         32.3 |
+|                             llama2 |    26.1 |           33.0 |               29.7 |              28.4 |           24.1 |         28.3 |
+|                          orca2:13b |    28.1 |           16.9 |               27.3 |              23.7 |           23.2 |         23.8 |
+|                    stablelm-zephyr |    22.0 |           17.8 |               18.8 |              22.2 |           25.8 |         21.3 |
+|         dolphin-phi:2.7b-v2.6-q6_K |    22.3 |           18.3 |               14.9 |              16.3 |           18.6 |         18.1 |
+|               codellama:13b-python |    11.4 |           14.4 |               15.1 |              13.0 |           14.9 |         13.8 |
+|              phi:2.7b-chat-v2-q6_K |     7.3 |            6.5 |                6.8 |               9.2 |           10.2 |          8.0 |
 
 
 Same information, but as a bar chart:
@@ -110,7 +114,9 @@ Same information, but as a bar chart:
 
 Clearly, the paid APIs win (the latest release: GPT-3.5-Turbo-1106), but that's not the whole story.
 
-![Elapsed-vs-Score](assets/all-elapsed-vs-score-scatter.png)
+![Elapsed-vs-Score-Paid-APIs](assets/elapsed-vs-score-scatter-paid.png)
+
+![Elapsed-vs-Score-OSS-models](assets/elapsed-vs-score-scatter-oss.png)
 
 ### Prompting Templates
 
@@ -121,14 +127,14 @@ Learnings so far:
 - Never use the "AsIs" prompt (ie, raw task definition). ALWAYS add some context around the language, situation, etc.
 - Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts ("CoT" stands for Chain of Thought) might be confusing the smaller models, hence why this prompt is so effective on average.
 
-| Prompt Template    | Elapsed (s, median) | Avg. Score (Max 100 pts) |
-|--------------------|---------------------|--------------------------|
-|     JuliaExpertAsk |                 6.9 |                     53.6 |
-|            InJulia |                11.3 |                     50.6 |
-| JuliaExpertCoTTask |                13.9 |                     46.4 |
-|     JuliaRecapTask |                19.3 |                     43.9 |
-|  JuliaRecapCoTTask |                16.0 |                     42.1 |
-|               AsIs |                10.4 |                     16.2 |
+| Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
+|--------------------|----------------------|---------------------|--------------------------|----------------------------|
+|            InJulia |                 16.7 |                11.7 |                     50.6 |                       50.0 |
+|     JuliaExpertAsk |                 11.8 |                 7.8 |                     47.6 |                       50.0 |
+|     JuliaRecapTask |                 20.9 |                15.9 |                     45.6 |                       50.0 |
+| JuliaExpertCoTTask |                 19.7 |                14.9 |                     43.9 |                       50.0 |
+|  JuliaRecapCoTTask |                 19.7 |                15.2 |                     42.5 |                       50.0 |
+|               AsIs |                 36.3 |                11.2 |                     13.0 |                        0.0 |
 
 
 Make your own analysis with `examples/summarize_results.jl`!
