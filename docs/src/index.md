@@ -19,7 +19,7 @@ Itchy fingers? Open the Results section or just run your own benchmark with `run
 
 ## First Steps
 
-To get started with benchmarking, see the [Getting Started](@ref) section, or simply continue to results: [Results for Paid LLM APIs](@ref "Results for Paid LLM APIs"), [Results for Open-Source LLM Models](@ref "Results for Open-Source LLM Models") and [Results by Prompt Templates](@ref "Results by Prompt Templates").
+To get started with benchmarking, see the [Getting Started](@ref) section, or simply continue to Results!
 
 ## Feedback and Improvements
 We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!
