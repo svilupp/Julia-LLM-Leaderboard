@@ -41,5 +41,5 @@ makedocs(;
     ])
 
 deploydocs(;
-    repo = "github.com/svilupp/Julia-LLM-Leaderboard.jl",
+    repo = "github.com/svilupp/Julia-LLM-Leaderboard",
     devbranch = "main")
