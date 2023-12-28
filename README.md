@@ -1,7 +1,7 @@
 # Julia LLM Leaderboard
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://svilupp.github.io/JuliaLLMLeaderboard.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://svilupp.github.io/JuliaLLMLeaderboard.jl/dev/)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://svilupp.github.io/Julia-LLM-Leaderboard/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://svilupp.github.io/Julia-LLM-Leaderboard/dev/)
 [![SciML Code Style](https://img.shields.io/static/v1?label=code%20style&message=SciML&color=9558b2&labelColor=389826)](https://github.com/SciML/SciMLStyle)
 
 Comparison of Julia language generation capabilities of various Large Language Models
