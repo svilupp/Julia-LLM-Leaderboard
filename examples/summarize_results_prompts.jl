@@ -6,9 +6,9 @@
 using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
-using Statistics: mean, median, quantile
+using Statistics: mean, median, quantile;
 
-# ! Configuration
+## ! Configuration
 SAVE_PLOTS = false
 DIR_RESULTS = joinpath(pkgdir(JuliaLLMLeaderboard), "code_generation")
 PAID_MODELS_DEFAULT = [
