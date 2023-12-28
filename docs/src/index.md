@@ -19,7 +19,7 @@ Itchy fingers? Open the Results section or just run your own benchmark with `run
 
 ## First Steps
 
-To get started with benchmarking, see the [Getting Started](@ref) section, or simply continue to ["Results](@ref).
+To get started with benchmarking, see the [Getting Started](@ref) section, or simply continue to [Results](@ref).
 
 ## Feedback and Improvements
 We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!
