@@ -9,6 +9,7 @@ using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
 using Statistics: mean, median, quantile;
+unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
 SAVE_PLOTS = false

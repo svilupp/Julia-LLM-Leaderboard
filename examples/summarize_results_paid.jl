@@ -13,6 +13,7 @@ using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
 using Statistics: mean, median, quantile;
+unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
 SAVE_PLOTS = false
@@ -38,7 +39,7 @@ PROMPTS = [
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
     @rsubset :model in PAID_MODELS_DEFAULT && :prompt_label in PROMPTS
-end
+end;
 
 # ## Model Comparison
 
@@ -69,7 +70,7 @@ output = @chain df begin
         :elapsed = mean(:elapsed_seconds)
         :score = mean(:score)
         :count_zero_score = count(iszero, :score)
-        :count_full_score = count(isone, :score)
+        :count_full_score = count(==(100), :score)
     end
     transform(_,
         [:elapsed, :score] .=> ByRow(x -> round(x, digits = 1)),
@@ -77,6 +78,7 @@ output = @chain df begin
     @rtransform :cost_cents = round(:cost * 100; digits = 2)
     select(Not(:cost))
     @orderby -:score
+    rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
@@ -143,7 +145,7 @@ SAVE_PLOTS && save("assets/cost-vs-score-scatter-paid.png", fig)
 fig
 
 # Table:
-fig = @chain df begin
+output = @chain df begin
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -184,3 +186,39 @@ fig = @chain df begin
 end
 SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
 fig
+
+# Table:
+output = @chain df begin
+    @by [:model, :prompt_label] begin
+        :cost = mean(:cost)
+        :elapsed = mean(:elapsed_seconds)
+        :score_avg = mean(:score)
+        :score_median = median(:score)
+        :cnt = $nrow
+    end
+    @rtransform :point_per_second = :score_avg / :elapsed
+    @orderby -:point_per_second
+    ## 
+    transform(_,
+        names(_, Not(:model, :prompt_label, :cost)) .=> ByRow(x -> round(x, digits = 1)),
+        renamecols = false)
+    @rtransform :cost_cents = round(:cost * 100; digits = 2)
+    select(Not(:cost))
+end
+## markdown_table(output, String) |> clipboard
+markdown_table(output)
+
+# ## Test Case Performance
+
+# Performance of different models across each test case
+output = @chain df begin
+    @by [:model, :name] begin
+        :score = mean(:score)
+    end
+    ## 
+    @aside average_ = @by _ :name :AverageScore=mean(:score) |> x -> round(x, digits = 1)
+    unstack(:name, :model, :score; fill = 0.0)
+    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
+    leftjoin(average_, on = :name)
+    @orderby -:AverageScore
+end

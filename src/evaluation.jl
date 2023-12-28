@@ -282,6 +282,7 @@ function load_evals(base_dir::AbstractString;
         :experiment,
         new_columns...,
     ]
+
     df = DataFrame([Dict(c => get(row, c, missing) for c in eval_cols) for row in output])
     df.filename = filenames
     score && (df.score = scores)

@@ -12,6 +12,7 @@ using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
 using Statistics: mean, median, quantile;
+unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
 SAVE_PLOTS = false
@@ -24,8 +25,27 @@ PAID_MODELS_DEFAULT = [
     "mistral-small",
     "mistral-medium",
 ];
-## TODO: add mapping for model sizes to color them
-MODEL_SIZES = Dict()
+MODEL_SIZES = Dict("orca2:13b" => "10-29",
+    "mistral:7b-instruct-v0.2-q4_0" => "4-9",
+    "nous-hermes2:34b-yi-q4_K_M" => ">30",
+    "starling-lm:latest" => "4-9",
+    "dolphin-phi:2.7b-v2.6-q6_K" => "<4",
+    "stablelm-zephyr" => "4-9",
+    "codellama:13b-python" => "10-29",
+    "magicoder:7b-s-cl-q6_K" => "4-9",
+    "phi:2.7b-chat-v2-q6_K" => "<4",
+    "magicoder" => "4-9",
+    "mistral:7b-instruct-q4_K_M" => "4-9",
+    "solar:10.7b-instruct-v1-q4_K_M" => "10-29",
+    "codellama:13b-instruct" => "10-29",
+    "openhermes2.5-mistral" => "4-9",
+    "llama2" => "4-9",
+    "yi:34b-chat" => ">30",
+    "deepseek-coder:33b-instruct-q4_K_M" => ">30",
+    "phind-codellama:34b-v2" => ">30",
+    "openchat:7b-v3.5-1210-q4_K_M" => "4-9",
+    "mistral:7b-instruct-v0.2-q6_K" => "4-9",
+    "mistral:7b-instruct-v0.2-q4_K_M" => "4-9")
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -39,7 +59,7 @@ PROMPTS = [
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
     @rsubset !any(startswith.(:model, PAID_MODELS_DEFAULT)) && :prompt_label in PROMPTS
-end
+end;
 
 # ## Model Comparison
 
@@ -52,12 +72,17 @@ fig = @chain df begin
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    @rtransform :size_group = MODEL_SIZES[:model]
+    @aside local size_order = ["<4", "4-9", "10-29", ">30"]
     @aside local order_ = _.model
     data(_) *
     mapping(:model => sorter(order_) => "Model",
-        :score => "Avg. Score (Max 100 pts)") * visual(BarPlot; bar_labels = :y, label_offset = 0)
+        :score => "Avg. Score (Max 100 pts)",
+        color = :size_group => sorter(size_order) => "Parameter Size (Bn)") *
+    visual(BarPlot; bar_labels = :y, label_offset = 0)
     draw(;
         figure = (; size = (900, 600)),
+        legend = (; position = :bottom),
         axis = (;
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
@@ -73,10 +98,11 @@ output = @chain df begin
         :score = mean(:score)
         :score_median = median(:score)
         :count_zero_score = count(iszero, :score)
-        :count_full_score = count(isone, :score)
+        :count_full_score = count(==(100), :score)
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
@@ -145,3 +171,23 @@ fig = @chain df begin
 end
 SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
 fig
+
+# Table:
+output = @chain df begin
+    @by [:model, :prompt_label] begin
+        :elapsed = mean(:elapsed_seconds)
+        :elapsed_median = median(:elapsed_seconds)
+        :score_avg = mean(:score)
+        :score_median = median(:score)
+        :cnt = $nrow
+    end
+    @rtransform :point_per_second = :score_avg / :elapsed
+    @orderby -:point_per_second
+    ## 
+    transform(_,
+        names(_, Not(:model, :prompt_label)) .=> ByRow(x -> round(x, digits = 1)),
+        renamecols = false)
+    rename(_, names(_) .|> unscrub_string)
+end
+## markdown_table(output, String) |> clipboard
+markdown_table(output)
