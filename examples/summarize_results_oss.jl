@@ -139,7 +139,7 @@ fig = @chain df begin
         color = :model => "Model")
     draw(; figure = (size = (800, 800),),
         axis = (xticklabelrotation = 45,
-            title = "Elapsed Time vs Score for Paid APIs [PRELIMINARY]",
+            title = "Elapsed Time vs Score for OSS Models [PRELIMINARY]",
             limits = (xlims..., nothing, nothing)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
 end
