@@ -163,6 +163,14 @@ Required fields in `definition.toml` include:
 - **imports**: Packages that are made available to the model (to avoid failures due to a failed dependency).
 - **reference_solution**: A reference solution to the problem, provided as a string of Julia code (no code fences).
 
+There are several optional fields:
+- **examples_setup**: Code to run before each example eval, provided as a string of Julia code (no code fences). Used to setup any variables or functions needed for the examples.
+- **examples_teardown**: Code to run after each example eval, provided as a string of Julia code (no code fences). Used to clean up any variables or functions needed for the examples.
+- **unit_tests_setup**: Code to run before each unit test eval, provided as a string of Julia code (no code fences). Used to setup any variables or functions needed for the unit tests.
+- **unit_tests_teardown**: Code to run after each unit test eval, provided as a string of Julia code (no code fences). Used to clean up any variables or functions needed for the unit tests.
+
+The above fields can improve re-use of code across the examples/unit tests.
+
 See an example in `examples/create_definition.jl`. 
 You can validate your test case definitions with `validate_definition()`.
 

@@ -4,7 +4,7 @@ CurrentModule = JuliaLLMLeaderboard
 
 # JuliaLLMLeaderboard
 
-Documentation for [JuliaLLMLeaderboard](https://github.com/svilupp/JuliaLLMLeaderboard.jl).
+Documentation for [Julia LLM Leaderboard](https://github.com/svilupp/Julia-LLM-Leaderboard).
 
 
 ## Introduction
@@ -14,11 +14,12 @@ This project is designed for the Julia community to compare the code generation 
 
 This repository aims to understand how different AI models and prompting strategies perform in generating syntactically correct Julia code to guide users in choosing the best model for their needs.
 
-Itchy fingers? Jump to `examples/` or just run your own benchmark with `run_benchmark()` (eg, `examples/code_gen_benchmark.jl`).
+Itchy fingers? Open the Results section or just run your own benchmark with `run_benchmark()` (eg, `examples/code_gen_benchmark.jl`).
 
-
-## Why JuliaLLMLeaderboard.jl?
 
 ## First Steps
 
-To get started, see the [Getting Started](@ref) section.
+To get started with benchmarking, see the [Getting Started](@ref) section, or simply continue to ["Results](@ref).
+
+## Feedback and Improvements
+We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!

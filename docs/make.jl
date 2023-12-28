@@ -29,9 +29,12 @@ makedocs(;
     pages = [
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
+        "Methodology" => "methodology.md",
+        "Test Definitions" => "test_definitions.md",
         "Results" => [
-            "Paid APIs" => "examples/example1.md",
-            "Summary" => "examples/summarize_results.md",
+            "Paid APIs" => "examples/summarize_results_paid.md",
+            "Open Source Models" => "examples/summarize_results_oss.md",
+            "Prompts" => "examples/summarize_results_prompts.md",
         ],
         "F.A.Q." => "frequently_asked_questions.md",
         "Reference" => "reference.md",

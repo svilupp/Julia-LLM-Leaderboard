@@ -2,7 +2,9 @@ using Literate
 
 ## ! Config
 example_files = [
-    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results.jl"),
+    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_oss.jl"),
+    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_paid.jl"),
+    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_prompts.jl"),
 ]
 output_dir = joinpath(@__DIR__, "src", "examples")
 

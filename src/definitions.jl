@@ -10,6 +10,12 @@
 # - **unit_tests**: Tests to validate the code, provided as a vector of `@test X = Z` statements.
 # - **imports**: Packages that are made available to the model (to avoid failures due to a failed dependency).
 # - **reference_solution**: A reference solution to the problem, provided as a string of Julia code (no code fences).
+#
+# Optional fields:
+# - `examples_setup`: A setup code to run before each example. Eg, build some input objects.
+# - `examples_teardown`: A teardown code to run after each example. Eg, delete the input objects that were created in the setup, or undo any changes.
+# - `unit_tests_setup`: A setup code to run before each unit test. Eg, build test objects that can be used in all individual test cases.
+# - `unit_tests_teardown`: A teardown code to run after each unit test. Eg, delete test objects that were created in the setup, or undo any changes.
 
 """
     validate_definition(definition::AbstractDict; evaluate::Bool=true, verbose::Bool=true)
@@ -31,7 +37,10 @@ validate_definition(definition)
 # output: true
 ```
 """
-function validate_definition(definition::AbstractDict; evaluate::Bool=true, verbose::Bool=true, kwargs...)
+function validate_definition(definition::AbstractDict;
+        evaluate::Bool = true,
+        verbose::Bool = true,
+        kwargs...)
     # Check top-level key for benchmark category
     allowed_category = ["code_generation"]
     category = first(keys(definition))
@@ -52,28 +61,43 @@ function validate_definition(definition::AbstractDict; evaluate::Bool=true, verb
     haskey(definition, "reference_solution") || error("Missing field: reference_solution")
 
     ## Check field types
-    @assert typeof(definition["name"]) <: AbstractString "Field `name` must be a string"
-    @assert typeof(definition["contributor"]) <: AbstractString "Field `contributor` must be a string"
-    @assert typeof(definition["prompt"]) <: AbstractString "Field `prompt` must be a string"
-    @assert typeof(definition["version"]) <: AbstractString "Field `version` must be a string"
-    @assert typeof(definition["criteria"]) <: Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
-    @assert typeof(definition["examples"]) <: Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
-    @assert typeof(definition["unit_tests"]) <: Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
-    @assert typeof(definition["imports"]) <: Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
-    @assert typeof(definition["reference_solution"]) <: AbstractString "Field `reference_solution` must be a string"
+    @assert typeof(definition["name"])<:AbstractString "Field `name` must be a string"
+    @assert typeof(definition["contributor"])<:AbstractString "Field `contributor` must be a string"
+    @assert typeof(definition["prompt"])<:AbstractString "Field `prompt` must be a string"
+    @assert typeof(definition["version"])<:AbstractString "Field `version` must be a string"
+    @assert typeof(definition["criteria"])<:Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
+    @assert typeof(definition["examples"])<:Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
+    @assert typeof(definition["unit_tests"])<:Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
+    @assert typeof(definition["imports"])<:Vector{<:AbstractString} "Field `criteria` must be a vector of strings"
+    @assert typeof(definition["reference_solution"])<:AbstractString "Field `reference_solution` must be a string"
+    if haskey(definition, "examples_setup")
+        @assert typeof(definition["examples_setup"])<:AbstractString "Field `examples_setup` must be a string"
+    end
+    if haskey(definition, "examples_teardown")
+        @assert typeof(definition["examples_teardown"])<:AbstractString "Field `examples_teardown` must be a string"
+    end
+    if haskey(definition, "unit_tests_setup")
+        @assert typeof(definition["unit_tests_setup"])<:AbstractString "Field `unit_tests_setup` must be a string"
+    end
+    if haskey(definition, "unit_tests_teardown")
+        @assert typeof(definition["unit_tests_teardown"])<:AbstractString "Field `unit_tests_teardown` must be a string"
+    end
 
     ## Not empty
     isempty(definition["name"]) && error("Field `name` must not be empty")
     isempty(definition["contributor"]) && error("Field `contributor` must not be empty")
     isempty(definition["prompt"]) && error("Field `prompt` must not be empty")
     isempty(definition["version"]) && error("Field `version` must not be empty")
-    isempty(definition["reference_solution"]) && error("Field `reference_solution` must not be empty")
+    isempty(definition["reference_solution"]) &&
+        error("Field `reference_solution` must not be empty")
     isempty(definition["criteria"]) && error("Field `criteria` must not be empty")
     if "executed_examples" in definition["criteria"]
-        isempty(definition["examples"]) && error("Field `examples` must not be empty if criteria includes `executed_examples`")
+        isempty(definition["examples"]) &&
+            error("Field `examples` must not be empty if criteria includes `executed_examples`")
     end
     if "passed_unit_tests" in definition["criteria"]
-        isempty(definition["unit_tests"]) && error("Field `unit_tests` must not be empty if criteria includes `passed_unit_tests`")
+        isempty(definition["unit_tests"]) &&
+            error("Field `unit_tests` must not be empty if criteria includes `passed_unit_tests`")
     end
 
     ## Evaluation
@@ -84,24 +108,39 @@ function validate_definition(definition::AbstractDict; evaluate::Bool=true, verb
             ""
         end
         ## Run the function
-        cb = PT.AICode(definition["reference_solution"]; prefix=imports_required, verbose, kwargs...)
+        cb = PT.AICode(definition["reference_solution"];
+            prefix = imports_required,
+            verbose,
+            kwargs...)
         @assert isvalid(cb) "Error: Failed to parse the reference solution. Please check the reference solution."
 
         ## Run all examples
         if "executed_examples" in definition["criteria"]
-            example_count = run_code_blocks(cb, definition["examples"]; verbose, prefix=imports_required)
+            example_count = run_code_blocks(cb,
+                definition["examples"];
+                verbose,
+                prefix = imports_required,
+                setup_code = get(definition, "examples_setup", ""),
+                teardown_code = get(definition, "examples_teardown", ""))
             example_length = length(definition["examples"])
-            @assert example_count > 0 "Failed to execute any examples. Please check the examples."
-            example_count < example_length && @warn "Failed to execute all examples. Expected $example_length, got $example_count"
+            @assert example_count>0 "Failed to execute any examples. Please check the examples."
+            example_count < example_length &&
+                @warn "Failed to execute all examples. Expected $example_length, got $example_count"
             verbose && @info "Passed $(example_count)/$(example_length) examples"
         end
 
         ## Run all unit tests
         if "passed_unit_tests" in definition["criteria"]
-            test_count = run_code_blocks(cb, definition["unit_tests"]; verbose, prefix=imports_required)
+            test_count = run_code_blocks(cb,
+                definition["unit_tests"];
+                verbose,
+                prefix = imports_required,
+                setup_code = get(definition, "unit_tests_setup", ""),
+                teardown_code = get(definition, "unit_tests_teardown", ""))
             test_length = length(definition["unit_tests"])
-            @assert test_count > 0 "Failed to execute any unit tests. Please check the unit tests."
-            test_count < test_length && @warn "Failed to execute all unit tests. Expected $test_length, got $test_count"
+            @assert test_count>0 "Failed to execute any unit tests. Please check the unit tests."
+            test_count < test_length &&
+                @warn "Failed to execute all unit tests. Expected $test_length, got $test_count"
             verbose && @info "Passed $(test_count)/$(test_length) tests"
         end
     end
@@ -109,7 +148,11 @@ function validate_definition(definition::AbstractDict; evaluate::Bool=true, verb
 end
 
 "Saves the test case `definition` to a TOML file under `filename`."
-function save_definition(filename::AbstractString, definition::AbstractDict; evaluate::Bool=false, verbose::Bool=true, kwargs...)
+function save_definition(filename::AbstractString,
+        definition::AbstractDict;
+        evaluate::Bool = false,
+        verbose::Bool = true,
+        kwargs...)
     ## Validate the definition
     @assert validate_definition(definition; evaluate, verbose, kwargs...) "Failed to validate the definition. Please fix the errors."
     ## Save it
@@ -124,7 +167,7 @@ function load_definition(filename)
 end
 
 "Finds all `definition.toml` filenames in the given path. Returns a list of filenames to load."
-function find_definitions(dir::AbstractString=".")
+function find_definitions(dir::AbstractString = ".")
     definitions = AbstractString[]
     for (root, dirs, files) in walkdir(dir)
         for file in files
