@@ -9,6 +9,7 @@
 
 ### Added
 - Documentation with detailed methodology, test case definitions, and results across various data cuts.
+- Added ~5 samples for each model/prompt/test case combination for more robust results.
 
 ### Fixed
 
