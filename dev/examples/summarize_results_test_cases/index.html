@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>by Test Case · JuliaLLMLeaderboard.jl</title><meta name="title" content="by Test Case · JuliaLLMLeaderboard.jl"/><meta property="og:title" content="by Test Case · JuliaLLMLeaderboard.jl"/><meta property="twitter:title" content="by Test Case · JuliaLLMLeaderboard.jl"/><meta name="description" content="Documentation for JuliaLLMLeaderboard.jl."/><meta property="og:description" content="Documentation for JuliaLLMLeaderboard.jl."/><meta property="twitter:description" content="Documentation for JuliaLLMLeaderboard.jl."/><meta property="og:url" content="https://svilupp.github.io/Julia-LLM-Leaderboard/examples/summarize_results_test_cases/"/><meta property="twitter:url" content="https://svilupp.github.io/Julia-LLM-Leaderboard/examples/summarize_results_test_cases/"/><link rel="canonical" href="https://svilupp.github.io/Julia-LLM-Leaderboard/examples/summarize_results_test_cases/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">JuliaLLMLeaderboard.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../../methodology/">Methodology</a></li><li><a class="tocitem" href="../../test_definitions/">Test Definitions</a></li><li><span class="tocitem">Results</span><ul><li><a class="tocitem" href="../summarize_results_paid/">Paid APIs</a></li><li><a class="tocitem" href="../summarize_results_oss/">Open-Source Models</a></li><li><a class="tocitem" href="../summarize_results_prompts/">Prompts</a></li><li class="is-active"><a class="tocitem" href>by Test Case</a><ul class="internal"><li><a class="tocitem" href="#Load-Results"><span>Load Results</span></a></li><li><a class="tocitem" href="#Tabular-Overview"><span>Tabular Overview</span></a></li><li><a class="tocitem" href="#Test-Cases"><span>Test Cases</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../frequently_asked_questions/">F.A.Q.</a></li><li><a class="tocitem" href="../../reference/">Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Results</a></li><li class="is-active"><a href>by Test Case</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>by Test Case</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/svilupp/Julia-LLM-Leaderboard" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/svilupp/Julia-LLM-Leaderboard/blob/main/examples/summarize_results_test_cases.jl#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Results-by-Test-Cases"><a class="docs-heading-anchor" href="#Results-by-Test-Cases">Results by Test Cases</a><a id="Results-by-Test-Cases-1"></a><a class="docs-heading-anchor-permalink" href="#Results-by-Test-Cases" title="Permalink"></a></h1><p>We currently have a few test cases across 2 categories: <code>data_analysis</code> and <code>utility_functions</code> (see folder <code>code_generation/</code>).</p><p>In this note, we preview each test case and highlight the highest performing model.</p><p>Reminder: The below scores are on a scale 0-100, where 100 is the best possible score and 0 means the generated code was not even parseable.</p><pre><code class="language-julia hljs"># Imports
+using JuliaLLMLeaderboard
+using CairoMakie, AlgebraOfGraphics
+using MarkdownTables, DataFramesMeta, Markdown
+using Statistics: mean, median, quantile;
+unscrub_string(s::AbstractString) = split(s, &quot;_&quot;) .|&gt; titlecase |&gt; x -&gt; join(x, &quot; &quot;);
+
+# ! Configuration
+SAVE_PLOTS = false
+DIR_RESULTS = joinpath(pkgdir(JuliaLLMLeaderboard), &quot;code_generation&quot;)
+PAID_MODELS_DEFAULT = [
+    &quot;gpt-3.5-turbo&quot;,
+    &quot;gpt-3.5-turbo-1106&quot;,
+    &quot;gpt-4-1106-preview&quot;,
+    &quot;mistral-tiny&quot;,
+    &quot;mistral-small&quot;,
+    &quot;mistral-medium&quot;,
+];
+PROMPTS = [
+    &quot;JuliaExpertCoTTask&quot;,
+    &quot;JuliaExpertAsk&quot;,
+    &quot;InJulia&quot;,
+    &quot;JuliaRecapTask&quot;,
+    &quot;JuliaRecapCoTTask&quot;,
+];</code></pre><h2 id="Load-Results"><a class="docs-heading-anchor" href="#Load-Results">Load Results</a><a id="Load-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Load-Results" title="Permalink"></a></h2><p>Use only the 5 most recent evaluations available for each definition/model/prompt</p><pre><code class="language-julia hljs">df = load_evals(DIR_RESULTS; max_history = 5);
+fn_definitions = find_definitions(DIR_RESULTS);
+</code></pre><pre><code class="nohighlight hljs">There are currently 14 test cases.
+</code></pre><h2 id="Tabular-Overview"><a class="docs-heading-anchor" href="#Tabular-Overview">Tabular Overview</a><a id="Tabular-Overview-1"></a><a class="docs-heading-anchor-permalink" href="#Tabular-Overview" title="Permalink"></a></h2><pre><code class="language-julia hljs">@chain df begin
+    @rsubset :prompt_label in PROMPTS
+    @by :name begin
+        :score = mean(:score)
+        :elapsed = mean(:elapsed_seconds)
+        :count_zero_score = count(iszero, :score)
+        :count_full_score = count(==(100), :score)
+    end
+end</code></pre><div><div style = "float: left;"><span>14×5 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">name</th><th style = "text-align: left;">score</th><th style = "text-align: left;">elapsed</th><th style = "text-align: left;">count_zero_score</th><th style = "text-align: left;">count_full_score</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Int64" style = "text-align: left;">Int64</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">add_yearmonth</td><td style = "text-align: right;">39.2758</td><td style = "text-align: right;">18.3196</td><td style = "text-align: right;">134</td><td style = "text-align: right;">39</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">audi_filter</td><td style = "text-align: right;">33.5417</td><td style = "text-align: right;">19.2347</td><td style = "text-align: right;">176</td><td style = "text-align: right;">33</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">count_model_rows</td><td style = "text-align: right;">45.068</td><td style = "text-align: right;">15.9486</td><td style = "text-align: right;">128</td><td style = "text-align: right;">75</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">weather_data_analyzer</td><td style = "text-align: right;">49.448</td><td style = "text-align: right;">22.0742</td><td style = "text-align: right;">148</td><td style = "text-align: right;">25</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td><td style = "text-align: left;">FloatWithUnits</td><td style = "text-align: right;">56.7578</td><td style = "text-align: right;">13.7847</td><td style = "text-align: right;">139</td><td style = "text-align: right;">285</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">6</td><td style = "text-align: left;">clean_column</td><td style = "text-align: right;">54.791</td><td style = "text-align: right;">12.1748</td><td style = "text-align: right;">122</td><td style = "text-align: right;">162</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">7</td><td style = "text-align: left;">event_scheduler</td><td style = "text-align: right;">39.1506</td><td style = "text-align: right;">21.5854</td><td style = "text-align: right;">155</td><td style = "text-align: right;">22</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">8</td><td style = "text-align: left;">extract_julia_code</td><td style = "text-align: right;">43.9372</td><td style = "text-align: right;">18.0414</td><td style = "text-align: right;">158</td><td style = "text-align: right;">15</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">9</td><td style = "text-align: left;">ispersonal</td><td style = "text-align: right;">37.7761</td><td style = "text-align: right;">17.3132</td><td style = "text-align: right;">106</td><td style = "text-align: right;">94</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">10</td><td style = "text-align: left;">keep_only_names</td><td style = "text-align: right;">55.925</td><td style = "text-align: right;">13.1114</td><td style = "text-align: right;">106</td><td style = "text-align: right;">121</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">11</td><td style = "text-align: left;">pig_latinify</td><td style = "text-align: right;">31.5346</td><td style = "text-align: right;">22.8135</td><td style = "text-align: right;">152</td><td style = "text-align: right;">0</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">12</td><td style = "text-align: left;">q_and_a_extractor</td><td style = "text-align: right;">40.9944</td><td style = "text-align: right;">20.6472</td><td style = "text-align: right;">155</td><td style = "text-align: right;">1</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">13</td><td style = "text-align: left;">timezone_bumper</td><td style = "text-align: right;">61.8519</td><td style = "text-align: right;">15.7282</td><td style = "text-align: right;">73</td><td style = "text-align: right;">198</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">14</td><td style = "text-align: left;">wrap_string</td><td style = "text-align: right;">54.8465</td><td style = "text-align: right;">17.8363</td><td style = "text-align: right;">99</td><td style = "text-align: right;">27</td></tr></tbody></table></div><h2 id="Test-Cases"><a class="docs-heading-anchor" href="#Test-Cases">Test Cases</a><a id="Test-Cases-1"></a><a class="docs-heading-anchor-permalink" href="#Test-Cases" title="Permalink"></a></h2><pre><code class="language-julia hljs">for fn in fn_definitions
+    # fn = fn_definitions[1]
+    d = load_definition(fn)[&quot;code_generation&quot;]
+
+    io = IOBuffer()
+    println(io, &quot;### Test Case: $(d[&quot;name&quot;])&quot;)
+    println(io, &quot;- Evaluation criteria: $(join(d[&quot;criteria&quot;],&quot;, &quot;))&quot;)
+    println(io, &quot;- Definition: \&quot;$(d[&quot;prompt&quot;])\&quot;&quot;)
+    println(io, &quot;- Allowed imports: $(join(d[&quot;imports&quot;],&quot;, &quot;))&quot;)
+    println(io, &quot;- Defined examples: $(length(get(d,&quot;examples&quot;,[])))&quot;)
+    println(io, &quot;- Defined unit tests: $(length(get(d,&quot;unit_tests&quot;,[])))&quot;)
+    println(io, &quot;- Reference solution: \n```julia\n$(d[&quot;reference_solution&quot;])\n```\n&quot;)
+    winner = @chain df begin
+        @rsubset :model in PAID_MODELS_DEFAULT &amp;&amp; :prompt_label in PROMPTS
+        @rsubset :name == d[&quot;name&quot;]
+        @by :model begin
+            :score = mean(:score)
+            :elapsed = mean(:elapsed_seconds)
+            :count_zero_score = count(iszero, :score)
+            :count_full_score = count(==(100), :score)
+        end
+        @orderby -:score
+        first
+    end
+    println(io,
+        &quot;**Winning Paid API:** $(winner.model) with score $(round(winner.score;digits=1)) \n&quot;)
+    println(io, &quot;**Winning Locally-hosted model:** TBU \n&quot;)
+
+    String(take!(io)) |&gt; Markdown.parse |&gt; print
+end</code></pre><pre><code class="nohighlight hljs">### Test Case: add_yearmonth
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Given a DataFrame `df` with column `dt` representing DateTimes. Write a function `add_yearmonth` that creates a new column `ym` by extracting year and month from `dt` and concatenating them together as an integer in format: “yyyymm”.&quot;
+  * Allowed imports: DataFrames, Dates
+  * Defined examples: 4
+  * Defined unit tests: 4
+  * Reference solution:
+
+```julia
+using DataFrames, Dates
+
+function add_yearmonth(df::DataFrame)
+    return transform(df, :dt =&gt; ByRow(dt -&gt; year(dt) * 100 + month(dt)) =&gt; :ym)
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 72.8 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: audi_filter
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;You are given a DataFrame `df_cars` with car data with columns `manufacturer` and `model`. Write a function audi*filter that filters down the dataset to only the rows with manufacturer “audi” and model being “a4 or “a4 quattro”, then it should create a new column `audi*a4_type`that equals`true` across all rows. Then return the resulting DataFrame.&quot;
+  * Allowed imports: DataFrames
+  * Defined examples: 2
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+using DataFrames
+
+function audi_filter(df::DataFrame)
+    # Filter for Audi A4 and Audi A4 Quattro
+    filtered_df = filter(row -&gt; row.manufacturer == &quot;audi&quot; &amp;&amp; (row.model == &quot;a4&quot; || row.model == &quot;a4 quattro&quot;), eachrow(df)) |&gt; DataFrame
+    # Add new column
+    filtered_df.audi_a4_type .= true
+    return filtered_df
+end
+
+```
+
+**Winning Paid API:** gpt-3.5-turbo-1106 with score 58.0 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: count*model*rows
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Given a DataFrame df*cars with column `model`, write a function `count*model_rows` that groups data by model and calculate how many rows there are for each.&quot;
+  * Allowed imports: DataFrames
+  * Defined examples: 2
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+using DataFrames
+
+function count_model_rows(df::DataFrame)
+    grouped_df = groupby(df, :model)
+    return combine(grouped_df, nrow =&gt; :count)
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 98.4 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: weather*data*analyzer
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;You are given a list of daily temperature data `temps` (numbers). Write a function `weather_data_analyzer` that performs statistical analyses on this data (use `Statistics` package). The function should return results in named tuple (construct it with `(; key1=value1,key2=value2)` syntax) containing the `average`, `max`, `min` temperatures, and a `trend` (can be only: `:increasing`, `:decreasing`, or `:stable`). If the list is empty, the function should return a named tuple with all values set to `nothing`.&quot;
+  * Allowed imports: Statistics
+  * Defined examples: 5
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+using Statistics
+
+function weather_data_analyzer(temps)
+    if isempty(temps)
+        return (; average=nothing, max=nothing, min=nothing, trend=nothing)
+    else
+        average = mean(temps)
+        max_temp = maximum(temps)
+        min_temp = minimum(temps)
+        trend = if all(diff(temps) .&gt; 0)
+            :increasing
+        elseif all(diff(temps) .&lt; 0)
+            :decreasing
+        else
+            :stable
+        end
+        return (; average=average, max=max_temp, min=min_temp, trend=trend)
+    end
+end
+
+```
+
+**Winning Paid API:** mistral-medium with score 85.4 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: FloatWithUnits
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Given a struct `FloatWithUnits` with fields `value` and `unit` (make sure to define it!), write a `show` method for it that will concatenate the value and unit with a space like this &quot;1.8 meters&quot;.&quot;
+  * Allowed imports:
+  * Defined examples: 2
+  * Defined unit tests: 3
+  * Reference solution:
+
+```julia
+struct FloatWithUnits
+    value::Float64
+    unit::String
+end
+Base.show(io::IO, f::FloatWithUnits) = print(io, f.value, &quot; &quot;, f.unit)
+
+```
+
+**Winning Paid API:** mistral-medium with score 93.0 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: clean_column
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a function `clean_column` that cleans a column name (`col`) by lowercasing it, stripping any leading or trailing whitespaces, and replacing any spaces and hyphens with an underscore, eg, &quot;My Column&quot; becomes &quot;my_column&quot;.&quot;
+  * Allowed imports:
+  * Defined examples: 3
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+function clean_column(col)
+    return lowercase(col) |&gt; strip |&gt; x -&gt; replace(x, r&quot;[\s-]&quot; =&gt; &quot;_&quot;)
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 90.5 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: event_scheduler
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;You are given a list of events where each event is a tuple with a start and a finish time (in the format &#39;YYYY-MM-DD HH:MM&#39;). Write a function `event_scheduler` that checks for any scheduling conflicts among the events. The function should return &quot;No conflicts&quot; if there are no overlapping events and &quot;Conflict&quot; if any events overlap in time. If the list is empty, return &quot;No events&quot;. Use package Dates for parsing.&quot;
+  * Allowed imports: Dates
+  * Defined examples: 5
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+using Dates
+
+function event_scheduler(events)
+    if isempty(events)
+        return &quot;No events&quot;
+    end
+    
+    # Sort the events based on the start time
+    sorted_events = sort(events, by = e -&gt; Dates.DateTime(e[1], &quot;yyyy-mm-dd HH:MM&quot;))
+    
+    # Check for conflicts
+    for i in 1:length(sorted_events)-1
+        if Dates.DateTime(sorted_events[i][2], &quot;yyyy-mm-dd HH:MM&quot;) &gt; Dates.DateTime(sorted_events[i+1][1], &quot;yyyy-mm-dd HH:MM&quot;)
+            return &quot;Conflict&quot;
+        end
+    end
+    
+    return &quot;No conflicts&quot;
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 63.6 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: extract*julia*code
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;You are provided a markdown document `md` with julia language code blocks. Write a function `extract_julia_code` that extracts all the code blocks, removes code fences and joins the code blocks (if there are multiple) together with a newline. Return a String. Do not provide any examples.&quot;
+  * Allowed imports:
+  * Defined examples: 4
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+function extract_julia_code(md::AbstractString)
+    code_blocks = eachmatch(r&quot;```julia
+(.*?)
+```
+
+&quot;s, md)     join([code.captures[1] for code in code_blocks], &quot; &quot;) end
+
+```
+
+**Winning Paid API:** mistral-medium with score 71.2 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: ispersonal
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a function `ispersonal` that returns a trait if the provided Vehicle type is a personal vehicle for everyday driving. All vehicles are subtypes of AbstractVehicle. Function must work for types: Car, Motorcycle, Bus, Truck. The first two should return true, the latter two should return false . The function should default to false for any other subtype of AbstractVehicle. Provide an example.&quot;
+  * Allowed imports:
+  * Defined examples: 4
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+abstract type AbstractVehicle end
+
+struct Car &lt;: AbstractVehicle end
+struct Motorcycle &lt;: AbstractVehicle end
+struct Bus &lt;: AbstractVehicle end
+struct Truck &lt;: AbstractVehicle end
+
+ispersonal(vehicle::AbstractVehicle) = false
+ispersonal(vehicle::Union{Car,Motorcycle}) = true
+
+```
+
+**Winning Paid API:** gpt-3.5-turbo-1106 with score 68.6 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: keep*only*names
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a function `keep_only_names` which iterates over the provided list of words (`words`) and removes all words that do not start with a capital letter (eg, remove &quot;dog&quot; but keep &quot;Dog&quot;).&quot;
+  * Allowed imports:
+  * Defined examples: 4
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+function keep_only_names(words)
+    return filter(word -&gt; isuppercase(first(word)), words)
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 91.0 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: pig_latinify
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a pig latin transformer called `pig_latinify` that operates on a vector of strings. It iterates over each string and changes it to pig latin. Each iteration should run on a separate thread.&quot;
+  * Allowed imports: Base.Threads
+  * Defined examples: 4
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+function to_pig_latin(word::AbstractString)
+    vowels = &quot;aeiouAEIOU&quot;
+    first_vowel_idx = findfirst(c -&gt; c in vowels, word)
+    if isnothing(first_vowel_idx) || first_vowel_idx == 1
+        return word * &quot;ay&quot;
+    else
+        return word[first_vowel_idx:end] * word[1:first_vowel_idx-1] * &quot;ay&quot;
+    end
+end
+
+function pig_latinify(words::Vector{&lt;:AbstractString})
+    transform = similar(words)
+    Threads.@threads for i in 1:length(words)
+        transform[i] = to_pig_latin(words[i])
+    end
+    return transform
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 56.1 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: q*and*a_extractor
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;You are given a markdown-formatted text `md`. Write a function `q_and_a_extractor` to extract all text in the markdown sections Question and Answer (starting with `# Question` and `# Answer`, respectively) and return the answer in a tuple like `(question,answer)`. Strip any leading spaces and newlines from the extracted text.&quot;
+  * Allowed imports:
+  * Defined examples: 3
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+function q_and_a_extractor(md::AbstractString)
+    question = match(r&quot;(?&lt;=# Question
+).*?(?=
+# [A-Za-z]+|$)&quot;s, md)
+    answer = match(r&quot;(?&lt;=# Answer
+).*?(?=
+# [A-Za-z]+|$)&quot;s, md)
+
+    return (question === nothing ? &quot;&quot; : strip(question.match)),
+    (answer === nothing ? &quot;&quot; : strip(answer.match))
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 69.0 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: timezone_bumper
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a function `timezone_bumper(dt,bump)` that increases any provided timestamp by `bump::Int` hours (defaults to +3 hours). Make sure it works only for DateTime types and throws an error for Date types.&quot;
+  * Allowed imports: Dates
+  * Defined examples: 5
+  * Defined unit tests: 5
+  * Reference solution:
+
+```julia
+using Dates
+
+function timezone_bumper(timestamp::DateTime, bump::Int=3)
+    return timestamp + Hour(bump)
+end
+
+
+```
+
+**Winning Paid API:** mistral-medium with score 97.0 
+
+**Winning Locally-hosted model:** TBU 
+### Test Case: wrap_string
+
+  * Evaluation criteria: parsed, executed, passed*unit*tests, executed_examples
+  * Definition: &quot;Write a function `wrap_string`. It iterates over words and it will add a new line each time a maximum `text_width::Int=10` would be exceeded. Provide an example&quot;
+  * Allowed imports:
+  * Defined examples: 2
+  * Defined unit tests: 6
+  * Reference solution:
+
+```julia
+function wrap_string(text::AbstractString, text_width::Int=10)
+    words = split(text)
+    line_length = 0
+    wrapped_text = &quot;&quot;
+    num_words = length(words)
+    for i in eachindex(words)
+        word = words[i]
+        # +1 for separator length for all but the last word
+        sep_length = (i == num_words) ? 0 : 1
+        if line_length + length(word) + sep_length &gt; text_width
+            wrapped_text *= &quot;
+&quot;
+            line_length = 0
+        end
+        wrapped_text *= word * &quot; &quot;
+        line_length += length(word) + 1
+    end
+    return strip(wrapped_text)
+end
+
+```
+
+**Winning Paid API:** gpt-4-1106-preview with score 97.8 
+
+**Winning Locally-hosted model:** TBU 
+</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../summarize_results_prompts/">« Prompts</a><a class="docs-footer-nextpage" href="../../frequently_asked_questions/">F.A.Q. »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Friday 29 December 2023 12:56">Friday 29 December 2023</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
