@@ -90,15 +90,15 @@ for fn in fn_definitions
     ## fn = fn_definitions[1]
     d = load_definition(fn)["code_generation"]
 
-    println(io, "### Test Case: $(d["name"])")
+    println(io, "### Test Case: $("`"*(d["name"])*"`")")
     println(io)
-    println(io, "- Definition file: $(relpath(fn,pkgdir(JuliaLLMLeaderboard)))")
+    println(io, "- Definition file: `$(relpath(fn,pkgdir(JuliaLLMLeaderboard)))`")
     println(io, "- Prompt: \"$(d["prompt"])\"")
-    println(io, "- Evaluation criteria: $(join(d["criteria"],", "))")
+    println(io, "- Evaluation criteria: $(join("`".*d["criteria"].*"`",", "))")
     println(io, "- Allowed imports: $(join(d["imports"],", "))")
     println(io, "- Defined examples: $(length(get(d,"examples",[])))")
     println(io, "- Defined unit tests: $(length(get(d,"unit_tests",[])))")
-    println(io, "- Reference solution: \n\n```julia\n$(d["reference_solution"])\n```\n")
+    println(io, "- Reference solution: \n\n`````julia\n$(d["reference_solution"])\n`````\n")
     ## Paid model winner
     winner = @chain df begin
         @rsubset :model in PAID_MODELS_DEFAULT && :prompt_label in PROMPTS

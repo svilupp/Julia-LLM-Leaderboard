@@ -6,9 +6,6 @@
 
 Comparison of Julia language generation capabilities of various Large Language Models
 
-> [!WARNING]  
-> This is a work in progress (pre-0.1.0). Please check back later for more updates.
-
 - [Julia LLM Leaderboard](#julia-llm-leaderboard)
   - [Introduction](#introduction)
   - [Test Cases](#test-cases)
@@ -47,10 +44,10 @@ Each model's and prompt's performance is evaluated based on several criteria:
 At the moment, all criteria are weighed equally and each test case can earn a maximum of 100 points. If a code passes all criteria, it gets 100/100 points. If it fails one criterion (eg, all unit tests), it gets 75/100 points. If it fails two criteria (eg, it runs but all examples and unit tests are broken), it gets 50 points, and so on.
 
 ## Results (Preview)
-To provide a glimpse of the repository's functionality, we have included example results for the first 14 test cases. 
+To provide a glimpse of the repository's functionality, we have included example results for the first 14 test cases. Open the documentation for the full results and a deep dive on each test case.
 
 > [!WARNING]  
-> These scores might change as we evolve the supporting functionality.
+> These scores might change as we evolve the supporting functionality and add more models.
 
 Remember that the benchmark is quite challenging for any model - a single extra space or parentheses and the score might become 0 (="unable to parse")!
 
@@ -77,37 +74,39 @@ In addition, we can consider the performance (score) versus the cost (measured i
 
 ### OSS Models
 
-Open-source models are generally not as good as the paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
+Open-source models are generally not as good as the best paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
 
 The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, they get defeated by a 7Bn Magicoder (if we use Q6 quantization).
 
-|| model                              | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
-|------------------------------------|---------|----------------|--------------------|-------------------|----------------|--------------|
-|             magicoder:7b-s-cl-q6_K |    63.3 |           61.8 |               54.5 |              62.6 |           67.4 |         61.9 |
-|             phind-codellama:34b-v2 |    60.6 |           69.7 |               59.1 |              59.1 |           57.8 |         61.2 |
-|                          magicoder |    59.6 |           51.0 |               46.4 |              57.0 |           54.5 |         53.7 |
-| deepseek-coder:33b-instruct-q4_K_M |    58.9 |           39.8 |               48.7 |              61.6 |           58.1 |         53.4 |
-|         nous-hermes2:34b-yi-q4_K_M |    58.8 |           37.7 |               52.8 |              46.2 |           58.8 |         50.8 |
-|             codellama:13b-instruct |    55.5 |           51.8 |               45.6 |              47.9 |           51.7 |         50.5 |
-|              openhermes2.5-mistral |    50.3 |           52.3 |               54.6 |              42.2 |           52.6 |         50.4 |
-|                 starling-lm:latest |    53.6 |           57.9 |               38.2 |              46.9 |           53.5 |         50.0 |
-|       openchat:7b-v3.5-1210-q4_K_M |    49.8 |           47.8 |               44.3 |              47.6 |           49.1 |         47.7 |
-|                        yi:34b-chat |    46.1 |           52.4 |               41.1 |              42.9 |           49.1 |         46.3 |
-|      mistral:7b-instruct-v0.2-q4_0 |    50.3 |           41.4 |               45.6 |              45.6 |           45.9 |         45.8 |
-|      mistral:7b-instruct-v0.2-q6_K |    42.6 |           39.8 |               48.1 |              48.8 |           49.3 |         45.7 |
-|    mistral:7b-instruct-v0.2-q4_K_M |    41.0 |           49.3 |               41.4 |              43.8 |           47.5 |         44.6 |
-|     solar:10.7b-instruct-v1-q4_K_M |    42.0 |           36.0 |               17.6 |              32.5 |           35.8 |         32.8 |
-|         mistral:7b-instruct-q4_K_M |    34.7 |           31.6 |               31.3 |              31.6 |           32.3 |         32.3 |
-|                             llama2 |    26.1 |           33.0 |               29.7 |              28.4 |           24.1 |         28.3 |
-|                          orca2:13b |    28.1 |           16.9 |               27.3 |              23.7 |           23.2 |         23.8 |
-|                    stablelm-zephyr |    22.0 |           17.8 |               18.8 |              22.2 |           25.8 |         21.3 |
-|         dolphin-phi:2.7b-v2.6-q6_K |    22.3 |           18.3 |               14.9 |              16.3 |           18.6 |         18.1 |
-|               codellama:13b-python |    11.4 |           14.4 |               15.1 |              13.0 |           14.9 |         13.8 |
-|              phi:2.7b-chat-v2-q6_K |     7.3 |            6.5 |                6.8 |               9.2 |           10.2 |          8.0 |
-
+| Model                              | Elapsed | Elapsed Median | Score | Score Median | Score Std Deviation | Count Zero Score | Count Full Score |
+|------------------------------------|---------|----------------|-------|--------------|---------------------|------------------|------------------|
+|             magicoder:7b-s-cl-q6_K |    15.6 |           15.6 |  61.9 |         60.0 |                28.7 |             11.0 |             35.0 |
+|             phind-codellama:34b-v2 |    37.1 |           37.1 |  61.2 |         72.5 |                33.1 |             28.0 |             50.0 |
+|                          magicoder |    12.8 |           12.8 |  53.7 |         50.0 |                32.8 |             41.0 |             51.0 |
+| deepseek-coder:33b-instruct-q4_K_M |    46.7 |           46.7 |  53.4 |         50.0 |                37.0 |             48.0 |             69.0 |
+|         nous-hermes2:34b-yi-q4_K_M |    56.8 |           56.8 |  50.8 |         50.0 |                32.9 |             65.0 |             47.0 |
+|             codellama:13b-instruct |    18.1 |           18.1 |  50.5 |         50.0 |                33.2 |             52.0 |             42.0 |
+|              openhermes2.5-mistral |    12.9 |           12.9 |  50.4 |         50.0 |                29.3 |             35.0 |             26.0 |
+|                 starling-lm:latest |    13.7 |           13.7 |  50.0 |         50.0 |                26.8 |             27.0 |             23.0 |
+|       openchat:7b-v3.5-1210-q4_K_M |    14.4 |           14.4 |  47.7 |         50.0 |                29.7 |             35.0 |             22.0 |
+|                        yi:34b-chat |    43.9 |           43.9 |  46.3 |         50.0 |                30.1 |             35.0 |             34.0 |
+|      mistral:7b-instruct-v0.2-q4_0 |    12.4 |           12.4 |  45.8 |         50.0 |                28.6 |             52.0 |             30.0 |
+|      mistral:7b-instruct-v0.2-q6_K |    21.7 |           21.7 |  45.7 |         50.0 |                28.8 |             31.0 |             19.0 |
+|    mistral:7b-instruct-v0.2-q4_K_M |    15.6 |           15.6 |  44.6 |         50.0 |                26.0 |             47.0 |             19.0 |
+|     solar:10.7b-instruct-v1-q4_K_M |    18.8 |           18.8 |  32.7 |         25.0 |                27.8 |             79.0 |              8.0 |
+|         mistral:7b-instruct-q4_K_M |    13.9 |           13.9 |  32.3 |         25.0 |                24.0 |             60.0 |              0.0 |
+|                             llama2 |    17.1 |           17.1 |  28.3 |         25.0 |                23.9 |             93.0 |              0.0 |
+|                          orca2:13b |    20.1 |           20.1 |  23.8 |          0.0 |                28.7 |            145.0 |              8.0 |
+|                    stablelm-zephyr |     9.9 |            9.9 |  21.3 |         25.0 |                22.0 |            125.0 |              1.0 |
+|         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.9 |  18.1 |          0.0 |                22.5 |            154.0 |              0.0 |
+|               codellama:13b-python |    12.5 |           12.5 |  13.8 |          0.0 |                21.1 |            140.0 |              0.0 |
+|              phi:2.7b-chat-v2-q6_K |    13.0 |           13.0 |   8.0 |          0.0 |                13.6 |            197.0 |              0.0 |
 
 Same information, but as a bar chart:
 
+![Model-Scores-for-OSS-by-size](assets/model-comparison-oss.png)
+
+And with a separate bar for each prompt template:
 ![Model-Prompt-Scores-for-Paid-API](assets/model-prompt-comparison-oss.png)
 
 ### Overall Time to Run vs Score
@@ -135,7 +134,6 @@ Learnings so far:
 | JuliaExpertCoTTask |                 19.7 |                14.9 |                     43.9 |                       50.0 |
 |  JuliaRecapCoTTask |                 19.7 |                15.2 |                     42.5 |                       50.0 |
 |               AsIs |                 36.3 |                11.2 |                     13.0 |                        0.0 |
-
 
 Make your own analysis with `examples/summarize_results.jl`!
 

@@ -60,7 +60,7 @@ fig = @chain df begin
     draw(;
         axis = (limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
-            title = "Paid APIs Performance [PRELIMINARY]"))
+            title = "Paid APIs Performance"))
 end
 
 # Table:
@@ -105,7 +105,7 @@ fig = @chain df begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(;
-        axis = (xticklabelrotation = 45, title = "Comparison for Paid APIs [PRELIMINARY]"))
+        axis = (xticklabelrotation = 45, title = "Comparison for Paid APIs"))
 end
 SAVE_PLOTS && save("assets/model-prompt-comparison-paid.png", fig)
 fig
@@ -126,6 +126,8 @@ end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
 
+# Note: Surprised by the low performance of some models on the CoT prompts? It's because the model accidentally sends a "stop" token before it writes the code.
+
 # ## Other Considerations
 
 # Comparison of Cost vs Average Score
@@ -142,7 +144,7 @@ fig = @chain df begin
         color = :model => "Model")
     draw(;
         axis = (xticklabelrotation = 45,
-            title = "Cost vs Score for Paid APIs [PRELIMINARY]"))
+            title = "Cost vs Score for Paid APIs"))
 end
 SAVE_PLOTS && save("assets/cost-vs-score-scatter-paid.png", fig)
 fig
@@ -183,7 +185,7 @@ fig = @chain df begin
         color = :model => "Model")
     draw(; figure = (size = (600, 600),),
         axis = (xticklabelrotation = 45,
-            title = "Elapsed Time vs Score for Paid APIs [PRELIMINARY]",
+            title = "Elapsed Time vs Score for Paid APIs",
             limits = (xlims..., nothing, nothing)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
 end

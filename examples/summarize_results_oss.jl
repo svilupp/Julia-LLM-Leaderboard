@@ -86,8 +86,9 @@ fig = @chain df begin
         axis = (;
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
-            title = "Open-Source LLM Model Performance [PRELIMINARY]"))
+            title = "Open-Source LLM Model Performance"))
 end
+SAVE_PLOTS && save("assets/model-comparison-oss.png", fig)
 fig
 
 # Table:
@@ -130,7 +131,7 @@ fig = @chain df begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45, title = "Comparison for OSS Models [PRELIMINARY]"),
+        axis = (xticklabelrotation = 45, title = "Comparison for OSS Models"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save("assets/model-prompt-comparison-oss.png", fig)
@@ -169,11 +170,11 @@ fig = @chain df begin
         color = :model => "Model")
     draw(; figure = (size = (800, 800),),
         axis = (xticklabelrotation = 45,
-            title = "Elapsed Time vs Score for OSS Models [PRELIMINARY]",
+            title = "Elapsed Time vs Score for OSS Models",
             limits = (xlims..., nothing, nothing)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
 end
-SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
+SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-oss.png", fig)
 fig
 
 # Table:

@@ -1,5 +1,10 @@
 # Frequently Asked Questions
 
+## What are the so-whats?
+
+There is limited guidance or comments in the docs, because it’s meant to be automatically generated (and, hence, can move around slightly).
+For the resulting insights, see the associated blog posts!
+
 ## Want to add a new model?
 
 In the short term, we don't foresee adding more models, unless there is some _transformative_ new option that runs on a consumer-grade hardware. 

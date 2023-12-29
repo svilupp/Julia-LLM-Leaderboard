@@ -5,6 +5,13 @@
 
 ### Fixed
 
+## [0.1.0]
+
+### Added
+- Documentation with detailed methodology, test case definitions, and results across various data cuts.
+
+### Fixed
+
 ## [pre-0.1.0]
 
 ### Fixed
