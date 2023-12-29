@@ -11,7 +11,7 @@
 using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
-using Statistics: mean, median, quantile;
+using Statistics: mean, median, quantile, std;
 unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
@@ -97,6 +97,7 @@ output = @chain df begin
         :elapsed_median = mean(:elapsed_seconds)
         :score = mean(:score)
         :score_median = median(:score)
+        :score_std_deviation = std(:score)
         :count_zero_score = count(iszero, :score)
         :count_full_score = count(==(100), :score)
     end
@@ -106,6 +107,9 @@ output = @chain df begin
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
+
+# Note that our sample size is low, so the rankings could easily change (we have high standard deviations of the estimated means).
+# That the results only as indicative.
 
 # ## Overview by Prompt Template
 

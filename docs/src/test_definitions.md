@@ -6,10 +6,9 @@ CurrentModule = JuliaLLMLeaderboard
 
 All test cases are defined in `definition.toml` files with the structure described below.
 
-## Folder Structure / Convention
+## Folder Structure
 
-1. **Naming Convention**: Create nested folders following the format `code_generation/category/test_case_name/definition.toml`.
-2. **Saving Results**: Store the full conversation and the evaluation results in a path nested by a model name like `code_generation/category/test case/model/evaluation__PROMPT__STRATEGY__TIMESTAMP.json` and `code_generation/category/test case/model/conversation__PROMPT__STRATEGY__TIMESTAMP.json`
+Definitions are saved in the following file paths `code_generation/category/test_case_name/definition.toml`.
 
 ## Anatomy of `definition.toml`
 Required fields in `definition.toml` include:
@@ -33,7 +32,7 @@ The above fields can improve re-use of code across the examples/unit tests.
 
 See an example in `examples/create_definition.jl`. 
 
-You can validate your test case definitions with `validate_definition()`.
+You can validate your test case definitions with `validate_definition`.
 
 ## Feedback and Improvements
 We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!

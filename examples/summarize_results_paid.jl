@@ -12,7 +12,7 @@
 using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
-using Statistics: mean, median, quantile;
+using Statistics: mean, median, quantile, std;
 unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
@@ -44,7 +44,7 @@ end;
 # ## Model Comparison
 
 # Highest average score by model:
-output = @chain df begin
+fig = @chain df begin
     @by [:model] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -69,6 +69,7 @@ output = @chain df begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
         :score = mean(:score)
+        :score_std_deviation = std(:score)
         :count_zero_score = count(iszero, :score)
         :count_full_score = count(==(100), :score)
     end
@@ -82,6 +83,8 @@ output = @chain df begin
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
+
+# While the victory of GPT-4 is not surprising, note that the our sample size is small and the standard deviation is quite high.
 
 # ## Overview by Prompt Template
 

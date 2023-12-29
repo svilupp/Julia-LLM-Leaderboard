@@ -35,6 +35,7 @@ makedocs(;
             "Paid APIs" => "examples/summarize_results_paid.md",
             "Open-Source Models" => "examples/summarize_results_oss.md",
             "Prompts" => "examples/summarize_results_prompts.md",
+            "by Test Case" => "examples/summarize_results_test_cases.md",
         ],
         "F.A.Q." => "frequently_asked_questions.md",
         "Reference" => "reference.md",
