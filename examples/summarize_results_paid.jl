@@ -74,7 +74,7 @@ output = @chain df begin
         :count_full_score = count(==(100), :score)
     end
     transform(_,
-        [:elapsed, :score] .=> ByRow(x -> round(x, digits = 1)),
+        [:elapsed, :score, :score_std_deviation] .=> ByRow(x -> round(x, digits = 1)),
         renamecols = false)
     @rtransform :cost_cents = round(:cost * 100; digits = 2)
     select(Not(:cost))
@@ -111,6 +111,7 @@ SAVE_PLOTS && save("assets/model-prompt-comparison-paid.png", fig)
 fig
 
 # Table:
+# - Surprised by the low performance of some models (eg, GPT 3.5 Turbo) on the CoT prompts? It's because the model accidentally sends a "stop" token before it writes the code.
 output = @chain df begin
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
@@ -125,8 +126,6 @@ output = @chain df begin
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
-
-# Note: Surprised by the low performance of some models on the CoT prompts? It's because the model accidentally sends a "stop" token before it writes the code.
 
 # ## Other Considerations
 
@@ -150,6 +149,7 @@ SAVE_PLOTS && save("assets/cost-vs-score-scatter-paid.png", fig)
 fig
 
 # Table:
+# - Point per cent is the average score divided by the average cost in US cents
 output = @chain df begin
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
@@ -166,6 +166,7 @@ output = @chain df begin
         renamecols = false)
     @rtransform :cost_cents = round(:cost * 100; digits = 2)
     select(Not(:cost))
+    rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
@@ -193,6 +194,7 @@ SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
 fig
 
 # Table:
+# - Point per second is the average score divided by the average elapsed time
 output = @chain df begin
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
@@ -209,6 +211,7 @@ output = @chain df begin
         renamecols = false)
     @rtransform :cost_cents = round(:cost * 100; digits = 2)
     select(Not(:cost))
+    rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)

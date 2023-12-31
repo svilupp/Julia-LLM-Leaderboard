@@ -178,6 +178,7 @@ SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-oss.png", fig)
 fig
 
 # Table:
+# - Point per second is the average score divided by the average elapsed time
 output = @chain df begin
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
