@@ -67,11 +67,19 @@ schema_lookup = Dict{String, Any}([
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
-# fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
+fn_definitions = [
+    joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
+]
+# 4x JuliaRecapTask
+# JuliaRecapCoTTask - wrap_string - 5x
+#
+# 1x clean_column           JuliaExpertAsk 
+# JuliaExpertCoTTask - clean column 5x
 # num_gpu = floor(Int, 21 / 65 * 60)
+
 evals = run_benchmark(; fn_definitions,
     models = ["yi:34b-chat-q3_K_L"],
-    prompt_labels = ["JuliaExpertCoTTask"],
+    prompt_labels = ["JuliaExpertAsk", "JuliaExpertCoTTask"],
     experiment = "yi-quantization-effects-default",
     auto_save = true, verbose = true,
     device,
@@ -80,19 +88,25 @@ evals = run_benchmark(; fn_definitions,
     api_kwargs = (; options = (; num_gpu = 99)));
 
 # ## Quick Eval
+df_all = allcombinations(DataFrame,
+    "model" => model_options,
+    "prompt_label" => prompt_options,
+    "fn_definitions" => fn_definitions)
+@rtransform!(df_all, :name=split(:fn_definitions, "/")[end - 1])
+
 ## Load data
-df = load_evals("yi_quant_benchmark"; max_history = 0)
+df = load_evals("yi-quantization-effects"; max_history = 0)
 
 # Overall summary by test case
 @chain df begin
-    # @rsubset :model == "mistral-medium"
-    @by [:model, :name, :prompt_label] begin
+    # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
+    @by [(:model):prompt_label, :name] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
         :count = $nrow
     end
+    leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
+    @rtransform :count = coalesce(:count, 0)
+    @rsubset :count < 5
     @orderby :count
-    # transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
-    # rename("model" => "Model", "count_zeros" => "# of Zero Scores", "score" => "Avg. Score",
-    #     "count" => "Count", "name" => "Name")
 end
