@@ -249,9 +249,11 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     if auto_save
         ## Define paths -- .../model/conversation__PROMPTABC__1SHOT__TIMESTAMP.json
         fn_evaluation = joinpath(save_dir,
+            definition["name"],
             model,
             "evaluation__$(prompt_label)__$(prompt_strategy)__$(timestamp).json")
         fn_conversation = joinpath(save_dir,
+            definition["name"],
             model,
             "conversation__$(prompt_label)__$(prompt_strategy)__$(timestamp).json")
         ## Save Evaluation
