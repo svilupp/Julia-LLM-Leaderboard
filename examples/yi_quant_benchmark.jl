@@ -24,12 +24,12 @@ model_options = [
 
 # Or OSS models:
 model_options = [
-    "yi:34b-chat-fp16",
-    "yi:34b-chat-q8_0",
-    "yi:34b-chat-q6_K",
-    "yi:34b-chat-q5_K_M",
-    "yi:34b-chat-q5_K_S",
-    "yi:34b-chat-q5_0",
+    # "yi:34b-chat-fp16",
+    # "yi:34b-chat-q8_0",
+    # "yi:34b-chat-q6_K",
+    # "yi:34b-chat-q5_K_M",
+    # "yi:34b-chat-q5_K_S",
+    # "yi:34b-chat-q5_0",
     "yi:34b-chat-q4_K_M",
     "yi:34b-chat-q4_0",
     "yi:34b-chat-q3_K_L",
@@ -67,9 +67,9 @@ schema_lookup = Dict{String, Any}([
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
-fn_definitions = [
-    joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
-]
+# fn_definitions = [
+#     joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
+# ]
 # 4x JuliaRecapTask
 # JuliaRecapCoTTask - wrap_string - 5x
 #
@@ -78,13 +78,13 @@ fn_definitions = [
 # num_gpu = floor(Int, 21 / 65 * 60)
 
 evals = run_benchmark(; fn_definitions,
-    models = ["yi:34b-chat-q3_K_L"],
-    prompt_labels = ["JuliaExpertAsk", "JuliaExpertCoTTask"],
+    models = model_options,
+    prompt_labels = prompt_options,
     experiment = "yi-quantization-effects-default",
     auto_save = true, verbose = true,
     device,
     save_dir = "yi-quantization-effects",
-    num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 60),
     api_kwargs = (; options = (; num_gpu = 99)));
 
 # ## Quick Eval
