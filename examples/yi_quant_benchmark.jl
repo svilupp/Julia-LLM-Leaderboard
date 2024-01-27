@@ -70,11 +70,8 @@ fn_definitions = find_definitions("code_generation/")
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
 # num_gpu = floor(Int, 21 / 65 * 60)
 evals = run_benchmark(; fn_definitions,
-    models = ["yi:34b-chat-q4_0",
-        "yi:34b-chat-q3_K_L",
-        "yi:34b-chat-q3_K_S",
-        "yi:34b-chat-q2_K"],
-    prompt_labels = prompt_options,
+    models = ["yi:34b-chat-q3_K_L"],
+    prompt_labels = ["JuliaExpertCoTTask"],
     experiment = "yi-quantization-effects-default",
     auto_save = true, verbose = true,
     device,
