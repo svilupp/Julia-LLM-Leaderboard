@@ -3,6 +3,7 @@ module JuliaLLMLeaderboard
 using TOML
 using PromptingTools
 using PromptingTools: AICode, eval!, save_conversation
+using PromptingTools.Experimental.AgentTools
 const PT = PromptingTools
 using DataFramesMeta
 using Dates

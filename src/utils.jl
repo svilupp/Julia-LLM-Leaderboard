@@ -20,36 +20,6 @@ function get_query_cost(msg::AIMessage, model::AbstractString,
 end
 
 """
-    @timeout(seconds, expr_to_run, expr_when_fails)
-
-Simple macro to run an expression with a timeout of `seconds`. If the `expr_to_run` fails to finish in `seconds` seconds, `expr_when_fails` is returned.
-
-# Example
-```julia
-x = @timeout 1 begin
-    sleep(1.1)
-    println("done")
-    1
-end "failed"
-
-```
-"""
-macro timeout(seconds, expr_to_run, expr_when_fails)
-    quote
-        tsk = @task $(esc(expr_to_run))
-        schedule(tsk)
-        Timer($(esc(seconds))) do timer
-            istaskdone(tsk) || Base.throwto(tsk, InterruptException())
-        end
-        try
-            fetch(tsk)
-        catch _
-            $(esc(expr_when_fails))
-        end
-    end
-end
-
-"""
     tmapreduce(f, op, itr; tasks_per_thread::Int = 2, kwargs...)
 
 A parallelized version of the `mapreduce` function leveraging multi-threading.

@@ -1,7 +1,7 @@
 name = "JuliaLLMLeaderboard"
 uuid = "d2e0caaf-b708-450d-8925-7705cdc6ef9e"
 authors = ["J S <49557684+svilupp@users.noreply.github.com>"]
-version = "0.1.0"
+version = "0.2.0-DEV"
 
 [deps]
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
@@ -23,4 +23,4 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
-PromptingTools = "0.6.0"
+# PromptingTools = "0.6.0"

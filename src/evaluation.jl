@@ -1,11 +1,85 @@
 
 """
-    run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
+    run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
+        prefix::String = "",
+        execution_timeout::Int = 60,
+        capture_stdout::Bool = true,
+        remove_tests::Bool = true)
+        prefix::String = "",
+        execution_timeout::Int = 60,
+        capture_stdout::Bool = true,
+        remove_tests::Bool = true)
+
+Runs the code block in the message `msg` and returns the result as an `AICode` object.
+
+Logic:
+- Always execute with a timeout
+- Always execute in a "safe mode" (inside a custom module, `safe_eval=true`)
+- Skip any package imports or environment changes (`skip_unsafe=true`)
+- Skip invalid/broken lines (`skip_invalid=true`)
+- Remove any unit tests (`remove_tests=true`), because model might have added some without being asked for it explicitly
+- First, evaluate the code block as a whole, and if it fails, try to extract the function definition and evaluate it separately (fallback)
+"""
+function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
+        prefix::String = "",
+        execution_timeout::Int = 60,
+        capture_stdout::Bool = true,
+        remove_tests::Bool = true)
+    # For ease of evaluation in "safe" mode (eg, inside a custom module), 
+    # but we skip any code lines with Pkg manipulation and importing unknown packages
+    # we skip invalid code blocks (in case some later example is poor)
+    # we do capture stdout, disabled to be able to process in parallel
+    # execution is set to timeout in 60s
+    cb = PT.@timeout execution_timeout begin
+        PT.AICode(msg;
+            prefix,
+            skip_unsafe = true,
+            skip_invalid = true,
+            capture_stdout, remove_tests)
+    end PT.AICode(msg;
+        auto_eval = false,
+        prefix,
+        skip_unsafe = true,
+        skip_invalid = true,
+        capture_stdout)
+
+    ## Fallback option
+    if !isvalid(cb)
+        ## We want to measure function defintion separately from examples and test cases, 
+        # so we give it one more chance and grab only the code definition
+        raw_blocks = PT.extract_code_blocks(msg.content)
+        definition_mask = PT.is_julia_code.(raw_blocks) .&&
+                          (PT.extract_function_name.(raw_blocks) .== function_name)
+        definition_idx = findfirst(definition_mask)
+        code = if !isnothing(definition_idx)
+            raw_blocks[definition_idx]
+        else
+            join(raw_blocks, "\n\n")
+        end
+        # redefine the code block to be just the function definition
+        cb = PT.@timeout execution_timeout begin
+            AICode(code;
+                prefix,
+                skip_unsafe = true,
+                capture_stdout, remove_tests)
+        end PT.AICode(code;
+            auto_eval = false,
+            prefix,
+            skip_unsafe = true,
+            skip_invalid = true,
+            capture_stdout)
+    end
+
+    return cb
+end
+
+"""
+    run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
         verbose::Bool = false, prefix::AbstractString = "",
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
         capture_stdout::Bool = true, execution_timeout::Int = 60)
 
-Runner for provided `code_blocks` (can be either unit tests or examples), returns count of examples executed without an error. 
+Runner for the additional `code_blocks` (can be either unit tests or examples), returns count of examples executed without an error. 
 
 `code_blocks` should be a vector of strings, each of which is a valid Julia expression that can be evaluated without an error thrown.
 Each successful run (no error thrown) is counted as a successful example.
@@ -32,20 +106,21 @@ run_code_blocks(cb, [code])
 # Output: 1 (= 1 example executed without an error thrown)
 ```
 """
-function run_code_blocks(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
+function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
         verbose::Bool = false, prefix::AbstractString = "",
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
         capture_stdout::Bool = true, execution_timeout::Int = 60)
     ##
     count_successful = 0
     cb_copy = copy(cb)
+    eval_module = getfield(Main, PT.extract_module_name(cb.expression))
     for (i, code) in enumerate(code_blocks)
-        # Inject the code to evaluate into the AICode object before we parse & eval it
-        # suffix means we put it at the end of the code block
-        # We run with timeout to avoid infinite loops
+        # Prepare the code to evaluate and evaluate it in the same module as the original code
         code_joined = string(setup_code, "\n\n", code, "\n\n", teardown_code)
-        @timeout execution_timeout begin
-            eval!(cb_copy; prefix, suffix = code_joined, capture_stdout)
+        code_expr = Meta.parseall(code_joined)
+        # We run with timeout to avoid infinite loops
+        PT.@timeout execution_timeout begin
+            eval!(cb_copy, code_expr; capture_stdout, eval_module)
         end nothing
 
         success = isvalid(cb_copy)
@@ -87,6 +162,7 @@ into a sub-folder of where the definition file was stored.
 - `experiment`: the experiment name, eg, `experiment="my_experiment"` (eg, when you're doing a parameter search). Defaults to `""` for standard benchmark run.
 - `execution_timeout`: the timeout for the AICode code execution in seconds. Defaults to 60s.
 - `capture_stdout`: if `capture_stdout=true`, AICode will capture the stdout of the code execution. Set to `false` if you're evaluating with multithreading (stdout capture is not thread-safe). Defaults to `true` to avoid poluting the benchmark.
+- `remove_tests`: if `remove_tests=true`, AICode will remove any @testset blocks and unit tests from the main code definition (shields against model defining wrong unit tests inadvertedly).
 
 
 # Examples
@@ -109,7 +185,8 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         prompt_strategy = "1SHOT", verbose::Bool = false,
         auto_save::Bool = true, save_dir::AbstractString = dirname(fn_definition),
         experiment::AbstractString = "",
-        execution_timeout::Int = 60, capture_stdout::Bool = true)
+        execution_timeout::Int = 60, capture_stdout::Bool = true,
+        remove_tests::Bool = true)
     @assert execution_timeout>0 "execution_timeout must be positive"
 
     ## early exit
@@ -127,51 +204,16 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     end
 
     ## Run the code
-    # For ease of evaluation in "safe" mode (eg, inside a custom module), 
-    # but we skip any code lines with Pkg manipulation and importing unknown packages
-    # we skip invalid code blocks (in case some later example is poor)
-    # we do capture stdout, disabled to be able to process in parallel
-    # execution is set to timeout in 60s
-    cb = @timeout execution_timeout begin
-        PT.AICode(msg;
-            prefix = imports_required,
-            skip_unsafe = true,
-            skip_invalid = true,
-            capture_stdout)
-    end PT.AICode(msg;
-        auto_eval = false,
+    cb = run_code_main(msg;
+        function_name = definition["name"],
         prefix = imports_required,
-        skip_unsafe = true,
-        skip_invalid = true,
-        capture_stdout)
-
-    if !isvalid(cb)
-        ## We want to measure function defintion separately from examples and test cases, 
-        # so we give it one more chance and grab only the code definition
-        raw_blocks = PT.extract_code_blocks(msg.content)
-        definition_mask = PT.is_julia_code.(raw_blocks) .&&
-                          (PT.extract_function_name.(raw_blocks) .== definition["name"])
-        definition_idx = findfirst(definition_mask)
-
-        if !isnothing(definition_idx)
-            # redefine the code block to be just the function definition
-            cb = @timeout execution_timeout begin
-                AICode(raw_blocks[definition_idx];
-                    prefix = imports_required,
-                    skip_unsafe = true,
-                    capture_stdout)
-            end PT.AICode(raw_blocks[definition_idx];
-                auto_eval = false,
-                prefix = imports_required,
-                skip_unsafe = true,
-                skip_invalid = true,
-                capture_stdout)
-        end
-    end
+        execution_timeout,
+        capture_stdout,
+        remove_tests)
 
     ## Run all examples
     example_count = if isvalid(cb)
-        run_code_blocks(cb, definition["examples"]; verbose,
+        run_code_blocks_additive(cb, definition["examples"]; verbose,
             prefix = imports_required, capture_stdout, execution_timeout,
             setup_code = get(definition, "examples_setup", ""),
             teardown_code = get(definition, "examples_teardown", ""))
@@ -181,7 +223,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
 
     ## Run all unit tests
     test_count = if isvalid(cb)
-        run_code_blocks(cb,
+        run_code_blocks_additive(cb,
             definition["unit_tests"];
             verbose,
             prefix = imports_required,

@@ -31,12 +31,8 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
     "deepseek-coder:33b-instruct-q4_K_M", "solar:10.7b-instruct-v1-q4_K_M",
     "mistral:7b-instruct-q4_K_M", "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K",
     "mistral:7b-instruct-v0.2-q6_K", "dolphin-phi:2.7b-v2.6-q6_K",
-    "nous-hermes2:34b-yi-q4_K_M"]
-
-## Rerun: 3x 2 models all cases, then 1x all before Q&A for nous-hermes
-## Then 3x for paid APIs
-model_options = ["dolphin-phi:2.7b-v2.6-q6_K",
-    "nous-hermes2:34b-yi-q4_K_M"]
+    "nous-hermes2:34b-yi-q4_K_M", "mistral:7b-instruct-v0.2-q4_0",
+    "mistral:7b-instruct-v0.2-q4_K_M"]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
@@ -63,7 +59,6 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-models = ["mistral:7b-instruct-v0.2-q4_0", "mistral:7b-instruct-v0.2-q4_K_M"]
 evals = run_benchmark(; fn_definitions, models,# = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
