@@ -78,3 +78,21 @@ evals = run_benchmark(; fn_definitions,
     save_dir = "yi-quantization-effects",
     num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 1000),
     api_kwargs = (; options = (; num_gpu = 99)));
+
+# ## Quick Eval
+## Load data
+df = load_evals("yi_quant_benchmark"; max_history = 0)
+
+# Overall summary by test case
+@chain df begin
+    # @rsubset :model == "mistral-medium"
+    @by [:model, :name, :prompt_label] begin
+        :score = mean(:score)
+        :count_zeros = count(==(0), :score)
+        :count = $nrow
+    end
+    @orderby :count
+    # transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
+    # rename("model" => "Model", "count_zeros" => "# of Zero Scores", "score" => "Avg. Score",
+    #     "count" => "Count", "name" => "Name")
+end
