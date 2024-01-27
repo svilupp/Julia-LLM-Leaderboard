@@ -64,7 +64,7 @@ schema_lookup = Dict{String, Any}([
 ] .=> Ref(PT.OllamaSchema()))
 
 # ## Run Benchmark - High-level Interface
-fn_definitions = find_definitions("code_generation/")
+fn_definitions = find_definitions("code_generation/utility_functions")
 
 # or if you want only one test case:
 # fn_definitions = [
@@ -77,7 +77,7 @@ fn_definitions = find_definitions("code_generation/")
 # JuliaExpertCoTTask - clean column 5x
 # num_gpu = floor(Int, 21 / 65 * 60)
 
-evals = run_benchmark(; fn_definitions,
+evals = run_benchmark(; fn_definitions = fn_definitions[5:end],
     models = model_options,
     prompt_labels = prompt_options,
     experiment = "yi-quantization-effects-default",
@@ -88,6 +88,8 @@ evals = run_benchmark(; fn_definitions,
     api_kwargs = (; options = (; num_gpu = 99)));
 
 # ## Quick Eval
+using DataFramesMeta
+using Statistics
 df_all = allcombinations(DataFrame,
     "model" => model_options,
     "prompt_label" => prompt_options,
@@ -100,13 +102,13 @@ df = load_evals("yi-quantization-effects"; max_history = 0)
 # Overall summary by test case
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
-    @by [(:model):prompt_label, :name] begin
+    @by [:name] begin #:prompt_label, :name] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
         :count = $nrow
     end
-    leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
-    @rtransform :count = coalesce(:count, 0)
-    @rsubset :count < 5
+    # leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
+    # @rtransform :count = coalesce(:count, 0)
+    # @rsubset :count < 10
     @orderby :count
 end
