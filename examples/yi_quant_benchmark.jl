@@ -11,18 +11,6 @@ const PT = PromptingTools
 device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # Select models to run
-#
-# Paid Models:
-model_options = [
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-1106",
-    "gpt-4-1106-preview",
-    "mistral-tiny",
-    "mistral-small",
-    "mistral-medium",
-]
-
-# Or OSS models:
 model_options = [
     "yi:34b-chat-fp16",
     "yi:34b-chat-q8_0",
@@ -48,20 +36,7 @@ prompt_options = [
 ]
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
-schema_lookup = Dict{String, Any}([
-    "mistral:7b-instruct-v0.2-q4_K_M",
-    "yi:34b-chat-fp16",
-    "yi:34b-chat-q2_K",
-    "yi:34b-chat-q3_K_L",
-    "yi:34b-chat-q3_K_S",
-    "yi:34b-chat-q4_0",
-    "yi:34b-chat-q4_K_M",
-    "yi:34b-chat-q5_0",
-    "yi:34b-chat-q5_K_M",
-    "yi:34b-chat-q5_K_S",
-    "yi:34b-chat-q6_K",
-    "yi:34b-chat-q8_0",
-] .=> Ref(PT.OllamaSchema()))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation")
