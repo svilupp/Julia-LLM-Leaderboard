@@ -4,11 +4,7 @@
         prefix::String = "",
         execution_timeout::Int = 60,
         capture_stdout::Bool = true,
-        remove_tests::Bool = true)
-        prefix::String = "",
-        execution_timeout::Int = 60,
-        capture_stdout::Bool = true,
-        remove_tests::Bool = true)
+        expression_transform::Symbol = :remove_all_tests)
 
 Runs the code block in the message `msg` and returns the result as an `AICode` object.
 
@@ -17,31 +13,24 @@ Logic:
 - Always execute in a "safe mode" (inside a custom module, `safe_eval=true`)
 - Skip any package imports or environment changes (`skip_unsafe=true`)
 - Skip invalid/broken lines (`skip_invalid=true`)
-- Remove any unit tests (`remove_tests=true`), because model might have added some without being asked for it explicitly
+- Remove any unit tests (`expression_transform=:remove_all_tests`), because model might have added some without being asked for it explicitly
 - First, evaluate the code block as a whole, and if it fails, try to extract the function definition and evaluate it separately (fallback)
 """
 function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
         prefix::String = "",
         execution_timeout::Int = 60,
         capture_stdout::Bool = true,
-        remove_tests::Bool = true)
+        expression_transform::Symbol = :remove_all_tests)
     # For ease of evaluation in "safe" mode (eg, inside a custom module), 
     # but we skip any code lines with Pkg manipulation and importing unknown packages
     # we skip invalid code blocks (in case some later example is poor)
     # we do capture stdout, disabled to be able to process in parallel
     # execution is set to timeout in 60s
-    cb = PT.@timeout execution_timeout begin
-        PT.AICode(msg;
-            prefix,
-            skip_unsafe = true,
-            skip_invalid = true,
-            capture_stdout, remove_tests)
-    end PT.AICode(msg;
-        auto_eval = false,
+    cb = PT.AICode(msg;
         prefix,
         skip_unsafe = true,
         skip_invalid = true,
-        capture_stdout)
+        capture_stdout, expression_transform, execution_timeout)
 
     ## Fallback option
     if !isvalid(cb)
@@ -57,17 +46,10 @@ function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
             join(raw_blocks, "\n\n")
         end
         # redefine the code block to be just the function definition
-        cb = PT.@timeout execution_timeout begin
-            AICode(code;
-                prefix,
-                skip_unsafe = true,
-                capture_stdout, remove_tests)
-        end PT.AICode(code;
-            auto_eval = false,
+        cb = AICode(code;
             prefix,
             skip_unsafe = true,
-            skip_invalid = true,
-            capture_stdout)
+            capture_stdout, expression_transform, execution_timeout)
     end
 
     return cb
@@ -75,7 +57,7 @@ end
 
 """
     run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
-        verbose::Bool = false, prefix::AbstractString = "",
+        verbose::Bool = false,
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
         capture_stdout::Bool = true, execution_timeout::Int = 60)
 
@@ -86,7 +68,6 @@ Each successful run (no error thrown) is counted as a successful example.
     
 # Keyword Arguments
 - `verbose=true` will provide more information about the test failures.
-- `prefix` is a string that will be prepended to each code block before it's evaluated. Useful for importing packages.
 - `setup_code` is a string that will be prepended to each code block before it's evaluated. Useful for setting up the environment/test objects.
 - `teardown_code` is a string that will be appended to each code block before it's evaluated. Useful for cleaning up the environment/test objects.
 - `capture_stdout` is a boolean whether to capture the stdout of the code execution. Set to `false` if you're evaluating with multithreading (stdout capture is not thread-safe).
@@ -107,23 +88,24 @@ run_code_blocks(cb, [code])
 ```
 """
 function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
-        verbose::Bool = false, prefix::AbstractString = "",
+        verbose::Bool = false,
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
         capture_stdout::Bool = true, execution_timeout::Int = 60)
     ##
     count_successful = 0
     cb_copy = copy(cb)
-    eval_module = getfield(Main, PT.extract_module_name(cb.expression))
+    eval_module = cb.output isa Module ? cb.output :
+                  getfield(Main, extract_module_name(cb.expression))
     for (i, code) in enumerate(code_blocks)
         # Prepare the code to evaluate and evaluate it in the same module as the original code
         code_joined = string(setup_code, "\n\n", code, "\n\n", teardown_code)
         code_expr = Meta.parseall(code_joined)
         # We run with timeout to avoid infinite loops
-        PT.@timeout execution_timeout begin
+        out = PT.@timeout execution_timeout begin
             eval!(cb_copy, code_expr; capture_stdout, eval_module)
         end nothing
 
-        success = isvalid(cb_copy)
+        success = isvalid(cb_copy) # !isnothing(out) && 
         if verbose && !success
             @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)"
         end
@@ -209,12 +191,12 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         prefix = imports_required,
         execution_timeout,
         capture_stdout,
-        remove_tests)
+        expression_transform = remove_tests ? :remove_all_tests : :nothing)
 
     ## Run all examples
     example_count = if isvalid(cb)
         run_code_blocks_additive(cb, definition["examples"]; verbose,
-            prefix = imports_required, capture_stdout, execution_timeout,
+            capture_stdout, execution_timeout,
             setup_code = get(definition, "examples_setup", ""),
             teardown_code = get(definition, "examples_teardown", ""))
     else
@@ -226,7 +208,6 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         run_code_blocks_additive(cb,
             definition["unit_tests"];
             verbose,
-            prefix = imports_required,
             capture_stdout,
             execution_timeout, setup_code = get(definition, "unit_tests_setup", ""),
             teardown_code = get(definition, "unit_tests_teardown", ""))
