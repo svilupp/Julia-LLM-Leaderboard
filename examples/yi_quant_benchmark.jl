@@ -107,3 +107,29 @@ df_missing = @chain df begin
     @rsubset :count_missing > 0
     @orderby -:count_missing
 end
+
+## fill missing benchmarks
+for row in eachrow(df_missing)
+    @info "Running $(row.model) / $(row.prompt_label) / $(row.name) for $(row.count_missing) samples"
+    evals = run_benchmark(; fn_definitions = [row.fn_definitions],
+        models = [row.model],
+        prompt_labels = [row.prompt_label],
+        experiment = "yi-quantization-effects-default",
+        auto_save = true, verbose = true,
+        device,
+        save_dir = "yi-quantization-effects",
+        num_samples = row.count_missing, schema_lookup,
+        http_kwargs = (; readtimeout = 1000),
+        api_kwargs = (; options = (; num_gpu = 99)))
+end
+
+## Extras - try to squeeze out more samples if there is time
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "yi-quantization-effects-default",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "yi-quantization-effects",
+    num_samples = 2, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99)));
