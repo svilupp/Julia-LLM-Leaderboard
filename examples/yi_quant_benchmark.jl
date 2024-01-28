@@ -30,11 +30,11 @@ model_options = [
     "yi:34b-chat-q5_K_M",
     "yi:34b-chat-q5_K_S",
     "yi:34b-chat-q5_0",
-    # "yi:34b-chat-q4_K_M",
-    # "yi:34b-chat-q4_0",
-    # "yi:34b-chat-q3_K_L",
-    # "yi:34b-chat-q3_K_S",
-    # "yi:34b-chat-q2_K",
+    "yi:34b-chat-q4_K_M",
+    "yi:34b-chat-q4_0",
+    "yi:34b-chat-q3_K_L",
+    "yi:34b-chat-q3_K_S",
+    "yi:34b-chat-q2_K",
 ]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
@@ -95,15 +95,15 @@ df_all = allcombinations(DataFrame,
 df = load_evals("yi-quantization-effects"; max_history = 0)
 
 # Overall summary by test case
-@chain df begin
+df_missing = @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
-    @by [:name] begin #:prompt_label, :name] begin
+    @by [:model, :prompt_label, :name] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
         :count = $nrow
     end
-    # leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
-    # @rtransform :count = coalesce(:count, 0)
-    # @rsubset :count < 10
-    @orderby :count
+    leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
+    @rtransform :count_missing = 10 - coalesce(:count, 0)
+    @rsubset :count_missing > 0
+    @orderby -:count_missing
 end
