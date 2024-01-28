@@ -47,15 +47,15 @@ fn_definitions = find_definitions("code_generation")
 # ]
 # num_gpu = floor(Int, 21 / 65 * 60)
 
-evals = run_benchmark(; fn_definitions,
-    models = model_options,
-    prompt_labels = prompt_options,
-    experiment = "yi-quantization-effects-default",
-    auto_save = true, verbose = true,
-    device,
-    save_dir = "yi-quantization-effects",
-    num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99)));
+# evals = run_benchmark(; fn_definitions,
+#     models = model_options,
+#     prompt_labels = prompt_options,
+#     experiment = "yi-quantization-effects-default",
+#     auto_save = true, verbose = true,
+#     device,
+#     save_dir = "yi-quantization-effects",
+#     num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 1000),
+#     api_kwargs = (; options = (; num_gpu = 99)));
 
 # ## Quick Eval
 using DataFramesMeta
