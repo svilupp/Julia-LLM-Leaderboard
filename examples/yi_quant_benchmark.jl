@@ -121,9 +121,9 @@ evals = run_benchmark(; fn_definitions,
 
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
-    @by [:model, :prompt_label] begin
+    @by [:model] begin
         :score = mean(:score)
-        :count_zeros = count(==(0), :score)
+        :count_zero = count(==(0), :score)
         :count_full = count(==(100), :score)
         :count = $nrow
     end
