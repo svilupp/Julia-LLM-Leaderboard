@@ -24,6 +24,23 @@ model_options = [
     # "yi:34b-chat-q3_K_S",
     # "yi:34b-chat-q2_K",
 ]
+model_options = [
+    "magicoder:7b-s-cl-fp16",
+    "magicoder:7b-s-cl-q8_0",
+    "magicoder:7b-s-cl-q6_K",
+    "magicoder:7b-s-cl-q5_0",
+    "magicoder:7b-s-cl-q5_1",
+    "magicoder:7b-s-cl-q5_K_M",
+    "magicoder:7b-s-cl-q5_K_S",
+    "magicoder:7b-s-cl-q4_0",
+    "magicoder:7b-s-cl-q4_1",
+    "magicoder:7b-s-cl-q4_K_M",
+    "magicoder:7b-s-cl-q4_K_S"
+    "magicoder:7b-s-cl-q3_K_L",
+    "magicoder:7b-s-cl-q3_K_M",
+    "magicoder:7b-s-cl-q3_K_S",
+    "magicoder:7b-s-cl-q2_K",
+]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
@@ -50,22 +67,32 @@ fn_definitions = find_definitions("code_generation")
 evals = run_benchmark(; fn_definitions,
     models = model_options,
     prompt_labels = prompt_options,
-    experiment = "yi-quantization-effects-temp0.3",
+    experiment = "magicoder-quantization-effects-default",
     auto_save = true, verbose = true,
     device,
-    save_dir = "yi-quantization-effects",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+    save_dir = "magicoder-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
+    api_kwargs = (; options = (; num_gpu = 99)));
 
-evals = run_benchmark(; fn_definitions,
-    models = model_options,
-    prompt_labels = prompt_options,
-    experiment = "yi-quantization-effects-temp0.5",
-    auto_save = true, verbose = true,
-    device,
-    save_dir = "yi-quantization-effects",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.5)));
+# evals = run_benchmark(; fn_definitions,
+#     models = model_options,
+#     prompt_labels = prompt_options,
+#     experiment = "magicoder-quantization-effects-temp0.3",
+#     auto_save = true, verbose = true,
+#     device,
+#     save_dir = "magicoder-quantization-effects",
+#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+
+# evals = run_benchmark(; fn_definitions,
+#     models = model_options,
+#     prompt_labels = prompt_options,
+#     experiment = "magicoder-quantization-effects-temp0.5",
+#     auto_save = true, verbose = true,
+#     device,
+#     save_dir = "magicoder-quantization-effects",
+#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.5)));
 
 # ## Quick Eval
 using DataFramesMeta
