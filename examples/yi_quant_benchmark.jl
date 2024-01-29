@@ -108,3 +108,14 @@ evals = run_benchmark(; fn_definitions,
     save_dir = "yi-quantization-effects",
     num_samples = 2, schema_lookup, http_kwargs = (; readtimeout = 1000),
     api_kwargs = (; options = (; num_gpu = 99)));
+
+@chain df begin
+    # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
+    @by [:model] begin
+        :score = mean(:score)
+        :count_zeros = count(==(0), :score)
+        :count_full = count(==(100), :score)
+        :count = $nrow
+    end
+    @orderby -:score
+end
