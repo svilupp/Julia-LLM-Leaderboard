@@ -105,7 +105,7 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
             eval!(cb_copy, code_expr; capture_stdout, eval_module)
         end nothing
 
-        success = isvalid(cb_copy) # !isnothing(out) && 
+        success = !isnothing(out) && isvalid(cb_copy)
         if verbose && !success
             @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)"
         end
