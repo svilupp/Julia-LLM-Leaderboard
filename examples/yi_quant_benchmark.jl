@@ -13,16 +13,16 @@ device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", b
 # Select models to run
 model_options = [
     "yi:34b-chat-fp16",
-    "yi:34b-chat-q8_0",
-    "yi:34b-chat-q6_K",
-    "yi:34b-chat-q5_K_M",
-    "yi:34b-chat-q5_K_S",
-    "yi:34b-chat-q5_0",
+    # "yi:34b-chat-q8_0",
+    # "yi:34b-chat-q6_K",
+    # "yi:34b-chat-q5_K_M",
+    # "yi:34b-chat-q5_K_S",
+    # "yi:34b-chat-q5_0",
     "yi:34b-chat-q4_K_M",
-    "yi:34b-chat-q4_0",
-    "yi:34b-chat-q3_K_L",
-    "yi:34b-chat-q3_K_S",
-    "yi:34b-chat-q2_K",
+    # "yi:34b-chat-q4_0",
+    # "yi:34b-chat-q3_K_L",
+    # "yi:34b-chat-q3_K_S",
+    # "yi:34b-chat-q2_K",
 ]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
@@ -47,15 +47,25 @@ fn_definitions = find_definitions("code_generation")
 # ]
 # num_gpu = floor(Int, 21 / 65 * 60)
 
-# evals = run_benchmark(; fn_definitions,
-#     models = model_options,
-#     prompt_labels = prompt_options,
-#     experiment = "yi-quantization-effects-default",
-#     auto_save = true, verbose = true,
-#     device,
-#     save_dir = "yi-quantization-effects",
-#     num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 1000),
-#     api_kwargs = (; options = (; num_gpu = 99)));
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "yi-quantization-effects-temp0.3",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "yi-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "yi-quantization-effects-temp0.5",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "yi-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.5)));
 
 # ## Quick Eval
 using DataFramesMeta
