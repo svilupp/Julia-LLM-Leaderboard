@@ -111,11 +111,23 @@ evals = run_benchmark(; fn_definitions,
 
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
-    @by [:model] begin
+    @by [:model, :prompt_label] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
         :count_full = count(==(100), :score)
         :count = $nrow
     end
     @orderby -:score
+end
+output = @chain df begin
+    @by [:model, :prompt_label] begin
+        :cost = mean(:cost)
+        :elapsed = mean(:elapsed_seconds)
+        :score = mean(:score)
+    end
+    @aside average_ = @by _ :model :AverageScore=mean(:score) |> x -> round(x, digits = 1)
+    unstack(:model, :prompt_label, :score; fill = 0.0)
+    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
+    leftjoin(average_, on = :model)
+    @orderby -:AverageScore
 end
