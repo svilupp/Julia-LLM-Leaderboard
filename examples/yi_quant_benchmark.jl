@@ -9,6 +9,7 @@ const PT = PromptingTools
 
 # ## Run for a single test case
 device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
+# export CUDA_VISIBLE_DEVICES=0
 
 # Select models to run
 model_options = [
@@ -135,16 +136,9 @@ for row in eachrow(df_missing)
         api_kwargs = (; options = (; num_gpu = 99)))
 end
 
-## Extras - try to squeeze out more samples if there is time
-evals = run_benchmark(; fn_definitions,
-    models = model_options,
-    prompt_labels = prompt_options,
-    experiment = "yi-quantization-effects-default",
-    auto_save = true, verbose = true,
-    device,
-    save_dir = "yi-quantization-effects",
-    num_samples = 2, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99)));
+# # Extras - try to squeeze out more samples if there is time
+
+# # Analysis
 
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
