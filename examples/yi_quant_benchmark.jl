@@ -62,10 +62,10 @@ fn_definitions = find_definitions("code_generation")
 # or if you want only one test case:
 fn_definitions = [
     # joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
-    "code_generation/utility_functions/extract_julia_code/definition.toml",
-    "code_generation/utility_functions/ispersonal/definition.toml",
-    "code_generation/utility_functions/keep_only_names/definition.toml",
-    "code_generation/utility_functions/pig_latinify/definition.toml",
+    # "code_generation/utility_functions/extract_julia_code/definition.toml",
+    # "code_generation/utility_functions/ispersonal/definition.toml",
+    # "code_generation/utility_functions/keep_only_names/definition.toml",
+    # "code_generation/utility_functions/pig_latinify/definition.toml",
     "code_generation/utility_functions/q_and_a_extractor/definition.toml",
     "code_generation/utility_functions/timezone_bumper/definition.toml",
     "code_generation/utility_functions/wrap_string/definition.toml"]
@@ -127,6 +127,7 @@ df_missing = @chain df begin
     @rsubset :count_missing > 0
     @orderby -:count_missing
 end
+@by df_missing :name :count_missing=sum(:count_missing)
 
 ## fill missing benchmarks
 for row in eachrow(df_missing)
