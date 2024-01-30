@@ -60,9 +60,15 @@ schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
 fn_definitions = find_definitions("code_generation")
 
 # or if you want only one test case:
-# fn_definitions = [
-#     joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
-# ]
+fn_definitions = [
+    # joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
+    "code_generation/utility_functions/extract_julia_code/definition.toml",
+    "code_generation/utility_functions/ispersonal/definition.toml",
+    "code_generation/utility_functions/keep_only_names/definition.toml",
+    "code_generation/utility_functions/pig_latinify/definition.toml",
+    "code_generation/utility_functions/q_and_a_extractor/definition.toml",
+    "code_generation/utility_functions/timezone_bumper/definition.toml",
+    "code_generation/utility_functions/wrap_string/definition.toml"]
 # num_gpu = floor(Int, 21 / 65 * 60)
 
 evals = run_benchmark(; fn_definitions,
@@ -75,15 +81,16 @@ evals = run_benchmark(; fn_definitions,
     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
     api_kwargs = (; options = (; num_gpu = 99)));
 
-evals = run_benchmark(; fn_definitions,
-    models = model_options,
-    prompt_labels = prompt_options,
-    experiment = "magicoder-quantization-effects-temp0.3",
-    auto_save = true, verbose = true,
-    device,
-    save_dir = "magicoder-quantization-effects",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+# TODO: fill missing items
+# evals = run_benchmark(; fn_definitions,
+#     models = model_options,
+#     prompt_labels = prompt_options,
+#     experiment = "magicoder-quantization-effects-temp0.3",
+#     auto_save = true, verbose = true,
+#     device,
+#     save_dir = "magicoder-quantization-effects",
+#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
 
 # evals = run_benchmark(; fn_definitions,
 #     models = model_options,
@@ -105,7 +112,7 @@ df_all = allcombinations(DataFrame,
 @rtransform!(df_all, :name=split(:fn_definitions, "/")[end - 1])
 
 ## Load data
-df = load_evals("yi-quantization-effects"; max_history = 0)
+df = load_evals("magicoder-quantization-effects"; max_history = 0)
 
 # Overall summary by test case
 df_missing = @chain df begin
@@ -127,10 +134,10 @@ for row in eachrow(df_missing)
     evals = run_benchmark(; fn_definitions = [row.fn_definitions],
         models = [row.model],
         prompt_labels = [row.prompt_label],
-        experiment = "yi-quantization-effects-default",
+        experiment = "magicoder-quantization-effects-default",
         auto_save = true, verbose = true,
         device,
-        save_dir = "yi-quantization-effects",
+        save_dir = "magicoder-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
         http_kwargs = (; readtimeout = 1000),
         api_kwargs = (; options = (; num_gpu = 99)))
