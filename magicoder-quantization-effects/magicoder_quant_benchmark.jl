@@ -31,10 +31,10 @@ for row in eachrow(df_missing)
     evals = run_benchmark(; fn_definitions = [row.fn_definitions],
         models = [row.model],
         prompt_labels = [row.prompt_label],
-        experiment = "yi-quantization-effects-default",
+        experiment = "magicoder-quantization-effects-default",
         auto_save = true, verbose = true,
         device,
-        save_dir = "yi-quantization-effects",
+        save_dir = "magicoder-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
         http_kwargs = (; readtimeout = 1000),
         api_kwargs = (; options = (; num_gpu = 99)))
@@ -46,6 +46,7 @@ end
 
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"
+    @rsubset :experiment == "magicoder-quantization-effects-default"
     @by [:model] begin
         :score = mean(:score)
         :count_zero = count(==(0), :score)
@@ -68,7 +69,7 @@ output = @chain df begin
     @orderby -:AverageScore
 end
 output = @chain df begin
-    @rsubset :experiment == "yi-quantization-effects-default"
+    @rsubset :experiment == "magicoder-quantization-effects-default"
     @by [:name, :model] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)

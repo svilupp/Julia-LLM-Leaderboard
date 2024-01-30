@@ -144,8 +144,6 @@ for row in eachrow(df_missing)
         api_kwargs = (; options = (; num_gpu = 99)))
 end
 
-# # Extras - try to squeeze out more samples if there is time
-
 # # Analysis
 
 @chain df begin
