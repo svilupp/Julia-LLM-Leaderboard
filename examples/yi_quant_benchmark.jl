@@ -8,7 +8,7 @@ using PromptingTools
 const PT = PromptingTools
 
 # ## Run for a single test case
-device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
+device = "NVIDIA-RTX-4090" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 # export CUDA_VISIBLE_DEVICES=0
 
 # Select models to run
@@ -36,7 +36,7 @@ model_options = [
     "magicoder:7b-s-cl-q4_0",
     "magicoder:7b-s-cl-q4_1",
     "magicoder:7b-s-cl-q4_K_M",
-    "magicoder:7b-s-cl-q4_K_S"
+    "magicoder:7b-s-cl-q4_K_S",
     "magicoder:7b-s-cl-q3_K_L",
     "magicoder:7b-s-cl-q3_K_M",
     "magicoder:7b-s-cl-q3_K_S",
@@ -75,15 +75,15 @@ evals = run_benchmark(; fn_definitions,
     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
     api_kwargs = (; options = (; num_gpu = 99)));
 
-# evals = run_benchmark(; fn_definitions,
-#     models = model_options,
-#     prompt_labels = prompt_options,
-#     experiment = "magicoder-quantization-effects-temp0.3",
-#     auto_save = true, verbose = true,
-#     device,
-#     save_dir = "magicoder-quantization-effects",
-#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "magicoder-quantization-effects-temp0.3",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "magicoder-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
 
 # evals = run_benchmark(; fn_definitions,
 #     models = model_options,
@@ -151,6 +151,7 @@ end
     @orderby -:score
 end
 output = @chain df begin
+    @rsubset :experiment == "yi-quantization-effects-default"
     @by [:model, :prompt_label] begin
         :cost = mean(:cost)
         :elapsed = mean(:elapsed_seconds)
@@ -160,5 +161,18 @@ output = @chain df begin
     unstack(:model, :prompt_label, :score; fill = 0.0)
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     leftjoin(average_, on = :model)
+    @orderby -:AverageScore
+end
+output = @chain df begin
+    @rsubset :experiment == "yi-quantization-effects-default"
+    @by [:name, :model] begin
+        :cost = mean(:cost)
+        :elapsed = mean(:elapsed_seconds)
+        :score = mean(:score)
+    end
+    @aside average_ = @by _ :name :AverageScore=mean(:score) |> x -> round(x, digits = 1)
+    unstack(:name, :model, :score; fill = 0.0)
+    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
+    leftjoin(average_, on = :name)
     @orderby -:AverageScore
 end
