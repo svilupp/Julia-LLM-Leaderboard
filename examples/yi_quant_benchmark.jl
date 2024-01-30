@@ -27,20 +27,20 @@ model_options = [
 ]
 model_options = [
     "magicoder:7b-s-cl-fp16",
-    "magicoder:7b-s-cl-q8_0",
+    # "magicoder:7b-s-cl-q8_0",
     "magicoder:7b-s-cl-q6_K",
-    "magicoder:7b-s-cl-q5_0",
-    "magicoder:7b-s-cl-q5_1",
-    "magicoder:7b-s-cl-q5_K_M",
+    # "magicoder:7b-s-cl-q5_0",
+    # "magicoder:7b-s-cl-q5_1",
+    # "magicoder:7b-s-cl-q5_K_M",
     "magicoder:7b-s-cl-q5_K_S",
     "magicoder:7b-s-cl-q4_0",
-    "magicoder:7b-s-cl-q4_1",
+    # "magicoder:7b-s-cl-q4_1",
     "magicoder:7b-s-cl-q4_K_M",
-    "magicoder:7b-s-cl-q4_K_S",
-    "magicoder:7b-s-cl-q3_K_L",
-    "magicoder:7b-s-cl-q3_K_M",
-    "magicoder:7b-s-cl-q3_K_S",
-    "magicoder:7b-s-cl-q2_K",
+    # "magicoder:7b-s-cl-q4_K_S",
+    # "magicoder:7b-s-cl-q3_K_L",
+    # "magicoder:7b-s-cl-q3_K_M",
+    # "magicoder:7b-s-cl-q3_K_S",
+    # "magicoder:7b-s-cl-q2_K",
 ]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
@@ -60,15 +60,9 @@ schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
 fn_definitions = find_definitions("code_generation")
 
 # or if you want only one test case:
-fn_definitions = [
-    # joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
-    # "code_generation/utility_functions/extract_julia_code/definition.toml",
-    # "code_generation/utility_functions/ispersonal/definition.toml",
-    # "code_generation/utility_functions/keep_only_names/definition.toml",
-    # "code_generation/utility_functions/pig_latinify/definition.toml",
-    "code_generation/utility_functions/q_and_a_extractor/definition.toml",
-    "code_generation/utility_functions/timezone_bumper/definition.toml",
-    "code_generation/utility_functions/wrap_string/definition.toml"]
+# fn_definitions = [
+# joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
+# ]
 # num_gpu = floor(Int, 21 / 65 * 60)
 
 evals = run_benchmark(; fn_definitions,
@@ -81,26 +75,25 @@ evals = run_benchmark(; fn_definitions,
     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
     api_kwargs = (; options = (; num_gpu = 99)));
 
-# TODO: fill missing items
-# evals = run_benchmark(; fn_definitions,
-#     models = model_options,
-#     prompt_labels = prompt_options,
-#     experiment = "magicoder-quantization-effects-temp0.3",
-#     auto_save = true, verbose = true,
-#     device,
-#     save_dir = "magicoder-quantization-effects",
-#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "magicoder-quantization-effects-temp0.3",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "magicoder-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
 
-# evals = run_benchmark(; fn_definitions,
-#     models = model_options,
-#     prompt_labels = prompt_options,
-#     experiment = "magicoder-quantization-effects-temp0.5",
-#     auto_save = true, verbose = true,
-#     device,
-#     save_dir = "magicoder-quantization-effects",
-#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.5)));
+evals = run_benchmark(; fn_definitions,
+    models = model_options,
+    prompt_labels = prompt_options,
+    experiment = "magicoder-quantization-effects-temp0.5",
+    auto_save = true, verbose = true,
+    device,
+    save_dir = "magicoder-quantization-effects",
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.5)));
 
 # ## Quick Eval
 using DataFramesMeta
