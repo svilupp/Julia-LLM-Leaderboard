@@ -64,7 +64,7 @@ fn_definitions = [
     # joinpath("code_generation", "utility_functions", "clean_column", "definition.toml"),
     # "code_generation/utility_functions/ispersonal/definition.toml",
     # "code_generation/utility_functions/keep_only_names/definition.toml",
-    "code_generation/utility_functions/pig_latinify/definition.toml",
+    # "code_generation/utility_functions/pig_latinify/definition.toml",
     "code_generation/utility_functions/q_and_a_extractor/definition.toml",
     "code_generation/utility_functions/timezone_bumper/definition.toml",
     "code_generation/utility_functions/wrap_string/definition.toml",
