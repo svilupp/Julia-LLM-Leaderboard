@@ -81,15 +81,15 @@ fn_definitions = [
 #     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
 #     api_kwargs = (; options = (; num_gpu = 99)));
 
-evals = run_benchmark(; fn_definitions,
-    models = model_options,
-    prompt_labels = prompt_options,
-    experiment = "magicoder-quantization-effects-temp0.3",
-    auto_save = true, verbose = true,
-    device,
-    save_dir = "magicoder-quantization-effects",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
-    api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
+# evals = run_benchmark(; fn_definitions,
+#     models = model_options,
+#     prompt_labels = prompt_options,
+#     experiment = "magicoder-quantization-effects-temp0.3",
+#     auto_save = true, verbose = true,
+#     device,
+#     save_dir = "magicoder-quantization-effects",
+#     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
+#     api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)));
 
 evals = run_benchmark(; fn_definitions,
     models = model_options,
