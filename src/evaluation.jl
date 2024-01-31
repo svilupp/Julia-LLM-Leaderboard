@@ -37,6 +37,10 @@ function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
         ## We want to measure function defintion separately from examples and test cases, 
         # so we give it one more chance and grab only the code definition
         raw_blocks = PT.extract_code_blocks(msg.content)
+        if isempty(raw_blocks)
+            ## Fallback option for generic code fence, we must check if the content is parseable
+            raw_blocks = PT.extract_code_blocks_fallback(msg.content)
+        end
         definition_mask = PT.is_julia_code.(raw_blocks) .&&
                           (PT.extract_function_name.(raw_blocks) .== function_name)
         definition_idx = findfirst(definition_mask)
@@ -99,7 +103,8 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
     for (i, code) in enumerate(code_blocks)
         # Prepare the code to evaluate and evaluate it in the same module as the original code
         code_joined = string(setup_code, "\n\n", code, "\n\n", teardown_code)
-        code_expr = Meta.parseall(code_joined)
+        code_include = "include_string(identity, $eval_module,\"\"\"$(escape_string(code_joined,'$'))\"\"\", \"__code_string_eval_additive\")\n"
+        code_expr = Meta.parseall(code_include)
         # We run with timeout to avoid infinite loops
         out = PT.@timeout execution_timeout begin
             eval!(cb_copy, code_expr; capture_stdout, eval_module)
@@ -107,7 +112,28 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
 
         success = !isnothing(out) && isvalid(cb_copy)
         if verbose && !success
-            @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)"
+            ## Pick the right lines (sometimes '1' is superfluous)
+            ## error_lines = if count(!isone, cb_copy.error_lines) > 0
+            ##     filter(!isone, cb_copy.error_lines) |> unique
+            ## else
+            ##     unique(cb_copy.error_lines)
+            ## end
+            ## Pick the right code source based on the quoted error source
+            failing_lines = []
+            sources = split(code_joined, '\n')
+            lines = PT.extract_stacktrace_lines("__code_string_eval_additive",
+                cb_copy.stdout) |>
+                    unique
+            !isempty(lines) && (append!(failing_lines,
+                sources[[err for err in lines
+                             if err <= length(sources)]]))
+            sources = split(cb.code, '\n')
+            lines = PT.extract_stacktrace_lines("__code_string_eval", cb_copy.stdout) |>
+                    unique
+            !isempty(lines) && (append!(failing_lines,
+                sources[[err for err in lines
+                             if err <= length(sources)]]))
+            @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
         end
         count_successful += success
     end

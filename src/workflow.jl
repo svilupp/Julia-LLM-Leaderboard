@@ -31,7 +31,7 @@ However, you can take this code and apply `Threads.@spawn` to it. The evaluation
 
 - `auto_save`: a boolean whether to automatically save the evaluation data. If not specified, it will save the data. Otherwise, it only returns the vector of `evals`
 - `verbose`: a boolean or integer to print progress. If not specified, it will print highlevel progress (verbose = 1 or true), for more details, set `verbose=2 or =3`.
-- `execution_timeout`: an integer to specify the timeout in seconds for the execution of the generated code. If not specified, it will use 60s.
+- `execution_timeout`: an integer to specify the timeout in seconds for the execution of the generated code. If not specified, it will use 10s (per run/test item).
 
 # Return
 - Vector of `evals`, ie, a dictionary of evaluation data for each model/prompt combination and each sample.
@@ -76,7 +76,7 @@ function run_benchmark(;
         codefixing_num_rounds::Int = 0,
         codefixing_prompt_labels::Vector{<:AbstractString} = ["CodeFixerTiny"],
         schema_lookup::AbstractDict{String, <:Any} = Dict{String, Any}(),
-        execution_timeout::Int = 60)
+        execution_timeout::Int = 10)
     @assert num_samples>0 "num_samples must be positive"
     unknown_definitions = filter(!isfile, fn_definitions)
     @assert isempty(unknown_definitions) "Unknown definition files: $(join(unknown_definitions, ", ")). Please fix the paths."

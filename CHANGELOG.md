@@ -2,6 +2,8 @@
 ## [Unreleased]
 
 ### Added
+- Improved code loading and debugging via Julia's code loading mechanism (`include_string`), which allows to better locate the lines that caused the errors (run `evaluate(....; verbose=true)` to see which lines caused the errors or `return_debug=true` to return the debug information as a secondary output).
+- Improved error capture and scoring (eg, imports of Base modules are now correctly recognized as "safe")
 
 ### Fixed
 
