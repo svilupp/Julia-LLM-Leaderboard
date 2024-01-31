@@ -135,13 +135,13 @@ for row in eachrow(df_missing)
     evals = run_benchmark(; fn_definitions = [row.fn_definitions],
         models = [row.model],
         prompt_labels = [row.prompt_label],
-        experiment = "magicoder-quantization-effects-default",
+        experiment = "magicoder-quantization-effects-temp0.3",
         auto_save = true, verbose = true,
         device,
         save_dir = "magicoder-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
         http_kwargs = (; readtimeout = 1000),
-        api_kwargs = (; options = (; num_gpu = 99)))
+        api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)))
 end
 
 # # Analysis
