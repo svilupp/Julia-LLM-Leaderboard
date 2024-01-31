@@ -65,7 +65,7 @@ fn_definitions = [
     # "code_generation/utility_functions/ispersonal/definition.toml",
     # "code_generation/utility_functions/keep_only_names/definition.toml",
     # "code_generation/utility_functions/pig_latinify/definition.toml",
-    "code_generation/utility_functions/q_and_a_extractor/definition.toml",
+    # "code_generation/utility_functions/q_and_a_extractor/definition.toml",
     "code_generation/utility_functions/timezone_bumper/definition.toml",
     "code_generation/utility_functions/wrap_string/definition.toml",
 ]
@@ -140,7 +140,7 @@ for row in eachrow(df_missing)
         device,
         save_dir = "magicoder-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
-        http_kwargs = (; readtimeout = 1000),
+        http_kwargs = (; readtimeout = 60),
         api_kwargs = (; options = (; num_gpu = 99, temperature = 0.3)))
 end
 
