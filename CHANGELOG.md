@@ -3,6 +3,8 @@
 
 ### Added
 - Capability to evaluate code with AgentCodeFixer loop (set `codefixing_num_rounds>0` )
+- Automatically set a different seed for commercial API providers (MistralAI, OpenAI) to avoid their caching mechanism
+- Re-scored all past submissions with the new methodology
 
 ### Fixed
 - Improved code loading and debugging via Julia's code loading mechanism (`include_string`), which allows to better locate the lines that caused the errors (run `evaluate(....; verbose=true)` to see which lines caused the errors or `return_debug=true` to return the debug information as a secondary output).

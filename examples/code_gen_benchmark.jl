@@ -16,12 +16,14 @@ device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti",
 #
 # Paid Models:
 model_options = [
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-1106",
-    "gpt-4-1106-preview",
-    "mistral-tiny",
-    "mistral-small",
-    "mistral-medium",
+    ## "gpt-3.5-turbo",
+    ## "gpt-3.5-turbo-1106",
+    ## "gpt-3.5-turbo-0125",
+    ## "gpt-4-1106-preview",
+    "gpt-4-0125-preview",
+    ## "mistral-tiny",
+    ## "mistral-small",
+    ## "mistral-medium",
 ]
 
 # Or OSS models:
@@ -59,11 +61,10 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions, models,# = model_options,
+evals = run_benchmark(; fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 150),
-    api_kwargs = (; options = (; num_gpu = 99)));
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 150));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!

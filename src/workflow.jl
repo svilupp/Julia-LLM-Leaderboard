@@ -130,13 +130,14 @@ function run_benchmark(;
                     PT.MODEL_REGISTRY[model].schema
                 end
                 ## always inject a random seed to avoid any API caching on repeated calls
-                if schema isa MistralOpenAISchema
+                if schema isa PT.MistralOpenAISchema
                     random_seed = rand(UInt16) |> Int
                     http_kwargs_ = merge(http_kwargs, (; random_seed))
-                elseif schema isa OpenAISchema
+                elseif schema isa PT.OpenAISchema
                     seed = rand(UInt16) |> Int
                     http_kwargs_ = merge(http_kwargs, (; seed))
                 else
+                    # keep as is
                     http_kwargs_ = http_kwargs
                 end
                 try
