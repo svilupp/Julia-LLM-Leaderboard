@@ -2,6 +2,7 @@
 ## [Unreleased]
 
 ### Added
+- Added new models (OpenAI "0125" versions, Codellama, and more)
 - Capability to evaluate code with AgentCodeFixer loop (set `codefixing_num_rounds>0` )
 - Automatically set a different seed for commercial API providers (MistralAI, OpenAI) to avoid their caching mechanism
 - Re-scored all past submissions with the new methodology
@@ -11,6 +12,9 @@
 - Improved error capture and scoring (eg, imports of Base modules are now correctly recognized as "safe")
 - Improved detection of parse errors (ie, reduces score of submissions that "executed" only because I didn't detect the parsing error earlier)
 - Fixed `mkdir` bug in `run_benchmark`
+
+### Removed
+- `@timeout` macro has been upstreamed to PromptingTools
 
 ## [0.1.0]
 

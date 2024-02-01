@@ -13,7 +13,6 @@ using JuliaLLMLeaderboard
 using CairoMakie, AlgebraOfGraphics
 using MarkdownTables, DataFramesMeta
 using Statistics: mean, median, quantile, std;
-unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
 SAVE_PLOTS = false

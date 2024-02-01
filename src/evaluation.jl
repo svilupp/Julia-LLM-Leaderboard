@@ -1,4 +1,12 @@
 
+## For debugging && error analysis
+@kwdef struct DebugInfo
+    error::Union{Nothing, Exception} = nothing
+    stdout::Union{Nothing, String} = nothing
+    failing_lines::Vector{<:AbstractString} = String[]
+    extra::Union{Nothing, String} = nothing
+end
+
 """
     run_code_main(msg::PT.AIMessage; verbose::Bool = true, function_name::AbstractString = "",
         prefix::String = "",
@@ -21,12 +29,14 @@ function run_code_main(msg::PT.AIMessage; verbose::Bool = true,
         prefix::String = "",
         execution_timeout::Int = 60,
         capture_stdout::Bool = true,
-        expression_transform::Symbol = :remove_all_tests)
+        expression_transform::Symbol = :remove_all_tests,
+        return_debug::Bool = false)
     # For ease of evaluation in "safe" mode (eg, inside a custom module), 
     # but we skip any code lines with Pkg manipulation and importing unknown packages
     # we skip invalid code blocks (in case some later example is poor)
     # we do capture stdout, disabled to be able to process in parallel
     # execution is set to timeout in 60s
+    debugs = DebugInfo[]
     cb = PT.AICode(msg;
         prefix,
         skip_unsafe = true,
@@ -56,11 +66,25 @@ function run_code_main(msg::PT.AIMessage; verbose::Bool = true,
             skip_unsafe = true,
             capture_stdout, expression_transform, execution_timeout)
     end
-    if verbose && !isvalid(cb)
-        @warn "Main Run Failure:\nError: $(cb.error)\nStdOut: $(cb.stdout)"
+    if (verbose || return_debug) && !isvalid(cb)
+        ## Pick the right code source based on the quoted error source
+        failing_lines = String[]
+        sources = split(cb.code, '\n')
+        lines = PT.extract_stacktrace_lines("__code_string_eval", cb.stdout) |>
+                unique
+        !isempty(lines) && (append!(failing_lines,
+            sources[[err for err in lines
+                         if err <= length(sources)]]))
+        verbose &&
+            @warn "Main Run Failure:\nError: $(cb.error)\nStdOut: $(cb.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
+        return_debug && (push!(debugs,
+            DebugInfo(cb.error, cb.stdout, failing_lines, nothing)))
     end
-
-    return cb
+    if return_debug
+        return cb, debugs
+    else
+        return cb
+    end
 end
 
 """
@@ -98,9 +122,11 @@ run_code_blocks(cb, [code])
 function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
         verbose::Bool = false,
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
-        capture_stdout::Bool = true, execution_timeout::Int = 60)
+        capture_stdout::Bool = true, execution_timeout::Int = 60,
+        return_debug::Bool = false)
     ##
     count_successful = 0
+    debugs = DebugInfo[]
     cb_copy = copy(cb)
     eval_module = cb.output isa Module ? cb.output :
                   getfield(Main, extract_module_name(cb.expression))
@@ -115,15 +141,9 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
         end nothing
 
         success = !isnothing(out) && isvalid(cb_copy)
-        if verbose && !success
-            ## Pick the right lines (sometimes '1' is superfluous)
-            ## error_lines = if count(!isone, cb_copy.error_lines) > 0
-            ##     filter(!isone, cb_copy.error_lines) |> unique
-            ## else
-            ##     unique(cb_copy.error_lines)
-            ## end
+        if (verbose || return_debug) && !success
             ## Pick the right code source based on the quoted error source
-            failing_lines = []
+            failing_lines = String[]
             sources = split(code_joined, '\n')
             lines = PT.extract_stacktrace_lines("__code_string_eval_additive",
                 cb_copy.stdout) |>
@@ -137,11 +157,18 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
             !isempty(lines) && (append!(failing_lines,
                 sources[[err for err in lines
                              if err <= length(sources)]]))
-            @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
+            verbose &&
+                @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
+            return_debug && (push!(debugs,
+                DebugInfo(cb_copy.error, cb_copy.stdout, failing_lines, nothing)))
         end
         count_successful += success
     end
-    return count_successful
+    if return_debug
+        return count_successful, debugs
+    else
+        return count_successful
+    end
 end
 
 """
@@ -198,7 +225,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         auto_save::Bool = true, save_dir::AbstractString = dirname(fn_definition),
         experiment::AbstractString = "",
         execution_timeout::Int = 60, capture_stdout::Bool = true,
-        remove_tests::Bool = true)
+        remove_tests::Bool = true, return_debug::Bool = false)
     @assert execution_timeout>0 "execution_timeout must be positive"
 
     ## early exit
@@ -206,6 +233,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         @warn "Conversation is nothing, skipping evaluation."
         return false
     end
+    debugs = DebugInfo[]
 
     ## Process the code
     msg = last(conversation)
@@ -221,26 +249,44 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         prefix = imports_required,
         execution_timeout,
         capture_stdout,
-        expression_transform = remove_tests ? :remove_all_tests : :nothing)
+        expression_transform = remove_tests ? :remove_all_tests : :nothing,
+        return_debug)
+    ## unwrap the return values
+    if return_debug && cb isa Tuple
+        cb, debugs_ = cb
+        append!(debugs, debugs_)
+    end
 
     ## Run all examples
     example_count = if isvalid(cb)
-        run_code_blocks_additive(cb, definition["examples"]; verbose,
+        count_ = run_code_blocks_additive(cb, definition["examples"]; verbose,
             capture_stdout, execution_timeout,
             setup_code = get(definition, "examples_setup", ""),
-            teardown_code = get(definition, "examples_teardown", ""))
+            teardown_code = get(definition, "examples_teardown", ""), return_debug)
+        ## Extract debugging info if provided
+        if return_debug && count_ isa Tuple
+            count_, debugs_ = count_
+            append!(debugs, debugs_)
+        end
+        count_
     else
         0
     end
 
     ## Run all unit tests
     test_count = if isvalid(cb)
-        run_code_blocks_additive(cb,
+        count_ = run_code_blocks_additive(cb,
             definition["unit_tests"];
             verbose,
             capture_stdout,
             execution_timeout, setup_code = get(definition, "unit_tests_setup", ""),
             teardown_code = get(definition, "unit_tests_teardown", ""))
+        ## Extract debugging info if provided
+        if return_debug && count_ isa Tuple
+            count_, debugs_ = count_
+            append!(debugs, debugs_)
+        end
+        count_
     else
         0
     end
@@ -275,7 +321,11 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
         save_conversation(fn_conversation, conversation)
     end
 
-    return evaluation
+    if return_debug
+        return evaluation, debugs
+    else
+        return evaluation
+    end
 end
 
 """

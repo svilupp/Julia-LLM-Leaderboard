@@ -12,7 +12,7 @@ using Random
 using Markdown, InteractiveUtils
 using ProgressMeter
 
-export timestamp_now, get_query_cost, @timeout
+export timestamp_now, get_query_cost, unscrub_string
 include("utils.jl")
 
 export save_definition, validate_definition, load_definition, find_definitions

@@ -95,7 +95,7 @@ fig
 output = @chain df begin
     @by [:model] begin
         :elapsed = mean(:elapsed_seconds)
-        :elapsed_median = mean(:elapsed_seconds)
+        :elapsed_median = median(:elapsed_seconds)
         :score = mean(:score)
         :score_median = median(:score)
         :score_std_deviation = std(:score)
