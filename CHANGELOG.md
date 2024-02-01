@@ -2,10 +2,13 @@
 ## [Unreleased]
 
 ### Added
-- Improved code loading and debugging via Julia's code loading mechanism (`include_string`), which allows to better locate the lines that caused the errors (run `evaluate(....; verbose=true)` to see which lines caused the errors or `return_debug=true` to return the debug information as a secondary output).
-- Improved error capture and scoring (eg, imports of Base modules are now correctly recognized as "safe")
+- Capability to evaluate code with AgentCodeFixer loop (set `codefixing_num_rounds>0` )
 
 ### Fixed
+- Improved code loading and debugging via Julia's code loading mechanism (`include_string`), which allows to better locate the lines that caused the errors (run `evaluate(....; verbose=true)` to see which lines caused the errors or `return_debug=true` to return the debug information as a secondary output).
+- Improved error capture and scoring (eg, imports of Base modules are now correctly recognized as "safe")
+- Improved detection of parse errors (ie, reduces score of submissions that "executed" only because I didn't detect the parsing error earlier)
+- Fixed `mkdir` bug in `run_benchmark`
 
 ## [0.1.0]
 

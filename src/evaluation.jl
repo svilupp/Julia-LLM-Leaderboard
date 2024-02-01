@@ -1,6 +1,6 @@
 
 """
-    run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
+    run_code_main(msg::PT.AIMessage; verbose::Bool = true, function_name::AbstractString = "",
         prefix::String = "",
         execution_timeout::Int = 60,
         capture_stdout::Bool = true,
@@ -16,7 +16,8 @@ Logic:
 - Remove any unit tests (`expression_transform=:remove_all_tests`), because model might have added some without being asked for it explicitly
 - First, evaluate the code block as a whole, and if it fails, try to extract the function definition and evaluate it separately (fallback)
 """
-function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
+function run_code_main(msg::PT.AIMessage; verbose::Bool = true,
+        function_name::AbstractString = "",
         prefix::String = "",
         execution_timeout::Int = 60,
         capture_stdout::Bool = true,
@@ -54,6 +55,9 @@ function run_code_main(msg::PT.AIMessage; function_name::AbstractString = "",
             prefix,
             skip_unsafe = true,
             capture_stdout, expression_transform, execution_timeout)
+    end
+    if verbose && !isvalid(cb)
+        @warn "Main Run Failure:\nError: $(cb.error)\nStdOut: $(cb.stdout)"
     end
 
     return cb
@@ -212,7 +216,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
     end
 
     ## Run the code
-    cb = run_code_main(msg;
+    cb = run_code_main(msg; verbose,
         function_name = definition["name"],
         prefix = imports_required,
         execution_timeout,
