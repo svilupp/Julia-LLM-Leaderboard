@@ -39,6 +39,7 @@ However, you can take this code and apply `Threads.@spawn` to it. The evaluation
 # Notes
 - In general, use HTTP timeouts because both local models and APIs can get stuck, eg, `http_kwargs=(; readtimeout=150)`
 - On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance (ie, offload all model layers to the GPU)
+- For commercial providers (MistralAI, OpenAI), we automatically inject a different random seed for each run to avoid caching
 
 # Example
 ```julia
