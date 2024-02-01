@@ -31,7 +31,7 @@ However, you can take this code and apply `Threads.@spawn` to it. The evaluation
 
 - `auto_save`: a boolean whether to automatically save the evaluation data. If not specified, it will save the data. Otherwise, it only returns the vector of `evals`
 - `verbose`: a boolean or integer to print progress. If not specified, it will print highlevel progress (verbose = 1 or true), for more details, set `verbose=2 or =3`.
-- `execution_timeout`: an integer to specify the timeout in seconds for the execution of the generated code. If not specified, it will use 60s.
+- `execution_timeout`: an integer to specify the timeout in seconds for the execution of the generated code. If not specified, it will use 10s (per run/test item).
 
 # Return
 - Vector of `evals`, ie, a dictionary of evaluation data for each model/prompt combination and each sample.
@@ -39,6 +39,7 @@ However, you can take this code and apply `Threads.@spawn` to it. The evaluation
 # Notes
 - In general, use HTTP timeouts because both local models and APIs can get stuck, eg, `http_kwargs=(; readtimeout=150)`
 - On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance (ie, offload all model layers to the GPU)
+- For commercial providers (MistralAI, OpenAI), we automatically inject a different random seed for each run to avoid caching
 
 # Example
 ```julia
@@ -76,7 +77,7 @@ function run_benchmark(;
         codefixing_num_rounds::Int = 0,
         codefixing_prompt_labels::Vector{<:AbstractString} = ["CodeFixerTiny"],
         schema_lookup::AbstractDict{String, <:Any} = Dict{String, Any}(),
-        execution_timeout::Int = 60)
+        execution_timeout::Int = 10)
     @assert num_samples>0 "num_samples must be positive"
     unknown_definitions = filter(!isfile, fn_definitions)
     @assert isempty(unknown_definitions) "Unknown definition files: $(join(unknown_definitions, ", ")). Please fix the paths."
@@ -101,7 +102,7 @@ function run_benchmark(;
     @assert isempty(unknown_models) "Unknown models: $(join(unknown_models, ", ")). Provide the necessary schema via the `schema_lookup` keyword."
 
     # Create the save_dir if it doesn't exist
-    !isempty(save_dir) && !isdir(save_dir) && mkdir(save_dir, parents = true)
+    !isempty(save_dir) && !isdir(save_dir) && mkpath(save_dir)
 
     # Prepare a list of combinations to run
     all_options = Iterators.product(prompt_labels, codefixing_prompt_labels, models) |>
@@ -129,6 +130,17 @@ function run_benchmark(;
                     # grab schema from registry
                     PT.MODEL_REGISTRY[model].schema
                 end
+                ## always inject a random seed to avoid any API caching on repeated calls
+                if schema isa PT.MistralOpenAISchema
+                    random_seed = rand(UInt16) |> Int
+                    http_kwargs_ = merge(http_kwargs, (; random_seed))
+                elseif schema isa PT.OpenAISchema
+                    seed = rand(UInt16) |> Int
+                    http_kwargs_ = merge(http_kwargs, (; seed))
+                else
+                    # keep as is
+                    http_kwargs_ = http_kwargs
+                end
                 try
                     ## Pick response generator based on the prompt_label
                     aicall = if prompt_label == "JuliaExpertAsk"
@@ -137,7 +149,7 @@ function run_benchmark(;
                             ask = definition["prompt"],
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "JuliaExpertAskZH"
@@ -156,7 +168,7 @@ function run_benchmark(;
                             data = first(definition["examples"]),
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "JuliaRecapCoTTask"
@@ -166,7 +178,7 @@ function run_benchmark(;
                             data = first(definition["examples"]),
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "JuliaRecapTask"
@@ -176,7 +188,7 @@ function run_benchmark(;
                             instructions = "None.",
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "InJulia"
@@ -184,7 +196,7 @@ function run_benchmark(;
                             "In Julia, $(definition["prompt"])";
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "AsIs"
@@ -192,7 +204,7 @@ function run_benchmark(;
                             definition["prompt"];
                             model,
                             api_kwargs,
-                            http_kwargs,
+                            http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
                     else
