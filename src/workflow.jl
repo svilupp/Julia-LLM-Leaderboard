@@ -86,7 +86,6 @@ function run_benchmark(;
     available_prompts = [
         "JuliaExpertCoTTask",
         "JuliaExpertAsk",
-        "JuliaExpertAskZH",
         "InJulia",
         "AsIs",
         "JuliaRecapTask",
@@ -150,15 +149,6 @@ function run_benchmark(;
                             model,
                             api_kwargs,
                             http_kwargs = http_kwargs_,
-                            return_all = true,
-                            verbose = (verbose > 1))
-                    elseif prompt_label == "JuliaExpertAskZH"
-                        AIGenerate(schema,
-                            :JuliaExpertAskZH;
-                            ask = definition["prompt"],
-                            model,
-                            api_kwargs,
-                            http_kwargs,
                             return_all = true,
                             verbose = (verbose > 1))
                     elseif prompt_label == "JuliaExpertCoTTask"
