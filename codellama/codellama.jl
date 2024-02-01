@@ -46,7 +46,7 @@ evals = run_benchmark(; fn_definitions,
     auto_save = true, verbose = true,
     device,
     save_dir = "codellama",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 300),
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 1000),
     api_kwargs = (; options = (; num_gpu = 99)));
 
 @assert false "Stop here"
@@ -84,12 +84,12 @@ for row in eachrow(df_missing)
     evals = run_benchmark(; fn_definitions = [row.fn_definitions],
         models = [row.model],
         prompt_labels = [row.prompt_label],
-        experiment = "yi-quantization-effects-zh-default",
+        experiment = "",
         auto_save = true, verbose = true,
         device,
-        save_dir = "yi-quantization-effects-zh",
+        save_dir = "codellama",
         num_samples = row.count_missing, schema_lookup,
-        http_kwargs = (; readtimeout = 60),
+        http_kwargs = (; readtimeout = 300),
         api_kwargs = (; options = (; num_gpu = 99)))
 end
 # # Analysis
