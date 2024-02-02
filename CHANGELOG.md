@@ -1,5 +1,12 @@
 # Changelog
+
 ## [Unreleased]
+
+### Added
+
+### Fixed
+
+## [0.2.0]
 
 ### Added
 - Added new models (OpenAI "0125" versions, Codellama, and more)
@@ -15,6 +22,10 @@
 
 ### Removed
 - `@timeout` macro has been upstreamed to PromptingTools
+
+### Case Studies
+- Quantization effects on Yi34b and Magicoder 7b
+- Effect of English vs Chinese on performance with Yi34b
 
 ## [0.1.0]
 
