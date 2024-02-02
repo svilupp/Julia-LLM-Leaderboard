@@ -119,6 +119,8 @@ Same information, but as a bar chart:
 And with a separate bar for each prompt template:
 ![Model-Prompt-Scores-for-Paid-API](assets/model-prompt-comparison-oss.png)
 
+Note: I have noticed that some evals in Ollama/llama.cpp now score slightly higher now than in Dec-23, so it's on a roadmap to re-run the above evals.
+
 ### Overall Time to Run vs Score
 
 Clearly, the paid APIs win (the latest release: GPT-3.5-Turbo-1106), but that's not the whole story.

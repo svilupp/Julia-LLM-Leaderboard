@@ -1,5 +1,5 @@
 # ---
-# title: "Quantization Effects on Yi34b"
+# title: "Quantization Effects on Magicoder:7b"
 # author: "svilupp"
 # date: "2024-02-02"
 # format:
@@ -11,8 +11,8 @@
 # jupyter: julia6-1.10
 # ---
 
-# # Quantization Effects on Yi34b
-# This report summarizes how the performance on LLM Leaderboard changes with different quantizations of Yi34b model
+# # Quantization Effects on Magicoder:7b
+# This report summarizes how the performance on LLM Leaderboard changes with different quantizations of Magicoder:7b model
 # 
 # Different quantizations have been benchmarked against Julia LLM Leaderboard (v0.2.0, 14 test cases).
 #
@@ -31,8 +31,8 @@ using CairoMakie, AlgebraOfGraphics, MarkdownTables
 using Statistics
 
 ## ! Configuration
-SAVE_PLOTS = false
-SAVE_DIR = "yi-quantization-effects"
+SAVE_PLOTS = true
+SAVE_DIR = "magicoder-quantization-effects"
 RESULTS_DIR = SAVE_DIR;
 
 # # Load Results
@@ -45,7 +45,7 @@ end;
 # # Default Parameters
 # These results are produced with default parameters set on Ollama (includes `temperature=0.7`)
 df_focus = @chain df begin
-    @rsubset :experiment == "yi-quantization-effects-default"
+    @rsubset :experiment == "magicoder-quantization-effects-default"
 end;
 temp = 0.7;
 
@@ -70,7 +70,7 @@ fig = @chain df_focus begin
         axis = (;
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
-            title = "Yi34b Performance on Temp=$temp"))
+            title = "Magicoder:7b Performance on Temp=$temp"))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-comparison-temp$temp.png"), fig)
 fig
@@ -85,6 +85,7 @@ output = @chain df_focus begin
         :score_std_deviation = std(:score)
         :count_zero_score = count(iszero, :score)
         :count_full_score = count(==(100), :score)
+        :count_samples = $nrow
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
@@ -112,7 +113,7 @@ fig = @chain df_focus begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45, title = "Yi34b Performance on Temp=$temp"),
+        axis = (xticklabelrotation = 45, title = "Magicoder:7b Performance on Temp=$temp"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-prompt-comparison-temp$temp.png"), fig)
@@ -153,7 +154,7 @@ markdown_table(output)
 # # Temperature=0.3
 # These results are produced with temperature set to `0.3` on Ollama
 df_focus = @chain df begin
-    @rsubset :experiment == "yi-quantization-effects-temp0.3"
+    @rsubset :experiment == "magicoder-quantization-effects-temp0.3"
 end;
 temp = 0.3;
 
@@ -178,7 +179,7 @@ fig = @chain df_focus begin
         axis = (;
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
-            title = "Yi34b Performance on Temp=$temp"))
+            title = "Magicoder:7b Performance on Temp=$temp"))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-comparison-temp$temp.png"), fig)
 fig
@@ -220,7 +221,7 @@ fig = @chain df_focus begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45, title = "Yi34b Performance on Temp=$temp"),
+        axis = (xticklabelrotation = 45, title = "Magicoder:7b Performance on Temp=$temp"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-prompt-comparison-temp$temp.png"), fig)
@@ -261,7 +262,7 @@ markdown_table(output)
 # # Temperature=0.5
 # These results are produced with temperature set to `0.5` on Ollama
 df_focus = @chain df begin
-    @rsubset :experiment == "yi-quantization-effects-temp0.5"
+    @rsubset :experiment == "magicoder-quantization-effects-temp0.5"
 end;
 temp = 0.5;
 
@@ -286,7 +287,7 @@ fig = @chain df_focus begin
         axis = (;
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
-            title = "Yi34b Performance on Temp=$temp"))
+            title = "Magicoder:7b Performance on Temp=$temp"))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-comparison-temp$temp.png"), fig)
 fig
@@ -328,7 +329,7 @@ fig = @chain df_focus begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45, title = "Yi34b Performance on Temp=$temp"),
+        axis = (xticklabelrotation = 45, title = "Magicoder:7b Performance on Temp=$temp"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-prompt-comparison-temp$temp.png"), fig)
@@ -390,8 +391,10 @@ fig = @chain df begin
         color = :experiment => "Prompts",
         dodge = :experiment) * visual(BarPlot; bar_labels = :y,
         label_offset = 0)
-    draw(; figure = (size = (800, 600),),
-        axis = (xticklabelrotation = 0, title = "Yi34b Performance Across Temperatures"),
+    draw(; figure = (size = (900, 600),),
+        axis = (xticklabelrotation = 45,
+            limits = (nothing, nothing, 0, 100),
+            title = "Magicoder:7b Performance Across Temperatures"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-temperature-comparison.png"), fig)
@@ -416,85 +419,6 @@ output = @chain df begin
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
     rename(_, names(_) .|> unscrub_string)
-end
-## markdown_table(output, String) |> clipboard
-markdown_table(output)
-
-# # Comparison with Prompt in Chinese
-# Only compares:
-#
-# - Prompt template: "JuliaExpertAsk" (translated to Chinese -> "JuliaExpertAskZH")
-# - Test case: "wrap_string" 
-# - Temperature: 0.7
-
-## Load merged data
-df_zh = @chain df begin
-    @aside local path = joinpath(RESULTS_DIR, "..", "yi-quantization-effects-zh")
-    @aside local df_ = load_evals(path; max_history = 0)
-    vcat(_, df_)
-    ## we have samples only for default temp
-    @rsubset endswith(:experiment, "-default") startswith(:prompt_label, "JuliaExpertAsk") :name=="wrap_string"
-    @rtransform :experiment = occursin("zh", :experiment) ? "Chinese" : "English"
-end;
-
-# ## Experiment Comparison
-# Table:
-output = @chain df_zh begin
-    @by [:experiment] begin
-        :elapsed = mean(:elapsed_seconds)
-        :elapsed_median = median(:elapsed_seconds)
-        :score = mean(:score)
-        :score_median = median(:score)
-        :score_std_deviation = std(:score)
-        :count_zero_score = count(iszero, :score)
-        :count_full_score = count(==(100), :score)
-        :count_samples = $nrow
-    end
-    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
-    @orderby -:score
-    rename(_, names(_) .|> unscrub_string)
-end
-## markdown_table(output, String) |> clipboard
-markdown_table(output)
-
-# ## Overview by Model Weights
-
-# Bar chart with all OSS models and various prompt templates
-fig = @chain df_zh begin
-    @by [:model, :experiment] begin
-        :cost = mean(:cost)
-        :elapsed = mean(:elapsed_seconds)
-        :score = mean(:score)
-        :score_median = median(:score)
-        :cnt = $nrow
-    end
-    @aside local average_ = @by(_, :model, :avg=mean(:score)) |>
-                            x -> @orderby(x, -:avg).model
-    data(_) *
-    mapping(:model => sorter(average_) => "Model Weights",
-        :score => "Avg. Score (Max 100 pts)",
-        color = :experiment => "Prompts",
-        dodge = :experiment) * visual(BarPlot)
-    draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45,
-            title = "Yi34b Performance in English vs Chinese"),
-        legend = (; position = :bottom))
-end
-SAVE_PLOTS && save(joinpath(SAVE_DIR, "model-comparison-english-chinese.png"), fig)
-fig
-
-# Table:
-output = @chain df_zh begin
-    @by [:model, :experiment] begin
-        :cost = mean(:cost)
-        :elapsed = mean(:elapsed_seconds)
-        :score = mean(:score)
-    end
-    @aside average_ = @by _ :model :AverageScore=mean(:score) |> x -> round(x, digits = 1)
-    unstack(:model, :experiment, :score; fill = 0.0)
-    transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
-    leftjoin(average_, on = :model)
-    @orderby -:AverageScore
 end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)

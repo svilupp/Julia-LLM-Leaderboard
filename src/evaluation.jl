@@ -280,7 +280,7 @@ function evaluate_1shot(; conversation, fn_definition, definition, model, prompt
             verbose,
             capture_stdout,
             execution_timeout, setup_code = get(definition, "unit_tests_setup", ""),
-            teardown_code = get(definition, "unit_tests_teardown", ""))
+            teardown_code = get(definition, "unit_tests_teardown", ""), return_debug)
         ## Extract debugging info if provided
         if return_debug && count_ isa Tuple
             count_, debugs_ = count_

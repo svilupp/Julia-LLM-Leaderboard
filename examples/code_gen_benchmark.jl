@@ -16,14 +16,14 @@ device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti",
 #
 # Paid Models:
 model_options = [
-    ## "gpt-3.5-turbo",
-    ## "gpt-3.5-turbo-1106",
+    "gpt-3.5-turbo",
+    "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-0125",
-    ## "gpt-4-1106-preview",
-    ## "gpt-4-0125-preview",
-    ## "mistral-tiny",
-    ## "mistral-small",
-    ## "mistral-medium",
+    "gpt-4-1106-preview",
+    "gpt-4-0125-preview",
+    "mistral-tiny",
+    "mistral-small",
+    "mistral-medium",
 ]
 
 # Or OSS models:
