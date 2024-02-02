@@ -92,7 +92,7 @@ for row in eachrow(df_missing)
         http_kwargs = (; readtimeout = 300),
         api_kwargs = (; options = (; num_gpu = 99)))
 end
-# # Analysis
+# # Analysis
 
 @chain df begin
     # @rsubset :model=="yi:34b-chat-q3_K_L" :prompt_label=="JuliaExpertCoTTask"

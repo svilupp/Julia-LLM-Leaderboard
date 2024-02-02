@@ -1,10 +1,11 @@
-# # Report for Quantization Effects on Yi34b
+# # Report for Quantization Effects on Yi34b
 # This report summarizes how the performance on LLM Leaderboard changes with different quantizations of Yi34b model
 # 
 # Different quantizations have been benchmarked against Julia LLM Leaderboard (v0.2.0, 14 test cases).
 #
-# Backend: Ollama v0.1.22
-# Frontend: PromptingTools.jl v0.10
+# Hardware: 4x NVIDIA RTX 4090 (Thank you, [01.ai](https://github.com/01-ai)!)
+# Backend: Ollama v0.1.22
+# Frontend: PromptingTools.jl v0.10
 
 using JuliaLLMLeaderboard
 using DataFramesMeta
@@ -26,7 +27,7 @@ end;
 # These results are produced with default parameters set on Ollama (includes `temperature=0.7`)
 df_default = @chain df begin
     @rsubset :experiment == "yi-quantization-effects-default"
-end
+end;
 
 # ## Model Comparison
 # Highest average score by model:
