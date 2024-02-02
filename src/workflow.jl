@@ -117,7 +117,8 @@ function run_benchmark(;
         (verbose >= 1) && @info ">> Running for $fn_definition at $(now())"
 
         # if save_dir is not specified, save in the same folder as the definition file
-        save_dir_ = isempty(save_dir) ? dirname(fn_definition) : save_dir
+        ## evaluate_1shot adds the definion name folder automatically, so jump to the folder above (eg, `code_generation/`)
+        save_dir_ = isempty(save_dir) ? joinpath(dirname(fn_definition), "..") : save_dir
         definition = load_definition(fn_definition)["code_generation"]
         for option in all_options
             for i in 1:num_samples
