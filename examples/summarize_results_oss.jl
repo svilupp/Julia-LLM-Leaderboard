@@ -15,7 +15,7 @@ using Statistics: mean, median, quantile, std;
 unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
-SAVE_PLOTS = true
+SAVE_PLOTS = false
 DIR_RESULTS = joinpath(pkgdir(JuliaLLMLeaderboard), "code_generation")
 PAID_MODELS_DEFAULT = [
     "gpt-3.5-turbo",
