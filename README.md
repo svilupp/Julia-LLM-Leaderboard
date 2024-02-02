@@ -44,7 +44,7 @@ Each model's and prompt's performance is evaluated based on several criteria:
 At the moment, all criteria are weighed equally and each test case can earn a maximum of 100 points. If a code passes all criteria, it gets 100/100 points. If it fails one criterion (eg, all unit tests), it gets 75/100 points. If it fails two criteria (eg, it runs but all examples and unit tests are broken), it gets 50 points, and so on.
 
 ## Results (Preview)
-To provide a glimpse of the repository's functionality, we have included example results for the first 14 test cases. Open the documentation for the full results and a deep dive on each test case.
+To provide a glimpse of the repository's functionality, we have included example results for the first 14 test cases. [**Open the documentation**](https://svilupp.github.io/Julia-LLM-Leaderboard/dev/) for the full results and a deep dive on each test case.
 
 > [!WARNING]  
 > These scores might change as we evolve the supporting functionality and add more models.
@@ -53,16 +53,21 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 
 ### Paid APIs
 
-Across the board, GPT-4 tends to be among the best-performing models. However, "mistral-small" (the recently released "Mixtral 8x7B" model) is quite impressive and it beats the default GPT-3.5 Turbo model in most cases.
+Across the board, GPT-4 tends to be among the best-performing models. The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as GPT-4 Turbo, yet it's much cheaper and faster (see the deep-dive in the docs)!
+"mistral-small" (the recently released "Mixtral 8x7B" model) is quite impressive, as it beats many of the GPT-3.5 Turbo in many cases.
 
-| model              | InJulia | JuliaExpertAsk | JuliaExpertCoTTask | JuliaRecapCoTTask | JuliaRecapTask | AverageScore |
-|--------------------|---------|----------------|--------------------|-------------------|----------------|--------------|
-| gpt-4-1106-preview |    77.5 |           76.7 |               74.3 |              77.6 |           72.9 |         75.8 |
-|     mistral-medium |    66.6 |           70.0 |               68.9 |              61.0 |           65.6 |         66.4 |
-|      mistral-small |    69.6 |           64.2 |               61.1 |              57.1 |           58.0 |         62.0 |
-| gpt-3.5-turbo-1106 |    76.7 |           74.6 |               73.8 |              15.9 |           56.5 |         59.5 |
-|       mistral-tiny |    54.8 |           46.2 |               41.9 |              52.2 |           46.6 |         48.3 |
-|      gpt-3.5-turbo |    72.8 |           61.4 |               33.0 |              26.4 |           16.8 |         42.1 |
+| Model              | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
+|--------------------|---------|-------|---------------------|------------------|------------------|------------|
+| gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
+| gpt-4-0125-preview |    30.2 |  73.1 |                31.7 |               26 |              140 |        1.3 |
+| gpt-3.5-turbo-0125 |     1.2 |  62.1 |                36.5 |               62 |               95 |       0.03 |
+|     mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
+|      mistral-small |     5.9 |  60.1 |                30.2 |               27 |               76 |       0.09 |
+| gpt-3.5-turbo-1106 |     2.1 |  58.4 |                39.2 |               82 |               97 |       0.04 |
+|       mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
+|      gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
+
+Note: From mid-February 2024, "gpt-3.5-turbo" will point to the latest release, "gpt-3.5-turbo-0125" (deprecating the June release).
 
 Same information, but as a bar chart:
 
@@ -76,31 +81,36 @@ In addition, we can consider the performance (score) versus the cost (measured i
 
 Open-source models are generally not as good as the best paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
 
-The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, they get defeated by a 7Bn Magicoder (if we use Q6 quantization).
+The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, magicoder:7b (Q6_K!) and codellama:13b (Q4_K_M!) give them a run for their money.
 
 | Model                              | Elapsed | Elapsed Median | Score | Score Median | Score Std Deviation | Count Zero Score | Count Full Score |
 |------------------------------------|---------|----------------|-------|--------------|---------------------|------------------|------------------|
-|             magicoder:7b-s-cl-q6_K |    15.6 |           15.6 |  61.9 |         60.0 |                28.7 |             11.0 |             35.0 |
-|             phind-codellama:34b-v2 |    37.1 |           37.1 |  61.2 |         72.5 |                33.1 |             28.0 |             50.0 |
-|                          magicoder |    12.8 |           12.8 |  53.7 |         50.0 |                32.8 |             41.0 |             51.0 |
-| deepseek-coder:33b-instruct-q4_K_M |    46.7 |           46.7 |  53.4 |         50.0 |                37.0 |             48.0 |             69.0 |
-|         nous-hermes2:34b-yi-q4_K_M |    56.8 |           56.8 |  50.8 |         50.0 |                32.9 |             65.0 |             47.0 |
-|             codellama:13b-instruct |    18.1 |           18.1 |  50.5 |         50.0 |                33.2 |             52.0 |             42.0 |
-|              openhermes2.5-mistral |    12.9 |           12.9 |  50.4 |         50.0 |                29.3 |             35.0 |             26.0 |
-|                 starling-lm:latest |    13.7 |           13.7 |  50.0 |         50.0 |                26.8 |             27.0 |             23.0 |
-|       openchat:7b-v3.5-1210-q4_K_M |    14.4 |           14.4 |  47.7 |         50.0 |                29.7 |             35.0 |             22.0 |
-|                        yi:34b-chat |    43.9 |           43.9 |  46.3 |         50.0 |                30.1 |             35.0 |             34.0 |
-|      mistral:7b-instruct-v0.2-q4_0 |    12.4 |           12.4 |  45.8 |         50.0 |                28.6 |             52.0 |             30.0 |
-|      mistral:7b-instruct-v0.2-q6_K |    21.7 |           21.7 |  45.7 |         50.0 |                28.8 |             31.0 |             19.0 |
-|    mistral:7b-instruct-v0.2-q4_K_M |    15.6 |           15.6 |  44.6 |         50.0 |                26.0 |             47.0 |             19.0 |
-|     solar:10.7b-instruct-v1-q4_K_M |    18.8 |           18.8 |  32.7 |         25.0 |                27.8 |             79.0 |              8.0 |
-|         mistral:7b-instruct-q4_K_M |    13.9 |           13.9 |  32.3 |         25.0 |                24.0 |             60.0 |              0.0 |
-|                             llama2 |    17.1 |           17.1 |  28.3 |         25.0 |                23.9 |             93.0 |              0.0 |
-|                          orca2:13b |    20.1 |           20.1 |  23.8 |          0.0 |                28.7 |            145.0 |              8.0 |
-|                    stablelm-zephyr |     9.9 |            9.9 |  21.3 |         25.0 |                22.0 |            125.0 |              1.0 |
-|         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.9 |  18.1 |          0.0 |                22.5 |            154.0 |              0.0 |
-|               codellama:13b-python |    12.5 |           12.5 |  13.8 |          0.0 |                21.1 |            140.0 |              0.0 |
-|              phi:2.7b-chat-v2-q6_K |    13.0 |           13.0 |   8.0 |          0.0 |                13.6 |            197.0 |              0.0 |
+|             phind-codellama:34b-v2 |    37.1 |           36.4 |  61.8 |         62.5 |                33.5 |             36.0 |             58.0 |
+|             magicoder:7b-s-cl-q6_K |    15.6 |           15.8 |  59.9 |         60.0 |                29.9 |             18.0 |             35.0 |
+|      codellama:13b-instruct-q4_K_M |     3.2 |            3.0 |  56.4 |         54.6 |                33.0 |             56.0 |             61.0 |
+| deepseek-coder:33b-instruct-q4_K_M |    46.7 |           44.6 |  55.0 |         50.0 |                36.8 |             62.0 |             68.0 |
+|                          magicoder |    12.8 |           10.7 |  53.7 |         50.0 |                33.2 |             49.0 |             52.0 |
+|         nous-hermes2:34b-yi-q4_K_M |    56.8 |           52.8 |  50.7 |         50.0 |                34.7 |             78.0 |             56.0 |
+|             codellama:13b-instruct |    18.1 |           16.7 |  50.0 |         50.0 |                34.4 |             65.0 |             44.0 |
+|       openchat:7b-v3.5-1210-q4_K_M |    14.4 |           13.7 |  49.4 |         50.0 |                30.3 |             48.0 |             23.0 |
+|              openhermes2.5-mistral |    12.9 |           12.2 |  48.9 |         50.0 |                31.3 |             55.0 |             27.0 |
+|                 starling-lm:latest |    13.7 |           12.5 |  48.4 |         50.0 |                30.2 |             58.0 |             26.0 |
+|       codellama:7b-instruct-q4_K_M |     2.1 |            2.0 |  47.8 |         50.0 |                35.3 |             95.0 |             38.0 |
+|                        yi:34b-chat |    43.9 |           41.3 |  45.6 |         50.0 |                30.5 |             45.0 |             34.0 |
+|      mistral:7b-instruct-v0.2-q6_K |    21.7 |           20.9 |  45.4 |         50.0 |                31.3 |             44.0 |             23.0 |
+|      mistral:7b-instruct-v0.2-q4_0 |    12.4 |           12.3 |  44.3 |         50.0 |                30.6 |             75.0 |             32.0 |
+|    mistral:7b-instruct-v0.2-q4_K_M |    15.6 |           15.1 |  42.6 |         50.0 |                28.6 |             71.0 |             23.0 |
+|      codellama:34b-instruct-q4_K_M |     7.5 |            6.8 |  39.7 |         50.0 |                36.1 |            127.0 |             35.0 |
+|      codellama:70b-instruct-q4_K_M |    16.3 |           13.8 |  36.4 |          0.0 |                41.2 |            179.0 |             58.0 |
+|     solar:10.7b-instruct-v1-q4_K_M |    18.8 |           17.7 |  35.2 |         50.0 |                31.1 |            107.0 |             10.0 |
+|         mistral:7b-instruct-q4_K_M |    13.9 |           13.0 |  34.8 |         50.0 |                26.5 |             80.0 |              0.0 |
+|        codellama:70b-instruct-q2_K |    11.2 |            9.4 |  29.8 |          0.0 |                37.7 |            198.0 |             29.0 |
+|                             llama2 |    17.1 |           16.3 |  26.5 |         25.0 |                26.5 |            131.0 |              0.0 |
+|                          orca2:13b |    20.1 |           18.3 |  23.1 |          0.0 |                30.6 |            166.0 |             11.0 |
+|                    stablelm-zephyr |     9.9 |            7.7 |  15.4 |          0.0 |                23.5 |            192.0 |              1.0 |
+|         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.4 |  14.9 |          0.0 |                22.9 |            188.0 |              0.0 |
+|               codellama:13b-python |    12.5 |           10.7 |  12.8 |          0.0 |                22.1 |            155.0 |              0.0 |
+|              phi:2.7b-chat-v2-q6_K |    13.0 |           11.6 |   8.9 |          0.0 |                19.4 |            222.0 |              0.0 |
 
 Same information, but as a bar chart:
 
@@ -128,12 +138,12 @@ Learnings so far:
 
 | Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
 |--------------------|----------------------|---------------------|--------------------------|----------------------------|
-|            InJulia |                 16.7 |                11.7 |                     50.6 |                       50.0 |
-|     JuliaExpertAsk |                 11.8 |                 7.8 |                     47.6 |                       50.0 |
-|     JuliaRecapTask |                 20.9 |                15.9 |                     45.6 |                       50.0 |
-| JuliaExpertCoTTask |                 19.7 |                14.9 |                     43.9 |                       50.0 |
-|  JuliaRecapCoTTask |                 19.7 |                15.2 |                     42.5 |                       50.0 |
-|               AsIs |                 36.3 |                11.2 |                     13.0 |                        0.0 |
+|            InJulia |                 15.5 |                10.8 |                     51.1 |                       50.0 |
+|     JuliaExpertAsk |                 10.6 |                 7.1 |                     47.6 |                       50.0 |
+|     JuliaRecapTask |                 18.9 |                14.0 |                     46.8 |                       50.0 |
+| JuliaExpertCoTTask |                 17.3 |                12.8 |                     42.9 |                       50.0 |
+|  JuliaRecapCoTTask |                 18.0 |                13.2 |                     41.7 |                       50.0 |
+|               AsIs |                 36.3 |                11.2 |                      9.8 |                        0.0 |
 
 Make your own analysis with `examples/summarize_results.jl`!
 

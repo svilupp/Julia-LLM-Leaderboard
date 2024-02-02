@@ -15,7 +15,7 @@ using Statistics: mean, median, quantile, std;
 unscrub_string(s::AbstractString) = split(s, "_") .|> titlecase |> x -> join(x, " ");
 
 ## ! Configuration
-SAVE_PLOTS = false
+SAVE_PLOTS = true
 DIR_RESULTS = joinpath(pkgdir(JuliaLLMLeaderboard), "code_generation")
 PAID_MODELS_DEFAULT = [
     "gpt-3.5-turbo",
@@ -80,7 +80,7 @@ fig = @chain df begin
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
     @rtransform :size_group = MODEL_SIZES[:model]
-    @aside local size_order = ["<4", "4-9", "10-29", ">30"]
+    @aside local size_order = ["<4", "4-9", "10-29", "30-69", ">70"]
     @aside local order_ = _.model
     data(_) *
     mapping(:model => sorter(order_) => "Model",
