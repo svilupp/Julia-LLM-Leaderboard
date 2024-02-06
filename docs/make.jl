@@ -33,7 +33,8 @@ makedocs(;
         "Test Definitions" => "test_definitions.md",
         "Results" => [
             "Paid APIs" => "examples/summarize_results_paid.md",
-            "Open-Source Models" => "examples/summarize_results_oss.md",
+            "Local Models" => "examples/summarize_results_local.md",
+            "Paid vs Local Models" => "examples/compare_paid_vs_local.md",
             "By Prompts" => "examples/summarize_results_prompts.md",
             "By Test Case" => "examples/summarize_results_test_cases.md",
         ],
