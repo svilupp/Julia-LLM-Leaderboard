@@ -3,8 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- Comparison of several Qwen-1.5 models
 
 ### Fixed
+- Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)
 
 ## [0.2.0]
 

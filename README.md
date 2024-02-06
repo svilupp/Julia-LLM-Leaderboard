@@ -77,9 +77,13 @@ In addition, we can consider the performance (score) versus the cost (measured i
 
 ![Cost-vs-Score](assets/cost-vs-score-scatter-paid.png)
 
-### OSS Models
+### Local Models
 
-Open-source models are generally not as good as the best paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
+Locally-hosted models are generally not as good as the best paid APIs, but they are getting close! Note that the "mistral-small" is already available to be run locally and there will be many future finetunes!
+
+> [!NOTE]
+> Big thank you to [01.ai](https://github.com/01-ai) and Jun Tian in particular for providing the compute for several parts of this benchmark!
+
 
 The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, magicoder:7b (Q6_K!) and codellama:13b (Q4_K_M!) give them a run for their money.
 
@@ -114,12 +118,13 @@ The best-performing models are in general around 33/34Bn parameters - Phind Code
 
 Same information, but as a bar chart:
 
-![Model-Scores-for-OSS-by-size](assets/model-comparison-oss.png)
+![Model-Scores-for-local-models-by-size](assets/model-comparison-local.png)
 
 And with a separate bar for each prompt template:
-![Model-Prompt-Scores-for-Paid-API](assets/model-prompt-comparison-oss.png)
+![Model-Prompt-Scores-for-local-models](assets/model-prompt-comparison-local.png)
 
-Note: I have noticed that some evals in Ollama/llama.cpp now score slightly higher now than in Dec-23, so it's on a roadmap to re-run the above evals.
+> [!NOTE]
+> I have noticed that some evals in Ollama/llama.cpp now score slightly higher now than in Dec-23, so it's on a roadmap to re-run the above evals.
 
 ### Overall Time to Run vs Score
 
@@ -127,7 +132,7 @@ Clearly, the paid APIs win (the latest release: GPT-3.5-Turbo-1106), but that's 
 
 ![Elapsed-vs-Score-Paid-APIs](assets/elapsed-vs-score-scatter-paid.png)
 
-![Elapsed-vs-Score-OSS-models](assets/elapsed-vs-score-scatter-oss.png)
+![Elapsed-vs-Score-Local-models](assets/elapsed-vs-score-scatter-local.png)
 
 ### Prompting Templates
 
