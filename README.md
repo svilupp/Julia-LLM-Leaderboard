@@ -12,7 +12,7 @@ Comparison of Julia language generation capabilities of various Large Language M
   - [Automated Evaluation Methodology](#automated-evaluation-methodology)
   - [Results (Preview)](#results-preview)
     - [Paid APIs](#paid-apis)
-    - [OSS Models](#oss-models)
+    - [Local Models](#local-models)
     - [Overall Time to Run vs Score](#overall-time-to-run-vs-score)
     - [Prompting Templates](#prompting-templates)
   - [Running Evaluation / Adding More Results](#running-evaluation--adding-more-results)
@@ -109,12 +109,20 @@ The best-performing models are in general around 33/34Bn parameters - Phind Code
 |     solar:10.7b-instruct-v1-q4_K_M |    18.8 |           17.7 |  35.2 |         50.0 |                31.1 |            107.0 |             10.0 |
 |         mistral:7b-instruct-q4_K_M |    13.9 |           13.0 |  34.8 |         50.0 |                26.5 |             80.0 |              0.0 |
 |        codellama:70b-instruct-q2_K |    11.2 |            9.4 |  29.8 |          0.0 |                37.7 |            198.0 |             29.0 |
+|            qwen:72b-chat-v1.5-q2_K |     8.9 |            8.4 |  27.2 |          0.0 |                37.6 |            211.0 |             45.0 |
+|          qwen:72b-chat-v1.5-q4_K_M |    11.4 |           10.4 |  27.0 |          0.0 |                40.4 |            231.0 |             52.0 |
 |                             llama2 |    17.1 |           16.3 |  26.5 |         25.0 |                26.5 |            131.0 |              0.0 |
 |                          orca2:13b |    20.1 |           18.3 |  23.1 |          0.0 |                30.6 |            166.0 |             11.0 |
 |                    stablelm-zephyr |     9.9 |            7.7 |  15.4 |          0.0 |                23.5 |            192.0 |              1.0 |
 |         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.4 |  14.9 |          0.0 |                22.9 |            188.0 |              0.0 |
 |               codellama:13b-python |    12.5 |           10.7 |  12.8 |          0.0 |                22.1 |            155.0 |              0.0 |
 |              phi:2.7b-chat-v2-q6_K |    13.0 |           11.6 |   8.9 |          0.0 |                19.4 |            222.0 |              0.0 |
+|          qwen:14b-chat-v1.5-q4_K_M |     3.2 |            2.9 |   8.1 |          0.0 |                21.4 |            299.0 |              6.0 |
+|            qwen:14b-chat-v1.5-q6_K |     3.8 |            3.5 |   6.5 |          0.0 |                19.9 |            310.0 |              5.0 |
+|           qwen:7b-chat-v1.5-q4_K_M |     2.2 |            2.0 |   3.4 |          0.0 |                14.7 |            329.0 |              1.0 |
+|             qwen:4b-chat-v1.5-q6_K |     2.7 |            1.5 |   3.3 |          0.0 |                12.4 |            327.0 |              0.0 |
+|             qwen:7b-chat-v1.5-q6_K |     2.7 |            2.5 |   3.0 |          0.0 |                12.3 |            326.0 |              0.0 |
+
 
 Same information, but as a bar chart:
 
@@ -145,12 +153,14 @@ Learnings so far:
 
 | Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
 |--------------------|----------------------|---------------------|--------------------------|----------------------------|
-|            InJulia |                 15.5 |                10.8 |                     51.1 |                       50.0 |
-|     JuliaExpertAsk |                 10.6 |                 7.1 |                     47.6 |                       50.0 |
-|     JuliaRecapTask |                 18.9 |                14.0 |                     46.8 |                       50.0 |
-| JuliaExpertCoTTask |                 17.3 |                12.8 |                     42.9 |                       50.0 |
-|  JuliaRecapCoTTask |                 18.0 |                13.2 |                     41.7 |                       50.0 |
+|            InJulia |                 13.6 |                 9.1 |                     44.3 |                       50.0 |
+|     JuliaExpertAsk |                  9.5 |                 6.1 |                     41.2 |                       50.0 |
+|     JuliaRecapTask |                 16.4 |                10.8 |                     40.1 |                       50.0 |
+| JuliaExpertCoTTask |                 15.0 |                10.0 |                     36.5 |                       25.0 |
+|  JuliaRecapCoTTask |                 15.7 |                10.7 |                     36.2 |                       25.0 |
 |               AsIs |                 36.3 |                11.2 |                      9.8 |                        0.0 |
+
+Note: The scores are negatively affected by the low performance of the Qwen-1.5 models.
 
 Make your own analysis with `examples/summarize_results.jl`!
 
