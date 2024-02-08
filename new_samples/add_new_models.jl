@@ -33,11 +33,11 @@ model_options = [
 ]
 model_options = [
     # "megadolphin:120b-v2.2-q4_K_M",
-    "deepseek-coder:33b-instruct-q4_K_M",
-    "codellama:34b-code-q4_K_M",
-    "phind-codellama:34b-v2-q4_K_M",
-    "phind-codellama:34b-v2",
-    "nous-hermes2:34b-yi-q4_K_M",
+    # "deepseek-coder:33b-instruct-q4_K_M",
+    # "codellama:34b-code-q4_K_M",
+    # "phind-codellama:34b-v2-q4_K_M",
+    # "phind-codellama:34b-v2",
+    # "nous-hermes2:34b-yi-q4_K_M",
     "dolphin-mixtral:8x7b-v2.7-q4_K_M",
     "nous-hermes2-mixtral:8x7b-dpo-q4_K_M",
     "codellama:13b-instruct",
@@ -90,7 +90,8 @@ df_all = allcombinations(DataFrame,
 @rtransform!(df_all, :name=split(:fn_definitions, "/")[end - 1])
 
 ## Load data
-df = load_evals("qwen-quantization-effects"; max_history = 0)
+df = load_evals("new_samples"; max_history = 0)
+@by df :model :cnt=$nrow
 
 # Overall summary by test case
 df_missing = @chain df begin
