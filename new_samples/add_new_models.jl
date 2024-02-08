@@ -16,7 +16,7 @@ using PromptingTools
 const PT = PromptingTools
 
 # ## Run for a single test case
-device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
+device = "NVIDIA-RTX-4090" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # Select models to run
 model_options = [
@@ -38,12 +38,13 @@ model_options = [
     # "phind-codellama:34b-v2-q4_K_M",
     # "phind-codellama:34b-v2",
     # "nous-hermes2:34b-yi-q4_K_M",
+    ## skip
     "dolphin-mixtral:8x7b-v2.7-q4_K_M",
     "nous-hermes2-mixtral:8x7b-dpo-q4_K_M",
-    "codellama:13b-instruct",
-    "openchat:7b-v3.5-0106-q4_K_M",
-    "openchat:7b-v3.5-0106-q6_K",
-    "magicoder",
+    # "codellama:13b-instruct",
+    # "openchat:7b-v3.5-0106-q4_K_M",
+    # "openchat:7b-v3.5-0106-q6_K",
+    # "magicoder",
 ]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
