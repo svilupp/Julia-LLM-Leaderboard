@@ -39,6 +39,8 @@ PROMPTS = [
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
     @rsubset :prompt_label in PROMPTS
+    ## remove qwen models as they are not correct!
+    @rsubset !occursin("qwen", :model)
 end;
 
 # ## Comparison by Model
