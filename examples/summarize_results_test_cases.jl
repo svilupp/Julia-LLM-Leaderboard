@@ -50,6 +50,8 @@ MD("There are currently $(length(fn_definitions)) test cases.") #hide
 
 ## Pre-aggregate winning models
 top_model = @chain df begin
+    ## remove qwen models as they are not correct!
+    @rsubset !occursin("qwen", :model)
     @rsubset !endswith(:model, "--optim")
     @by [:model, :name] :score=mean(:score)
     @rtransform :is_paid = :model in PAID_MODELS_DEFAULT

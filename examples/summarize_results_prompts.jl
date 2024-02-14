@@ -34,7 +34,11 @@ PROMPTS = [
 
 # ## Load Results
 # Use only the 5 most recent evaluations available for each definition/model/prompt
-df = load_evals(DIR_RESULTS; max_history = 5);
+df = @chain begin
+    load_evals(DIR_RESULTS; max_history = 5)
+    ## remove qwen models as they are not correct!
+    @rsubset !occursin("qwen", :model)
+end
 
 # ## Overview of Prompt Templates
 # We've added an "AsIs" prompt template, which is just the raw task definition (nothing added). 
