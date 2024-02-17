@@ -64,6 +64,8 @@ fig = @chain df begin
             xticklabelrotation = 45,
             title = "Paid APIs Performance"))
 end
+SAVE_PLOTS && save("assets/model-comparison-paid.png", fig)
+fig
 
 # Table:
 output = @chain df begin
