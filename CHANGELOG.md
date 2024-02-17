@@ -3,7 +3,8 @@
 ## [Unreleased]
 
 ### Added
-- Comparison of several Qwen-1.5 models
+- REMOVED: Comparison of several Qwen-1.5 models (removed due to poor scores caused by invalid GGUF)
+- Added benchmark evals for Google Gemini 1.0 Pro (latest version as of 17th Feb 2024)
 
 ### Fixed
 - Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)

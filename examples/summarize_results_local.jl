@@ -26,6 +26,7 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "gemini-1.0-pro-latest",
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "mistral:7b-instruct-v0.2-q4_0" => "4-9",

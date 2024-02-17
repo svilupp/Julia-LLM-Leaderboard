@@ -26,6 +26,7 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "gemini-1.0-pro-latest",
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
