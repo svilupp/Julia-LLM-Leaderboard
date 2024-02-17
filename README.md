@@ -56,16 +56,17 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 Across the board, GPT-4 tends to be among the best-performing models. The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as GPT-4 Turbo, yet it's much cheaper and faster (see the deep-dive in the docs)!
 "mistral-small" (the recently released "Mixtral 8x7B" model) is quite impressive, as it beats many of the GPT-3.5 Turbo in many cases.
 
-| Model              | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
-|--------------------|---------|-------|---------------------|------------------|------------------|------------|
-| gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
-| gpt-4-0125-preview |    30.2 |  73.1 |                31.7 |               26 |              140 |        1.3 |
-| gpt-3.5-turbo-0125 |     1.2 |  62.1 |                36.5 |               62 |               95 |       0.03 |
-|     mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
-|      mistral-small |     5.9 |  60.1 |                30.2 |               27 |               76 |       0.09 |
-| gpt-3.5-turbo-1106 |     2.1 |  58.4 |                39.2 |               82 |               97 |       0.04 |
-|       mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
-|      gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
+| Model                 | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
+|-----------------------|---------|-------|---------------------|------------------|------------------|------------|
+|    gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
+|    gpt-4-0125-preview |    30.2 |  73.1 |                31.7 |               26 |              140 |        1.3 |
+|    gpt-3.5-turbo-0125 |     1.2 |  62.1 |                36.5 |               62 |               95 |       0.03 |
+|        mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
+|         mistral-small |     5.9 |  60.1 |                30.2 |               27 |               76 |       0.09 |
+|    gpt-3.5-turbo-1106 |     2.1 |  58.4 |                39.2 |               82 |               97 |       0.04 |
+|          mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
+|         gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
+| gemini-1.0-pro-latest |     4.2 |  35.9 |                25.5 |               76 |                9 |        0.0 |
 
 Note: From mid-February 2024, "gpt-3.5-turbo" will point to the latest release, "gpt-3.5-turbo-0125" (deprecating the June release).
 

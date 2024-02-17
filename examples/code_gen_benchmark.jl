@@ -5,9 +5,13 @@
 # It saves: `evaluation__PROMPTABC__1SHOT__TIMESTAMP.json` and `conversation__PROMPTABC__1SHOT__TIMESTAMP.json`
 
 # ## Imports
+using Pkg;
+Pkg.activate(Base.current_project());
 using JuliaLLMLeaderboard
 using PromptingTools
 const PT = PromptingTools
+## Pkg.add("https://github.com/tylerjthomas9/GoogleGenAI.jl.git");
+## using GoogleGenAI # needed if you want to run Gemini!
 
 # ## Run for a single test case
 device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
@@ -24,6 +28,7 @@ model_options = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "gemini-1.0-pro-latest",
 ]
 
 # Or OSS models:
@@ -56,6 +61,8 @@ schema_lookup = Dict{String, Any}(["llama2", "openhermes2.5-mistral", "starling-
     "nous-hermes2:34b-yi-q4_K_M", "magicoder:7b-s-cl-q6_K",
     "mistral:7b-instruct-v0.2-q4_0", "mistral:7b-instruct-v0.2-q4_K_M"] .=> Ref(PT.OllamaSchema()))
 
+schema_lookup = merge(schema_lookup, Dict("gemini-1.0-pro-latest" => PT.GoogleSchema()))
+
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
@@ -64,7 +71,7 @@ fn_definitions = find_definitions("code_generation/")
 evals = run_benchmark(; fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = 5, schema_lookup, http_kwargs = (; readtimeout = 150));
+    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 150));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
@@ -154,4 +161,46 @@ evals = let
         end
     end
     evals
+end
+
+# ## Fill missing combinations
+# Sometimes APIs fail, this way to can re-run the missing samples
+
+using DataFramesMeta
+df_all = allcombinations(DataFrame,
+    "model" => model_options,
+    "prompt_label" => prompt_options,
+    "fn_definitions" => fn_definitions)
+@rtransform!(df_all, :name=split(:fn_definitions, "/")[end - 1])
+
+## Load data
+df = load_evals("code_generation"; max_history = 0)
+
+# Overall summary by test case
+df_missing = @chain df begin
+    @rsubset :model == "gemini-1.0-pro-latest"
+    @by [:model, :prompt_label, :name] begin
+        :score = mean(:score)
+        :count_zeros = count(==(0), :score)
+        :count = $nrow
+    end
+    leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
+    @rtransform :count_missing = 10 - coalesce(:count, 0)
+    @rsubset :count_missing > 0
+    @orderby -:count_missing
+end
+@by df_missing :name :count_missing=sum(:count_missing)
+
+## fill missing benchmarks
+for row in eachrow(df_missing)
+    @info "Running $(row.model) / $(row.prompt_label) / $(row.name) for $(row.count_missing) samples"
+    evals = run_benchmark(; fn_definitions = [row.fn_definitions],
+        models = [row.model],
+        prompt_labels = [row.prompt_label],
+        experiment = "",
+        auto_save = true, verbose = true,
+        device,
+        ## save_dir = "yi-quantization-effects",
+        num_samples = row.count_missing, schema_lookup,
+        http_kwargs = (; readtimeout = 150))
 end
