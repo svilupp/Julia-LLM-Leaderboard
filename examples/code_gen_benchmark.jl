@@ -59,7 +59,7 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions, models = ["gemma:7b-instruct-q6_K"],
+evals = run_benchmark(; fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 150));
