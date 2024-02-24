@@ -27,8 +27,7 @@ model_options = [
     "gpt-4-0125-preview",
     "mistral-tiny",
     "mistral-small",
-    "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "mistral-medium"    ## "gemini-1.0-pro-latest"
 ]
 
 # Or OSS models:
@@ -39,7 +38,7 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
     "mistral:7b-instruct-q4_K_M", "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K",
     "mistral:7b-instruct-v0.2-q6_K", "dolphin-phi:2.7b-v2.6-q6_K",
     "nous-hermes2:34b-yi-q4_K_M", "mistral:7b-instruct-v0.2-q4_0",
-    "mistral:7b-instruct-v0.2-q4_K_M"]
+    "mistral:7b-instruct-v0.2-q4_K_M", "gemma:7b-instruct-q6_K"]
 
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
@@ -48,20 +47,12 @@ prompt_options = [
     "InJulia",
     ## "AsIs", # no need to prove that it's worse
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ]
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
-schema_lookup = Dict{String, Any}(["llama2", "openhermes2.5-mistral", "starling-lm:latest",
-    "yi:34b-chat", "codellama:13b-instruct", "magicoder",
-    "stablelm-zephyr", "orca2:13b", "phind-codellama:34b-v2",
-    "deepseek-coder:33b-instruct-q4_K_M", "solar:10.7b-instruct-v1-q4_K_M",
-    "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K",
-    "mistral:7b-instruct-v0.2-q6_K", "dolphin-phi:2.7b-v2.6-q6_K",
-    "nous-hermes2:34b-yi-q4_K_M", "magicoder:7b-s-cl-q6_K",
-    "mistral:7b-instruct-v0.2-q4_0", "mistral:7b-instruct-v0.2-q4_K_M"] .=> Ref(PT.OllamaSchema()))
-
-schema_lookup = merge(schema_lookup, Dict("gemini-1.0-pro-latest" => PT.GoogleSchema()))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
+## schema_lookup = merge(schema_lookup, Dict("gemini-1.0-pro-latest" => PT.GoogleSchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")

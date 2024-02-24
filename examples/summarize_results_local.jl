@@ -26,7 +26,7 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "gemini-1.0-pro-latest"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "mistral:7b-instruct-v0.2-q4_0" => "4-9",
@@ -60,13 +60,14 @@ MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "qwen:14b-chat-v1.5-q4_K_M" => "10-29",
     "qwen:7b-chat-v1.5-q6_K" => "4-9",
     "qwen:7b-chat-v1.5-q4_K_M" => "4-9",
-    "qwen:4b-chat-v1.5-q6_K" => "4-9")
+    "qwen:4b-chat-v1.5-q6_K" => "4-9",
+    "gemma:7b-instruct-q6_K" => "4-9")
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ];
 
 # ## Load Results
@@ -140,7 +141,7 @@ fig = @chain df begin
         :score_median = median(:score)
         :cnt = $nrow
     end
-    @aside local average_ = @by(_, :model, :avg=mean(:score)) |>
+    @aside local average_ = @by(_, :model,:avg=mean(:score)) |>
                             x -> @orderby(x, -:avg).model
     data(_) *
     mapping(:model => sorter(average_) => "Model",

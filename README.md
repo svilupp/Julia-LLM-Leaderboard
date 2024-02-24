@@ -111,6 +111,7 @@ The best-performing models are in general around 33/34Bn parameters - Phind Code
 |         mistral:7b-instruct-q4_K_M |    13.9 |           13.0 |  34.8 |         50.0 |                26.5 |             80.0 |              0.0 |
 |        codellama:70b-instruct-q2_K |    11.2 |            9.4 |  29.8 |          0.0 |                37.7 |            198.0 |             29.0 |
 |                             llama2 |    17.1 |           16.3 |  26.5 |         25.0 |                26.5 |            131.0 |              0.0 |
+|             gemma:7b-instruct-q6_K |    20.9 |           22.1 |  25.9 |         25.0 |                25.2 |            147.0 |              2.0 |
 |                          orca2:13b |    20.1 |           18.3 |  23.1 |          0.0 |                30.6 |            166.0 |             11.0 |
 |                    stablelm-zephyr |     9.9 |            7.7 |  15.4 |          0.0 |                23.5 |            192.0 |              1.0 |
 |         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.4 |  14.9 |          0.0 |                22.9 |            188.0 |              0.0 |
