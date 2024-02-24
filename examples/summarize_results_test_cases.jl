@@ -25,14 +25,14 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ];
 struct MD #hide
     str::AbstractString #hide
@@ -71,7 +71,8 @@ end
         :count_full_score = count(==(100), :score)
         :count_samples = $nrow
     end
-    @rtransform :average_score=round(:average_score; digits = 1) :average_elapsed=round(:average_elapsed;
+    @rtransform :average_score=round(:average_score; digits = 1) :average_elapsed=round(
+        :average_elapsed;
         digits = 1)
     leftjoin(_,
         @rsubset(top_model, :is_paid),

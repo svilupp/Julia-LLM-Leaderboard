@@ -25,14 +25,14 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ];
 
 # ## Load Latest Results
