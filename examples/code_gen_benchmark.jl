@@ -16,6 +16,9 @@ const PT = PromptingTools
 # ## Run for a single test case
 device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
+# How many samples to generate for each model/prompt combination
+num_samples = 10
+
 # Select models to run
 #
 # Paid Models:
@@ -62,7 +65,7 @@ fn_definitions = find_definitions("code_generation/")
 evals = run_benchmark(; fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 150));
+    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
@@ -176,7 +179,7 @@ df_missing = @chain df begin
         :count = $nrow
     end
     leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
-    @rtransform :count_missing = 10 - coalesce(:count, 0)
+    @rtransform :count_missing = num_samples - coalesce(:count, 0)
     @rsubset :count_missing > 0
     @orderby -:count_missing
 end

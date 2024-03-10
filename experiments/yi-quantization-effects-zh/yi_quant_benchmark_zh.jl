@@ -15,6 +15,9 @@ PT.TEMPLATE_STORE[:JuliaExpertAskZH] = template
 device = "NVIDIA-RTX-4090-4x" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 # export CUDA_VISIBLE_DEVICES=0
 
+# How many samples to generate for each model/prompt combination
+num_samples = 10
+
 # Select models to run
 model_options = [
     # "yi:34b-chat-fp16",
@@ -52,7 +55,7 @@ evals = run_benchmark(; fn_definitions,
     auto_save = true, verbose = true,
     device,
     save_dir = "yi-quantization-effects-zh",
-    num_samples = 10, schema_lookup, http_kwargs = (; readtimeout = 200),
+    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 200),
     api_kwargs = (; options = (; num_gpu = 99)));
 
 @assert false "Stop here"
@@ -79,7 +82,7 @@ df_missing = @chain df begin
         :count = $nrow
     end
     leftjoin(df_all, _, on = [:model, :prompt_label, :name], validate = (true, true))
-    @rtransform :count_missing = 10 - coalesce(:count, 0)
+    @rtransform :count_missing = num_samples - coalesce(:count, 0)
     @rsubset :count_missing > 0
     @orderby -:count_missing
 end
