@@ -1,0 +1,1 @@
+./server -m models/cheater-7b.Q5_K_M.gguf -c 4096 -ngl 99 --port 10897
