@@ -19,6 +19,7 @@ Comparison of Julia language generation capabilities of various Large Language M
   - [Debugging](#debugging)
   - [Contributing Your Test Case](#contributing-your-test-case)
     - [Anatomy of `definition.toml`](#anatomy-of-definitiontoml)
+  - [Contributing GenAI Conversations with/about Julia](#contributing-genai-conversations-withabout-julia)
   - [Feedback and Improvements](#feedback-and-improvements)
 
 
@@ -201,6 +202,12 @@ The above fields can improve re-use of code across the examples/unit tests.
 
 See an example in `examples/create_definition.jl`. 
 You can validate your test case definitions with `validate_definition()`.
+
+## Contributing GenAI Conversations with/about Julia
+
+Please PR and add any relevant and MOSTLY CORRECT conversations with/in/about Julia in folder `julia_conversations/`. 
+
+The goal is to have a collection of conversations that are useful for finetuning Julia knowledge in smaller models.
 
 ## Feedback and Improvements
 We highly value community input. If you have suggestions or ideas for improvement, please open an issue. All contributions are welcome!
