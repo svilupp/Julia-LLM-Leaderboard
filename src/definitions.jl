@@ -116,10 +116,9 @@ function validate_definition(definition::AbstractDict;
 
         ## Run all examples
         if "executed_examples" in definition["criteria"]
-            example_count = run_code_blocks(cb,
+            example_count = run_code_blocks_additive(cb,
                 definition["examples"];
                 verbose,
-                prefix = imports_required,
                 setup_code = get(definition, "examples_setup", ""),
                 teardown_code = get(definition, "examples_teardown", ""))
             example_length = length(definition["examples"])
@@ -131,10 +130,9 @@ function validate_definition(definition::AbstractDict;
 
         ## Run all unit tests
         if "passed_unit_tests" in definition["criteria"]
-            test_count = run_code_blocks(cb,
+            test_count = run_code_blocks_additive(cb,
                 definition["unit_tests"];
                 verbose,
-                prefix = imports_required,
                 setup_code = get(definition, "unit_tests_setup", ""),
                 teardown_code = get(definition, "unit_tests_teardown", ""))
             test_length = length(definition["unit_tests"])
