@@ -1,0 +1,12 @@
+[code_generation]
+prompt = "Write a function `find_mean`. It computes the weighted mean of array `A` with weight vector `w`. Provide an example"
+reference_solution = "function find_mean(data::AbstractVector, weights::AbstractVector)\n    @assert length(data) == length(weights) \"Data and weights must have the same length\"\n    \n    total_weight = sum(weights)\n    @assert total_weight != 0 \"Total weight cannot be zero\"\n    \n    sum_product = sum(data .* weights)\n    \n    return sum_product / total_weight\nend\n"
+unit_tests = ["@testset \"find_mean\" begin\n    @test find_mean([1:3;], [1.0, 1.0, 0.5]) ≈ 1.8\n    @test find_mean(1:3, [1.0, 1.0, 0.5])    ≈ 1.8\n\n    # for wt in ([1.0, 1.0, 1.0], [1.0, 0.2, 0.0], [0.2, 0.0, 1.0])\n    #     @test find_mean(a, wt, 1) ≈ sum(a.*reshape(wt, length(wt), 1, 1), 1)/sum(wt)\n    #     @test find_mean(a, wt, 2) ≈ sum(a.*reshape(wt, 1, length(wt), 1), 2)/sum(wt)\n    #     @test find_mean(a, wt, 3) ≈ sum(a.*reshape(wt, 1, 1, length(wt)), 3)/sum(wt)\n    #     @test_throws ErrorException find_mean(a, f(wt), 4)\n    # end\nend\n"]
+examples_setup = "text = \"This function will compute the weighted mean of array `A` with weight vector `w`\""
+name = "find_mean"
+version = "1.0"
+imports = ["Test"]
+criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
+contributor = "svilupp"
+unit_tests_setup = "text = \"This function will compute the weighted mean of array `A` with weight vector `w`\""
+examples = ["find_ mean(arr)", "find_ mean([1,2,3,4,4])"]
