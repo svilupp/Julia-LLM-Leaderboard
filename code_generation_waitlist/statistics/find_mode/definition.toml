@@ -8,5 +8,5 @@ version = "1.0"
 imports = ["Test"]
 criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
 contributor = "ceferisbarov"
-unit_tests_setup = "arr1 = [1, 2, 3, 3, 4, 5, 5, 3]; arr2 = ['a', 'b', 'c', 'c', 'd', 'e', 'e', 'c']; d3 = [100]; d4 = [0.1, 0.2, 0.2, 0.3]"
+unit_tests_setup = "d1 = [1, 2, 3, 3, 4, 5, 5, 3]; d2 = ['a', 'b', 'c', 'c', 'd', 'e', 'e', 'c']; d3 = [100]; d4 = [0.1, 0.2, 0.2, 0.3]"
 examples = ["find_mode(arr)", "find_mode([1,2,3,4,4])", "find_mode([25])", "find_mode([0.1, 0.2, 0.2, 0.3])"]

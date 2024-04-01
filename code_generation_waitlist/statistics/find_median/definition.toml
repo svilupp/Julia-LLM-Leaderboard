@@ -2,7 +2,7 @@
 criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
 name = "find_median"
 contributor = "ceferisbarov"
-examples = ["find_median(arr)", "find_median([1,2,3,4,4])"]
+examples = ["find_median(arr)", "find_median([1,2,3,4,4])", "find_median([1.0, 1.5, 1.6, 1.8])", "find_median([5, 4, 6, 3])"]
 imports = ["Test", "Statistics"]
 prompt = "Write a function `find`. It computes median over arbitrary array. Provide an example"
 reference_solution = "function find_median(v::AbstractVector)\n    isempty(v) && throw(ArgumentError(\"median of an empty array is undefined.\"))\n    eltype(v)>:Missing && any(ismissing, v) && return missing\n    any(x -> x isa Number && isnan(x), v) && return convert(eltype(v), NaN)\n    inds = axes(v, 1)\n    n = length(inds)\n    mid = div(first(inds)+last(inds),2)\n    if isodd(n)\n        return middle(partialsort!(v,mid))\n    else\n        m = partialsort!(v, mid:mid+1)\n        return middle(m[1], m[2])\n    end\nend\n"
