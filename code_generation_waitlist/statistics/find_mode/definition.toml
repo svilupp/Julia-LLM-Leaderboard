@@ -1,12 +1,12 @@
 [code_generation]
 prompt = "Write a function `find_mode`. It computes mode over arbitrary array. Provide an example"
 reference_solution = "function find_mode(a::AbstractArray{T}) where T\n    isempty(a) && error(\"mode: input array cannot be empty.\")\n    cnts = Dict{T,Int}()\n    # first element\n    mc = 1\n    mv = a[1]\n    cnts[mv] = 1\n    # find the mode along with table construction\n    for i = 2 : length(a)\n        @inbounds x = a[i]\n        if haskey(cnts, x)\n            c = (cnts[x] += 1)\n            if c > mc\n                mc = c\n                mv = x\n            end\n        else\n            cnts[x] = 1\n            # in this case: c = 1, and thus c > mc won't happen\n        end\n    end\n    return mv\nend\n"
-unit_tests = ["d1 = [1, 2, 3, 3, 4, 5, 5, 3]\nd2 = ['a', 'b', 'c', 'c', 'd', 'e', 'e', 'c']\n@test mode(d1) == 3\n@test mode(d2) == 'c'\n"]
-examples_setup = "text = \"This function will compute mode over arbitrary array\""
+unit_tests = ["@test find_mode(d1) == 3", "@test find_mode(d2) == 'c'", "@test find_mode(d3) == 100", "@test find_mode(d4) == 0.2"]
+examples_setup = "arr = [1, 2, 3, 3, 4, 5, 5, 3];"
 name = "find_mode"
 version = "1.0"
 imports = ["Test"]
 criteria = ["parsed", "executed", "passed_unit_tests", "executed_examples"]
-contributor = "svilupp"
-unit_tests_setup = "text = \"This function will compute mode over arbitrary array\""
-examples = ["find_mode(arr)", "find_mode([1,2,3,4,4])"]
+contributor = "ceferisbarov"
+unit_tests_setup = "arr1 = [1, 2, 3, 3, 4, 5, 5, 3]; arr2 = ['a', 'b', 'c', 'c', 'd', 'e', 'e', 'c']; d3 = [100]; d4 = [0.1, 0.2, 0.2, 0.3]"
+examples = ["find_mode(arr)", "find_mode([1,2,3,4,4])", "find_mode([25])", "find_mode([0.1, 0.2, 0.2, 0.3])"]
