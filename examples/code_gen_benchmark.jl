@@ -29,9 +29,15 @@ model_options = [
     "gpt-4-1106-preview",
     "gpt-4-0125-preview",
     "mistral-tiny",
-    "mistral-small",
-    "mistral-medium"    ## "gemini-1.0-pro-latest"
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "claude-2.1"
 ]
+## "gemini-1.0-pro-latest"
 
 # Or OSS models:
 model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34b-chat",
@@ -56,16 +62,21 @@ prompt_options = [
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
 schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
 ## schema_lookup = merge(schema_lookup, Dict("gemini-1.0-pro-latest" => PT.GoogleSchema()))
+## schema_lookup = merge(schema_lookup,
+##     Dict(["claude-3-opus-20240229",
+##         "claude-3-sonnet-20240229",
+##         "claude-3-haiku-20240307",
+##         "claude-2.1"] .=> Ref(PT.AnthropicSchema())))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions, models = model_options,
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
+    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 100));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
@@ -161,6 +172,7 @@ end
 # Sometimes APIs fail, this way to can re-run the missing samples
 
 using DataFramesMeta
+using Statistics
 df_all = allcombinations(DataFrame,
     "model" => model_options,
     "prompt_label" => prompt_options,
@@ -172,7 +184,7 @@ df = load_evals("code_generation"; max_history = 0)
 
 # Overall summary by test case
 df_missing = @chain df begin
-    @rsubset :model == "gemini-1.0-pro-latest"
+    @rsubset :model in model_options
     @by [:model, :prompt_label, :name] begin
         :score = mean(:score)
         :count_zeros = count(==(0), :score)
@@ -196,5 +208,5 @@ for row in eachrow(df_missing)
         device,
         ## save_dir = "yi-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
-        http_kwargs = (; readtimeout = 150))
+        http_kwargs = (; readtimeout = 200))
 end

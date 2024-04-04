@@ -25,6 +25,13 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "mistral-large",
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
     "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
@@ -32,7 +39,9 @@ PROMPTS = [
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask"
+    "JuliaRecapCoTTask",
+    "JuliaExpertAskXML",
+    "JuliaExpertCoTTaskXML"
 ];
 struct MD #hide
     str::AbstractString #hide

@@ -26,6 +26,14 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "mistral-large",
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "claude-2.1",
     "gemini-1.0-pro-latest"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
@@ -141,7 +149,7 @@ fig = @chain df begin
         :score_median = median(:score)
         :cnt = $nrow
     end
-    @aside local average_ = @by(_, :model,:avg=mean(:score)) |>
+    @aside local average_ = @by(_, :model, :avg=mean(:score)) |>
                             x -> @orderby(x, -:avg).model
     data(_) *
     mapping(:model => sorter(average_) => "Model",
