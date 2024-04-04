@@ -54,20 +54,29 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 
 ### Paid APIs
 
-Across the board, GPT-4 tends to be among the best-performing models. The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as GPT-4 Turbo, yet it's much cheaper and faster (see the deep-dive in the docs)!
-"mistral-small" (the recently released "Mixtral 8x7B" model) is quite impressive, as it beats many of the GPT-3.5 Turbo in many cases.
+Across the board, Claude 3 and GPT-4 are the best-performing models. The real surprise is the performance of Claude 3 Haiku which is 50-100x cheaper than Claude 3 Opus but still beats GPT-4.
+The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as GPT-4 Turbo, yet it's much cheaper and faster (see the deep-dive in the docs)!
+"mistral-small" ("Mixtral 8x7B" model) is quite impressive, as it beats many of the GPT-3.5 Turbo in many cases.
 
-| Model                 | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
-|-----------------------|---------|-------|---------------------|------------------|------------------|------------|
-|    gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
-|    gpt-4-0125-preview |    30.2 |  73.1 |                31.7 |               26 |              140 |        1.3 |
-|    gpt-3.5-turbo-0125 |     1.2 |  62.1 |                36.5 |               62 |               95 |       0.03 |
-|        mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
-|         mistral-small |     5.9 |  60.1 |                30.2 |               27 |               76 |       0.09 |
-|    gpt-3.5-turbo-1106 |     2.1 |  58.4 |                39.2 |               82 |               97 |       0.04 |
-|          mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
-|         gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
-| gemini-1.0-pro-latest |     4.2 |  35.9 |                25.5 |               76 |                9 |        0.0 |
+| Model                    | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
+|--------------------------|---------|-------|---------------------|------------------|------------------|------------|
+|   claude-3-opus-20240229 |    20.3 |  83.2 |                19.6 |                2 |              329 |        3.9 |
+| claude-3-sonnet-20240229 |     8.7 |  78.8 |                26.2 |               22 |              308 |       0.73 |
+|  claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
+|       gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
+|       gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
+|       mistral-large-2402 |     8.5 |  71.6 |                27.2 |               13 |              223 |        0.0 |
+|               claude-2.1 |    10.1 |  67.9 |                30.8 |               47 |              229 |        0.8 |
+|       gpt-3.5-turbo-0125 |     1.2 |  61.7 |                36.6 |              125 |              192 |       0.03 |
+|           mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
+|            mistral-small |     5.9 |  60.1 |                30.2 |               27 |               76 |       0.09 |
+|       mistral-small-2402 |     5.3 |  59.9 |                29.4 |               31 |              169 |        0.0 |
+|       gpt-3.5-turbo-1106 |     2.1 |  58.4 |                39.2 |               82 |               97 |       0.04 |
+|             mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
+|            gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
+|    gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
+
+
 
 Note: From mid-February 2024, "gpt-3.5-turbo" will point to the latest release, "gpt-3.5-turbo-0125" (deprecating the June release).
 
@@ -149,16 +158,16 @@ Learnings so far:
 - Never use the "AsIs" prompt (ie, raw task definition). ALWAYS add some context around the language, situation, etc.
 - Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts ("CoT" stands for Chain of Thought) might be confusing the smaller models, hence why this prompt is so effective on average.
 
-| Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
-|--------------------|----------------------|---------------------|--------------------------|----------------------------|
-|            InJulia |                 13.6 |                 9.1 |                     44.3 |                       50.0 |
-|     JuliaExpertAsk |                  9.5 |                 6.1 |                     41.2 |                       50.0 |
-|     JuliaRecapTask |                 16.4 |                10.8 |                     40.1 |                       50.0 |
-| JuliaExpertCoTTask |                 15.0 |                10.0 |                     36.5 |                       25.0 |
-|  JuliaRecapCoTTask |                 15.7 |                10.7 |                     36.2 |                       25.0 |
-|               AsIs |                 36.3 |                11.2 |                      9.8 |                        0.0 |
+| Prompt Template       | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
+|-----------------------|----------------------|---------------------|--------------------------|----------------------------|
+|               InJulia |                 14.4 |                10.0 |                     53.4 |                       50.0 |
+|        JuliaExpertAsk |                 10.0 |                 6.7 |                     50.6 |                       50.0 |
+|        JuliaRecapTask |                 17.5 |                12.6 |                     50.1 |                       50.0 |
+|    JuliaExpertCoTTask |                 15.9 |                11.1 |                     46.7 |                       50.0 |
+|     JuliaRecapCoTTask |                 16.7 |                11.9 |                     45.7 |                       50.0 |
 
-Note: The scores are negatively affected by the low performance of the Qwen-1.5 models.
+
+Note: The XML-based templates are tested only for Claude 3 models (Haiku and Sonnet), that's why we remove them from the comparison.
 
 Make your own analysis with `examples/summarize_results.jl`!
 

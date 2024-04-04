@@ -23,20 +23,29 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "mistral-large",
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "claude-2.1",
+    "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ];
 
 # ## Load Results
 # Use only the 5 most recent evaluations available for each definition/model/prompt
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
+    @rsubset :prompt_label in PROMPTS
     ## remove qwen models as they are not correct!
     @rsubset !occursin("qwen", :model)
 end
