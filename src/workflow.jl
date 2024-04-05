@@ -66,7 +66,7 @@ function run_benchmark(;
             "InJulia",
             "AsIs",
             "JuliaRecapTask",
-            "JuliaRecapCoTTask",
+            "JuliaRecapCoTTask"
         ],
         api_kwargs::NamedTuple = NamedTuple(),
         http_kwargs::NamedTuple = (; readtimeout = 300),
@@ -91,6 +91,8 @@ function run_benchmark(;
         "AsIs",
         "JuliaRecapTask",
         "JuliaRecapCoTTask",
+        "JuliaExpertCoTTaskXML",
+        "JuliaExpertAskXML"
     ]
     unknown_prompts = setdiff(prompt_labels, available_prompts)
     @assert isempty(unknown_prompts) "Unknown prompt labels: $(join(unknown_prompts, ", "))"
@@ -153,6 +155,15 @@ function run_benchmark(;
                             http_kwargs = http_kwargs_,
                             return_all = true,
                             verbose = (verbose > 1))
+                    elseif prompt_label == "JuliaExpertAskXML"
+                        AIGenerate(schema,
+                            :JuliaExpertAskXML;
+                            ask = definition["prompt"],
+                            model,
+                            api_kwargs,
+                            http_kwargs = http_kwargs_,
+                            return_all = true,
+                            verbose = (verbose > 1))
                     elseif prompt_label == "JuliaExpertAskZH"
                         AIGenerate(schema,
                             :JuliaExpertAskZH;
@@ -165,6 +176,16 @@ function run_benchmark(;
                     elseif prompt_label == "JuliaExpertCoTTask"
                         AIGenerate(schema,
                             :JuliaExpertCoTTask;
+                            task = definition["prompt"],
+                            data = first(definition["examples"]),
+                            model,
+                            api_kwargs,
+                            http_kwargs = http_kwargs_,
+                            return_all = true,
+                            verbose = (verbose > 1))
+                    elseif prompt_label == "JuliaExpertCoTTaskXML"
+                        AIGenerate(schema,
+                            :JuliaExpertCoTTaskXML;
                             task = definition["prompt"],
                             data = first(definition["examples"]),
                             model,
@@ -252,7 +273,7 @@ function run_benchmark(;
                         (:codefixing, codefixing_label),
                         (:model, model),
                         (:prompt, prompt_label),
-                        (:sample, i),
+                        (:sample, i)
                     ])
             end
         end

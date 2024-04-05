@@ -26,20 +26,28 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
-    "gemini-1.0-pro-latest",
+    "mistral-large",
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "claude-2.1",
+    "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
     "InJulia",
     "JuliaRecapTask",
-    "JuliaRecapCoTTask",
+    "JuliaRecapCoTTask"
 ];
 
 # ## Load Latest Results
-# Use only the 5 most recent evaluations available for each definition/model/prompt
+# Use only the 10 most recent evaluations available for each definition/model/prompt
 df = @chain begin
-    load_evals(DIR_RESULTS; max_history = 5)
+    load_evals(DIR_RESULTS; max_history = 10)
     @rsubset :model in PAID_MODELS_DEFAULT && :prompt_label in PROMPTS
 end;
 
@@ -57,7 +65,8 @@ fig = @chain df begin
     @aside local order_ = _.model
     data(_) *
     mapping(:model => sorter(order_) => "Model",
-        :score => "Avg. Score (Max 100 pts)") * visual(BarPlot; bar_labels = :y,
+        :score => "Avg. Score (Max 100 pts)") *
+    visual(BarPlot; bar_labels = :y,
         label_offset = 0)
     draw(;
         axis = (limits = (nothing, nothing, 0, 100),
@@ -109,6 +118,7 @@ fig = @chain df begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(;
+        figure = (; size = (900, 600)),
         axis = (xticklabelrotation = 45, title = "Comparison for Paid APIs"))
 end
 SAVE_PLOTS && save("assets/model-prompt-comparison-paid.png", fig)
@@ -234,3 +244,4 @@ output = @chain df begin
     leftjoin(average_, on = :name)
     @orderby -:AverageScore
 end
+markdown_table(output)
