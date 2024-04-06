@@ -131,21 +131,21 @@ for fn in fn_definitions
     println(io,
         "**Winning Paid Model:** \"$(winner.model)\" with average score $(round(winner.score;digits=1)) (Full score: $(winner.count_full_score)/$(winner.cnt), Zero score: $(winner.count_zero_score)/$(winner.cnt)) \n")
     ## OSS winner
-    winner = @chain df begin
-        @rsubset !any(startswith.(:model, PAID_MODELS_DEFAULT)) && :prompt_label in PROMPTS
-        @rsubset :name == d["name"]
-        @by :model begin
-            :score = mean(:score)
-            :elapsed = mean(:elapsed_seconds)
-            :count_zero_score = count(iszero, :score)
-            :count_full_score = count(==(100), :score)
-            :cnt = $nrow
-        end
-        @orderby -:score
-        first
-    end
-    println(io,
-        "**Winning Locally-hosted Model:** \"$(winner.model)\" with average score $(round(winner.score;digits=1)) (Full score: $(winner.count_full_score)/$(winner.cnt), Zero score: $(winner.count_zero_score)/$(winner.cnt)) \n")
+    ## winner = @chain df begin
+    ##     @rsubset !any(startswith.(:model, PAID_MODELS_DEFAULT)) && :prompt_label in PROMPTS
+    ##     @rsubset :name == d["name"]
+    ##     @by :model begin
+    ##         :score = mean(:score)
+    ##         :elapsed = mean(:elapsed_seconds)
+    ##         :count_zero_score = count(iszero, :score)
+    ##         :count_full_score = count(==(100), :score)
+    ##         :cnt = $nrow
+    ##     end
+    ##     @orderby -:score
+    ##     first
+    ## end
+    ## println(io,
+    ##     "**Winning Locally-hosted Model:** \"$(winner.model)\" with average score $(round(winner.score;digits=1)) (Full score: $(winner.count_full_score)/$(winner.cnt), Zero score: $(winner.count_zero_score)/$(winner.cnt)) \n")
     println(io, "\n")
 end
 MD(String(take!(io)))

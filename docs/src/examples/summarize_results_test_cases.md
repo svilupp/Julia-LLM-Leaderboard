@@ -30,6 +30,14 @@ PAID_MODELS_DEFAULT = [
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
+    "mistral-large",
+    "mistral-small-2402",
+    "mistral-medium-2312",
+    "mistral-large-2402",
+    "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
+    "gemini-1.0-pro-latest"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
@@ -37,6 +45,8 @@ PROMPTS = [
     "InJulia",
     "JuliaRecapTask",
     "JuliaRecapCoTTask",
+    "JuliaExpertAskXML",
+    "JuliaExpertCoTTaskXML"
 ];
 ````
 
@@ -57,6 +67,8 @@ Overview of all test cases, sorted by average score and with the winning model h
 ````julia
 # Pre-aggregate winning models
 top_model = @chain df begin
+    # remove qwen models as they are not correct!
+    @rsubset !occursin("qwen", :model)
     @rsubset !endswith(:model, "--optim")
     @by [:model, :name] :score=mean(:score)
     @rtransform :is_paid = :model in PAID_MODELS_DEFAULT
@@ -75,7 +87,8 @@ end
         :count_full_score = count(==(100), :score)
         :count_samples = $nrow
     end
-    @rtransform :average_score=round(:average_score; digits = 1) :average_elapsed=round(:average_elapsed;
+    @rtransform :average_score=round(:average_score; digits = 1) :average_elapsed=round(
+        :average_elapsed;
         digits = 1)
     leftjoin(_,
         @rsubset(top_model, :is_paid),
@@ -94,7 +107,7 @@ end
 ````
 
 ```@raw html
-<div><div style = "float: left;"><span>14×8 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">Name</th><th style = "text-align: left;">Average Score</th><th style = "text-align: left;">Average Elapsed</th><th style = "text-align: left;">Count Zero Score</th><th style = "text-align: left;">Count Full Score</th><th style = "text-align: left;">Count Samples</th><th style = "text-align: left;">Paid Winner</th><th style = "text-align: left;">Oss Winner</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Union{Missing, String}" style = "text-align: left;">String?</th><th title = "Union{Missing, String}" style = "text-align: left;">String?</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">timezone_bumper</td><td style = "text-align: right;">52.8</td><td style = "text-align: right;">12.2</td><td style = "text-align: right;">293</td><td style = "text-align: right;">314</td><td style = "text-align: right;">917</td><td style = "text-align: left;">mistral-medium (97.3)</td><td style = "text-align: left;">deepseek-coder:33b-instruct-q4_K_M (100.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">FloatWithUnits</td><td style = "text-align: right;">57.6</td><td style = "text-align: right;">11.1</td><td style = "text-align: right;">340</td><td style = "text-align: right;">474</td><td style = "text-align: right;">1027</td><td style = "text-align: left;">gpt-3.5-turbo-0125 (94.0)</td><td style = "text-align: left;">qwen:72b-chat-v1.5-q4_K_M (99.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">weather_data_analyzer</td><td style = "text-align: right;">44.3</td><td style = "text-align: right;">17.8</td><td style = "text-align: right;">373</td><td style = "text-align: right;">41</td><td style = "text-align: right;">975</td><td style = "text-align: left;">gpt-4-0125-preview (87.8)</td><td style = "text-align: left;">magicoder:7b-s-cl-q6_K (83.7)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">keep_only_names</td><td style = "text-align: right;">46.3</td><td style = "text-align: right;">10.2</td><td style = "text-align: right;">343</td><td style = "text-align: right;">182</td><td style = "text-align: right;">923</td><td style = "text-align: left;">gpt-4-0125-preview (85.2)</td><td style = "text-align: left;">magicoder:7b-s-cl-q6_K (83.3)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td><td style = "text-align: left;">wrap_string</td><td style = "text-align: right;">48.1</td><td style = "text-align: right;">14.2</td><td style = "text-align: right;">300</td><td style = "text-align: right;">44</td><td style = "text-align: right;">920</td><td style = "text-align: left;">gpt-4-0125-preview (93.7)</td><td style = "text-align: left;">magicoder:7b-s-cl-q6_K (83.3)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">6</td><td style = "text-align: left;">clean_column</td><td style = "text-align: right;">49.5</td><td style = "text-align: right;">9.5</td><td style = "text-align: right;">303</td><td style = "text-align: right;">208</td><td style = "text-align: right;">956</td><td style = "text-align: left;">gpt-4-0125-preview (84.5)</td><td style = "text-align: left;">mistral:7b-instruct-v0.2-q4_0 (77.8)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">7</td><td style = "text-align: left;">ispersonal</td><td style = "text-align: right;">35.1</td><td style = "text-align: right;">13.8</td><td style = "text-align: right;">341</td><td style = "text-align: right;">174</td><td style = "text-align: right;">925</td><td style = "text-align: left;">gpt-3.5-turbo-0125 (74.0)</td><td style = "text-align: left;">qwen:72b-chat-v1.5-q2_K (69.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">8</td><td style = "text-align: left;">event_scheduler</td><td style = "text-align: right;">34.5</td><td style = "text-align: right;">17.4</td><td style = "text-align: right;">425</td><td style = "text-align: right;">53</td><td style = "text-align: right;">974</td><td style = "text-align: left;">gpt-4-0125-preview (94.4)</td><td style = "text-align: left;">phind-codellama:34b-v2 (62.2)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">9</td><td style = "text-align: left;">q_and_a_extractor</td><td style = "text-align: right;">30.0</td><td style = "text-align: right;">16.3</td><td style = "text-align: right;">433</td><td style = "text-align: right;">0</td><td style = "text-align: right;">945</td><td style = "text-align: left;">gpt-4-1106-preview (47.6)</td><td style = "text-align: left;">magicoder:7b-s-cl-q6_K (54.4)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">10</td><td style = "text-align: left;">add_yearmonth</td><td style = "text-align: right;">35.4</td><td style = "text-align: right;">14.4</td><td style = "text-align: right;">362</td><td style = "text-align: right;">67</td><td style = "text-align: right;">980</td><td style = "text-align: left;">gpt-4-0125-preview (76.2)</td><td style = "text-align: left;">codellama:13b-instruct-q4_K_M (53.2)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">11</td><td style = "text-align: left;">pig_latinify</td><td style = "text-align: right;">25.3</td><td style = "text-align: right;">18.5</td><td style = "text-align: right;">390</td><td style = "text-align: right;">0</td><td style = "text-align: right;">921</td><td style = "text-align: left;">gpt-4-1106-preview (54.8)</td><td style = "text-align: left;">deepseek-coder:33b-instruct-q4_K_M (51.1)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">12</td><td style = "text-align: left;">audi_filter</td><td style = "text-align: right;">28.0</td><td style = "text-align: right;">15.1</td><td style = "text-align: right;">445</td><td style = "text-align: right;">49</td><td style = "text-align: right;">974</td><td style = "text-align: left;">gpt-3.5-turbo-0125 (60.0)</td><td style = "text-align: left;">nous-hermes2:34b-yi-q4_K_M (48.3)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">13</td><td style = "text-align: left;">count_model_rows</td><td style = "text-align: right;">38.2</td><td style = "text-align: right;">12.4</td><td style = "text-align: right;">363</td><td style = "text-align: right;">99</td><td style = "text-align: right;">975</td><td style = "text-align: left;">gpt-4-0125-preview (98.4)</td><td style = "text-align: left;">codellama:13b-instruct-q4_K_M (47.9)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">14</td><td style = "text-align: left;">extract_julia_code</td><td style = "text-align: right;">29.3</td><td style = "text-align: right;">13.5</td><td style = "text-align: right;">425</td><td style = "text-align: right;">0</td><td style = "text-align: right;">951</td><td style = "text-align: left;">gpt-4-0125-preview (51.6)</td><td style = "text-align: left;">yi:34b-chat (46.1)</td></tr></tbody></table></div>
+<div><div style = "float: left;"><span>14×8 DataFrame</span></div><div style = "clear: both;"></div></div><div class = "data-frame" style = "overflow-x: scroll;"><table class = "data-frame" style = "margin-bottom: 6px;"><thead><tr class = "header"><th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th><th style = "text-align: left;">Name</th><th style = "text-align: left;">Average Score</th><th style = "text-align: left;">Average Elapsed</th><th style = "text-align: left;">Count Zero Score</th><th style = "text-align: left;">Count Full Score</th><th style = "text-align: left;">Count Samples</th><th style = "text-align: left;">Paid Winner</th><th style = "text-align: left;">Oss Winner</th></tr><tr class = "subheader headerLastRow"><th class = "rowNumber" style = "font-weight: bold; text-align: right;"></th><th title = "String" style = "text-align: left;">String</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Float64" style = "text-align: left;">Float64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Int64" style = "text-align: left;">Int64</th><th title = "Union{Missing, String}" style = "text-align: left;">String?</th><th title = "Union{Missing, String}" style = "text-align: left;">String?</th></tr></thead><tbody><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td><td style = "text-align: left;">clean_column</td><td style = "text-align: right;">55.9</td><td style = "text-align: right;">9.1</td><td style = "text-align: right;">309</td><td style = "text-align: right;">335</td><td style = "text-align: right;">1176</td><td style = "text-align: left;">claude-3-opus-20240229 (100.0)</td><td style = "text-align: left;">claude-2.1 (100.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td><td style = "text-align: left;">timezone_bumper</td><td style = "text-align: right;">58.2</td><td style = "text-align: right;">11.7</td><td style = "text-align: right;">300</td><td style = "text-align: right;">458</td><td style = "text-align: right;">1137</td><td style = "text-align: left;">claude-3-opus-20240229 (100.0)</td><td style = "text-align: left;">deepseek-coder:33b-instruct-q4_K_M (100.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td><td style = "text-align: left;">wrap_string</td><td style = "text-align: right;">50.6</td><td style = "text-align: right;">13.7</td><td style = "text-align: right;">331</td><td style = "text-align: right;">63</td><td style = "text-align: right;">1140</td><td style = "text-align: left;">gpt-4-0125-preview (93.7)</td><td style = "text-align: left;">claude-2.1 (92.8)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td><td style = "text-align: left;">FloatWithUnits</td><td style = "text-align: right;">61.5</td><td style = "text-align: right;">10.5</td><td style = "text-align: right;">375</td><td style = "text-align: right;">642</td><td style = "text-align: right;">1247</td><td style = "text-align: left;">claude-3-haiku-20240307 (100.0)</td><td style = "text-align: left;">deepseek-coder:33b-instruct-q4_K_M (91.7)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td><td style = "text-align: left;">keep_only_names</td><td style = "text-align: right;">51.8</td><td style = "text-align: right;">9.7</td><td style = "text-align: right;">348</td><td style = "text-align: right;">275</td><td style = "text-align: right;">1143</td><td style = "text-align: left;">mistral-large-2402 (97.6)</td><td style = "text-align: left;">claude-2.1 (91.2)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">6</td><td style = "text-align: left;">event_scheduler</td><td style = "text-align: right;">39.8</td><td style = "text-align: right;">16.4</td><td style = "text-align: right;">444</td><td style = "text-align: right;">107</td><td style = "text-align: right;">1194</td><td style = "text-align: left;">gpt-4-0125-preview (94.4)</td><td style = "text-align: left;">claude-2.1 (84.8)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">7</td><td style = "text-align: left;">weather_data_analyzer</td><td style = "text-align: right;">49.3</td><td style = "text-align: right;">16.7</td><td style = "text-align: right;">386</td><td style = "text-align: right;">58</td><td style = "text-align: right;">1195</td><td style = "text-align: left;">claude-3-haiku-20240307 (92.9)</td><td style = "text-align: left;">magicoder:7b-s-cl-q6_K (83.7)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">8</td><td style = "text-align: left;">q_and_a_extractor</td><td style = "text-align: right;">34.3</td><td style = "text-align: right;">15.3</td><td style = "text-align: right;">459</td><td style = "text-align: right;">0</td><td style = "text-align: right;">1165</td><td style = "text-align: left;">claude-3-opus-20240229 (67.3)</td><td style = "text-align: left;">claude-2.1 (72.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">9</td><td style = "text-align: left;">ispersonal</td><td style = "text-align: right;">37.9</td><td style = "text-align: right;">12.9</td><td style = "text-align: right;">368</td><td style = "text-align: right;">230</td><td style = "text-align: right;">1145</td><td style = "text-align: left;">claude-3-sonnet-20240229 (74.3)</td><td style = "text-align: left;">nous-hermes2:34b-yi-q4_K_M (68.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">10</td><td style = "text-align: left;">extract_julia_code</td><td style = "text-align: right;">32.9</td><td style = "text-align: right;">12.4</td><td style = "text-align: right;">452</td><td style = "text-align: right;">0</td><td style = "text-align: right;">1171</td><td style = "text-align: left;">claude-3-opus-20240229 (65.2)</td><td style = "text-align: left;">claude-2.1 (55.0)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">11</td><td style = "text-align: left;">count_model_rows</td><td style = "text-align: right;">43.5</td><td style = "text-align: right;">11.6</td><td style = "text-align: right;">388</td><td style = "text-align: right;">171</td><td style = "text-align: right;">1195</td><td style = "text-align: left;">claude-3-opus-20240229 (98.4)</td><td style = "text-align: left;">claude-2.1 (53.9)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">12</td><td style = "text-align: left;">add_yearmonth</td><td style = "text-align: right;">40.6</td><td style = "text-align: right;">13.6</td><td style = "text-align: right;">382</td><td style = "text-align: right;">147</td><td style = "text-align: right;">1200</td><td style = "text-align: left;">claude-3-haiku-20240307 (87.7)</td><td style = "text-align: left;">claude-2.1 (53.2)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">13</td><td style = "text-align: left;">pig_latinify</td><td style = "text-align: right;">27.7</td><td style = "text-align: right;">17.4</td><td style = "text-align: right;">426</td><td style = "text-align: right;">0</td><td style = "text-align: right;">1141</td><td style = "text-align: left;">claude-3-opus-20240229 (68.9)</td><td style = "text-align: left;">deepseek-coder:33b-instruct-q4_K_M (51.1)</td></tr><tr><td class = "rowNumber" style = "font-weight: bold; text-align: right;">14</td><td style = "text-align: left;">audi_filter</td><td style = "text-align: right;">32.4</td><td style = "text-align: right;">14.0</td><td style = "text-align: right;">464</td><td style = "text-align: right;">89</td><td style = "text-align: right;">1194</td><td style = "text-align: left;">claude-3-opus-20240229 (94.0)</td><td style = "text-align: left;">nous-hermes2:34b-yi-q4_K_M (48.3)</td></tr></tbody></table></div>
 ```
 
 ## Individual Test Cases
@@ -170,9 +183,9 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-0125-preview" with average score 76.2 (Full score: 11/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-haiku-20240307" with average score 87.7 (Full score: 28/35, Zero score: 3/35) 
 
-**Winning Locally-hosted Model:** "codellama:13b-instruct-q4_K_M" with average score 53.2 (Full score: 4/25, Zero score: 5/25) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 53.2 (Full score: 1/25, Zero score: 0/25) 
 
 
 
@@ -199,7 +212,7 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-3.5-turbo-0125" with average score 60.0 (Full score: 7/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 94.0 (Full score: 22/25, Zero score: 0/25) 
 
 **Winning Locally-hosted Model:** "phind-codellama:34b-v2" with average score 53.5 (Full score: 6/20, Zero score: 3/20) 
 
@@ -225,9 +238,9 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-0125-preview" with average score 98.4 (Full score: 23/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 98.4 (Full score: 23/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "phind-codellama:34b-v2" with average score 49.9 (Full score: 4/20, Zero score: 3/20) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 53.9 (Full score: 2/25, Zero score: 5/25) 
 
 
 
@@ -264,7 +277,7 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-0125-preview" with average score 87.8 (Full score: 12/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-haiku-20240307" with average score 92.9 (Full score: 11/35, Zero score: 0/35) 
 
 **Winning Locally-hosted Model:** "magicoder:7b-s-cl-q6_K" with average score 83.7 (Full score: 0/15, Zero score: 0/15) 
 
@@ -289,7 +302,7 @@ Base.show(io::IO, f::FloatWithUnits) = print(io, f.value, " ", f.unit)
 
 `````
 
-**Winning Paid Model:** "mistral-medium" with average score 98.0 (Full score: 23/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-haiku-20240307" with average score 100.0 (Full score: 35/35, Zero score: 0/35) 
 
 **Winning Locally-hosted Model:** "qwen:72b-chat-v1.5-q4_K_M" with average score 99.0 (Full score: 24/25, Zero score: 0/25) 
 
@@ -312,9 +325,9 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-1106-preview" with average score 90.5 (Full score: 11/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 100.0 (Full score: 25/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "mistral:7b-instruct-v0.2-q6_K" with average score 83.0 (Full score: 10/15, Zero score: 1/15) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 100.0 (Full score: 25/25, Zero score: 0/25) 
 
 
 
@@ -353,7 +366,7 @@ end
 
 **Winning Paid Model:** "gpt-4-0125-preview" with average score 94.4 (Full score: 15/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "phind-codellama:34b-v2" with average score 66.8 (Full score: 4/20, Zero score: 3/20) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 84.8 (Full score: 14/25, Zero score: 0/25) 
 
 
 
@@ -378,9 +391,9 @@ end
 
 `````
 
-**Winning Paid Model:** "mistral-small" with average score 52.2 (Full score: 0/25, Zero score: 3/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 65.2 (Full score: 0/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "yi:34b-chat" with average score 53.0 (Full score: 0/20, Zero score: 2/20) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 55.0 (Full score: 0/25, Zero score: 1/25) 
 
 
 
@@ -407,7 +420,7 @@ ispersonal(vehicle::Union{Car,Motorcycle}) = true
 
 `````
 
-**Winning Paid Model:** "gpt-3.5-turbo-0125" with average score 74.0 (Full score: 15/25, Zero score: 3/25) 
+**Winning Paid Model:** "claude-3-sonnet-20240229" with average score 74.3 (Full score: 20/35, Zero score: 1/35) 
 
 **Winning Locally-hosted Model:** "qwen:72b-chat-v1.5-q2_K" with average score 69.0 (Full score: 15/25, Zero score: 5/25) 
 
@@ -430,9 +443,9 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-1106-preview" with average score 91.0 (Full score: 12/25, Zero score: 0/25) 
+**Winning Paid Model:** "mistral-large-2402" with average score 97.6 (Full score: 22/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "magicoder:7b-s-cl-q6_K" with average score 83.3 (Full score: 9/15, Zero score: 0/15) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 91.2 (Full score: 17/25, Zero score: 0/25) 
 
 
 
@@ -467,7 +480,7 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-1106-preview" with average score 61.4 (Full score: 0/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 68.9 (Full score: 0/25, Zero score: 1/25) 
 
 **Winning Locally-hosted Model:** "deepseek-coder:33b-instruct-q4_K_M" with average score 57.9 (Full score: 0/15, Zero score: 0/15) 
 
@@ -498,9 +511,9 @@ end
 
 `````
 
-**Winning Paid Model:** "gpt-4-1106-preview" with average score 53.3 (Full score: 0/25, Zero score: 2/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 67.3 (Full score: 0/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "magicoder:7b-s-cl-q6_K" with average score 54.4 (Full score: 0/15, Zero score: 2/15) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 72.0 (Full score: 0/25, Zero score: 1/25) 
 
 
 
@@ -524,7 +537,7 @@ end
 
 `````
 
-**Winning Paid Model:** "mistral-medium" with average score 97.0 (Full score: 22/25, Zero score: 0/25) 
+**Winning Paid Model:** "claude-3-opus-20240229" with average score 100.0 (Full score: 25/25, Zero score: 0/25) 
 
 **Winning Locally-hosted Model:** "deepseek-coder:33b-instruct-q4_K_M" with average score 100.0 (Full score: 15/15, Zero score: 0/15) 
 
@@ -565,7 +578,7 @@ end
 
 **Winning Paid Model:** "gpt-4-1106-preview" with average score 97.8 (Full score: 14/25, Zero score: 0/25) 
 
-**Winning Locally-hosted Model:** "magicoder:7b-s-cl-q6_K" with average score 83.3 (Full score: 2/15, Zero score: 0/15) 
+**Winning Locally-hosted Model:** "claude-2.1" with average score 92.8 (Full score: 12/25, Zero score: 0/25) 
 
 
 
