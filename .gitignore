@@ -30,7 +30,5 @@ Manifest.toml
 ## scratch files
 **/_*
 
-# ignore results of waitlisted test cases
-code_generation_waitlist/*/*/*/*.json
 # but not test case definitions
 !code_generation_waitlist/*/*/*.toml
