@@ -28,6 +28,7 @@ model_options = [
     "gpt-3.5-turbo-0125",
     "gpt-4-1106-preview",
     "gpt-4-0125-preview",
+    "gpt-4-turbo-2024-04-09",
     "mistral-tiny",
     "mistral-small-2402",
     "mistral-medium-2312",

@@ -62,6 +62,7 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |--------------------------|---------|-------|---------------------|------------------|------------------|------------|
 |   claude-3-opus-20240229 |    20.3 |  83.2 |                19.6 |                2 |              329 |        3.9 |
 | claude-3-sonnet-20240229 |     8.7 |  78.8 |                26.2 |               22 |              308 |       0.73 |
+|   gpt-4-turbo-2024-04-09 |    10.8 |  75.3 |                29.6 |               38 |              290 |       1.38 |
 |  claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
 |       gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
 |       gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
@@ -75,6 +76,7 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |             mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |            gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |    gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
+
 
 
 
@@ -158,13 +160,13 @@ Learnings so far:
 - Never use the "AsIs" prompt (ie, raw task definition). ALWAYS add some context around the language, situation, etc.
 - Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts ("CoT" stands for Chain of Thought) might be confusing the smaller models, hence why this prompt is so effective on average.
 
-| Prompt Template       | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
-|-----------------------|----------------------|---------------------|--------------------------|----------------------------|
-|               InJulia |                 14.4 |                10.0 |                     53.4 |                       50.0 |
-|        JuliaExpertAsk |                 10.0 |                 6.7 |                     50.6 |                       50.0 |
-|        JuliaRecapTask |                 17.5 |                12.6 |                     50.1 |                       50.0 |
-|    JuliaExpertCoTTask |                 15.9 |                11.1 |                     46.7 |                       50.0 |
-|     JuliaRecapCoTTask |                 16.7 |                11.9 |                     45.7 |                       50.0 |
+| Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
+|--------------------|----------------------|---------------------|--------------------------|----------------------------|
+|            InJulia |                 14.3 |                10.1 |                     53.9 |                       50.0 |
+|     JuliaExpertAsk |                  9.9 |                 6.7 |                     51.3 |                       50.0 |
+|     JuliaRecapTask |                 17.3 |                12.4 |                     50.6 |                       50.0 |
+| JuliaExpertCoTTask |                 15.7 |                11.0 |                     47.4 |                       50.0 |
+|  JuliaRecapCoTTask |                 16.6 |                11.9 |                     46.5 |                       50.0 |
 
 
 Note: The XML-based templates are tested only for Claude 3 models (Haiku and Sonnet), that's why we remove them from the comparison.
