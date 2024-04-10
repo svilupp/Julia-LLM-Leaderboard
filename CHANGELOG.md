@@ -12,6 +12,7 @@
 - REMOVED: Comparison of several Qwen-1.5 models (removed due to poor scores caused by invalid GGUF)
 - Added benchmark evals for Google Gemini 1.0 Pro (latest version as of 17th Feb 2024)
 - Added benchmark evals for Claude 3 models and MistralAI "mistral-large"
+- Added benchmark for the latest OpenAI GPT-4 Turbo ("gpt-4-turbo-2024-04-09")
 
 ### Fixed
 - Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)
