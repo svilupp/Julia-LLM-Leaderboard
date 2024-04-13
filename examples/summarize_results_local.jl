@@ -70,7 +70,11 @@ MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "qwen:7b-chat-v1.5-q6_K" => "4-9",
     "qwen:7b-chat-v1.5-q4_K_M" => "4-9",
     "qwen:4b-chat-v1.5-q6_K" => "4-9",
-    "gemma:7b-instruct-q6_K" => "4-9")
+    "gemma:7b-instruct-q6_K" => "4-9",
+    "accounts/fireworks/models/dbrx-instruct" => ">70",
+    "accounts/fireworks/models/mixtral-8x22b-instruct-preview" => ">70",
+    "accounts/fireworks/models/qwen-72b-chat" => ">70"
+)
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -78,14 +82,19 @@ PROMPTS = [
     "JuliaRecapTask",
     "JuliaRecapCoTTask"
 ];
-
+## Clean up fireworks names
+function model_clean(model::AbstractString)
+    occursin("fireworks", model) ?
+    replace(model, "accounts/fireworks/models/" => "") * ("(Fireworks.ai)") : model
+end
+;
 # ## Load Results
 # Use only the 5 most recent evaluations available for each definition/model/prompt
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
     @rsubset !any(startswith.(:model, PAID_MODELS_DEFAULT)) && :prompt_label in PROMPTS
-    ## remove qwen models as they are not correct!
-    @rsubset !occursin("qwen", :model)
+    ## remove qwen models as they are not correct! But allow the accounts/fireworks models
+    @rsubset !occursin("qwen", :model) || occursin("accounts", :model)
 end;
 
 # ## Model Comparison
@@ -99,11 +108,12 @@ fig = @chain df begin
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    @rtransform :model_clean = model_clean(:model)
     @rtransform :size_group = MODEL_SIZES[:model]
     @aside local size_order = ["<4", "4-9", "10-29", "30-69", ">70"]
-    @aside local order_ = _.model
+    @aside local order_ = _.model_clean
     data(_) *
-    mapping(:model => sorter(order_) => "Model",
+    mapping(:model_clean => sorter(order_) => "Model",
         :score => "Avg. Score (Max 100 pts)",
         color = :size_group => sorter(size_order) => "Parameter Size (Bn)") *
     visual(BarPlot; bar_labels = :y, label_offset = 0, label_rotation = 1)
@@ -131,6 +141,7 @@ output = @chain df begin
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    @rtransform :model = model_clean(:model)
     rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
@@ -150,6 +161,7 @@ fig = @chain df begin
         :score_median = median(:score)
         :cnt = $nrow
     end
+    @rtransform :model = model_clean(:model)
     @aside local average_ = @by(_, :model, :avg=mean(:score)) |>
                             x -> @orderby(x, -:avg).model
     data(_) *
@@ -184,6 +196,7 @@ markdown_table(output)
 
 # Comparison of Time-to-generate vs Average Score
 fig = @chain df begin
+    @rsubset !occursin("HOSTED", :device)
     @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
@@ -207,6 +220,7 @@ fig
 # Table:
 # - Point per second is the average score divided by the average elapsed time
 output = @chain df begin
+    @rsubset !occursin("HOSTED", :device)
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
