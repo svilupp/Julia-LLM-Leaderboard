@@ -77,7 +77,7 @@ fn_definitions = find_definitions("code_generation/")
 evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 100));
+    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
