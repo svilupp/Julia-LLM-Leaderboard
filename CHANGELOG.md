@@ -14,6 +14,7 @@
 - Added benchmark evals for Claude 3 models and MistralAI "mistral-large"
 - Added benchmark for the latest OpenAI GPT-4 Turbo ("gpt-4-turbo-2024-04-09")
 - Added benchmarks for several open-weights models hosted on Fireworks.ai: Qwen-72b, Mixtral 8x22b (instruct preview), DBRX Instruct
+- Added benchmarks for Llama3 models and Mistral's own Mixtral-8x22b
 
 ### Fixed
 - Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)
