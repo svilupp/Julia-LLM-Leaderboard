@@ -23,6 +23,7 @@ PAID_MODELS_DEFAULT = [
     "gpt-3.5-turbo-0125",
     "gpt-4-1106-preview",
     "gpt-4-0125-preview",
+    "gpt-4-turbo-2024-04-09",
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
@@ -69,7 +70,15 @@ MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "qwen:7b-chat-v1.5-q6_K" => "4-9",
     "qwen:7b-chat-v1.5-q4_K_M" => "4-9",
     "qwen:4b-chat-v1.5-q6_K" => "4-9",
-    "gemma:7b-instruct-q6_K" => "4-9")
+    "gemma:7b-instruct-q6_K" => "4-9",
+    "accounts/fireworks/models/dbrx-instruct" => ">70",
+    "accounts/fireworks/models/mixtral-8x22b-instruct-preview" => ">70",
+    "accounts/fireworks/models/qwen-72b-chat" => ">70",
+    "meta-llama/Llama-3-8b-chat-hf" => "4-9",
+    "meta-llama/Llama-3-70b-chat-hf" => ">70",
+    "microsoft/WizardLM-2-8x22B" => ">70",
+    "mistralai/Mixtral-8x22B-Instruct-v0.1" => ">70"
+)
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -77,14 +86,25 @@ PROMPTS = [
     "JuliaRecapTask",
     "JuliaRecapCoTTask"
 ];
-
+## Clean up fireworks names
+function model_clean(model::AbstractString)
+    model = occursin("fireworks", model) ?
+            replace(model, "accounts/fireworks/models/" => "") * ("(Fireworks.ai)") : model
+    model = occursin("meta-llama/", model) ?
+            replace(model, "meta-llama/" => "") * ("(Together.ai)") : model
+    model = occursin("mistralai/", model) ?
+            replace(model, "mistralai/" => "") * ("(Together.ai)") : model
+    model = occursin("microsoft/", model) ?
+            replace(model, "microsoft/" => "") * ("(Together.ai)") : model
+end
+;
 # ## Load Results
 # Use only the 5 most recent evaluations available for each definition/model/prompt
 df = @chain begin
     load_evals(DIR_RESULTS; max_history = 5)
     @rsubset !any(startswith.(:model, PAID_MODELS_DEFAULT)) && :prompt_label in PROMPTS
-    ## remove qwen models as they are not correct!
-    @rsubset !occursin("qwen", :model)
+    ## remove qwen models as they are not correct! But allow the accounts/fireworks models
+    @rsubset !occursin("qwen", :model) || occursin("accounts", :model)
 end;
 
 # ## Model Comparison
@@ -98,11 +118,12 @@ fig = @chain df begin
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    @rtransform :model_clean = model_clean(:model)
     @rtransform :size_group = MODEL_SIZES[:model]
     @aside local size_order = ["<4", "4-9", "10-29", "30-69", ">70"]
-    @aside local order_ = _.model
+    @aside local order_ = _.model_clean
     data(_) *
-    mapping(:model => sorter(order_) => "Model",
+    mapping(:model_clean => sorter(order_) => "Model",
         :score => "Avg. Score (Max 100 pts)",
         color = :size_group => sorter(size_order) => "Parameter Size (Bn)") *
     visual(BarPlot; bar_labels = :y, label_offset = 0, label_rotation = 1)
@@ -110,6 +131,7 @@ fig = @chain df begin
         figure = (; size = (900, 600)),
         legend = (; position = :bottom),
         axis = (;
+            xautolimitmargin = (0.1, 0.05),
             limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,
             title = "Open-Source LLM Model Performance"))
@@ -130,6 +152,7 @@ output = @chain df begin
     end
     transform(_, names(_, Number) .=> ByRow(x -> round(x, digits = 1)), renamecols = false)
     @orderby -:score
+    @rtransform :model = model_clean(:model)
     rename(_, names(_) .|> unscrub_string)
 end
 ## markdown_table(output, String) |> clipboard
@@ -149,6 +172,7 @@ fig = @chain df begin
         :score_median = median(:score)
         :cnt = $nrow
     end
+    @rtransform :model = model_clean(:model)
     @aside local average_ = @by(_, :model, :avg=mean(:score)) |>
                             x -> @orderby(x, -:avg).model
     data(_) *
@@ -157,7 +181,8 @@ fig = @chain df begin
         color = :prompt_label => "Prompts",
         dodge = :prompt_label) * visual(BarPlot)
     draw(; figure = (size = (900, 600),),
-        axis = (xticklabelrotation = 45, title = "Comparison for Local Models"),
+        axis = (xautolimitmargin = (0.1, 0.05), xticklabelrotation = 45,
+            title = "Comparison for Local Models"),
         legend = (; position = :bottom))
 end
 SAVE_PLOTS && save("assets/model-prompt-comparison-local.png", fig)
@@ -182,7 +207,9 @@ markdown_table(output)
 # ## Other Considerations
 
 # Comparison of Time-to-generate vs Average Score
+# Removed any HOSTED model (that's why you don't see some models that are in other plots).
 fig = @chain df begin
+    @rsubset !occursin("HOSTED", :device)
     @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
@@ -195,7 +222,7 @@ fig = @chain df begin
         :score => "Avg. Score (Max 100 pts)",
         color = :model => "Model")
     draw(; figure = (size = (800, 900),),
-        axis = (xticklabelrotation = 45,
+        axis = (xautolimitmargin = (0.1, 0.05), xticklabelrotation = 45,
             title = "Elapsed Time vs Score for Local Models",
             limits = (xlims..., nothing, nothing)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
@@ -206,6 +233,7 @@ fig
 # Table:
 # - Point per second is the average score divided by the average elapsed time
 output = @chain df begin
+    @rsubset !occursin("HOSTED", :device)
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)

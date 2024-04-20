@@ -62,6 +62,7 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |--------------------------|---------|-------|---------------------|------------------|------------------|------------|
 |   claude-3-opus-20240229 |    20.3 |  83.2 |                19.6 |                2 |              329 |        3.9 |
 | claude-3-sonnet-20240229 |     8.7 |  78.8 |                26.2 |               22 |              308 |       0.73 |
+|   gpt-4-turbo-2024-04-09 |    10.8 |  75.3 |                29.6 |               38 |              290 |       1.38 |
 |  claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
 |       gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
 |       gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
@@ -75,6 +76,7 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |             mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |            gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |    gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
+
 
 
 
@@ -96,37 +98,44 @@ Locally-hosted models are generally not as good as the best paid APIs, but they 
 > Big thank you to [01.ai](https://github.com/01-ai) and Jun Tian in particular for providing the compute for several parts of this benchmark!
 
 
-The best-performing models are in general around 33/34Bn parameters - Phind CodeLlama and Deepseek Coder, however, magicoder:7b (Q6_K!) and codellama:13b (Q4_K_M!) give them a run for their money.
+The best trade-off performance vs size is the latest Meta llama3 8bn. Otherwise, the leading model is Mixtral-8x22bn.
 
-| Model                              | Elapsed | Elapsed Median | Score | Score Median | Score Std Deviation | Count Zero Score | Count Full Score |
-|------------------------------------|---------|----------------|-------|--------------|---------------------|------------------|------------------|
-|             phind-codellama:34b-v2 |    37.1 |           36.4 |  61.8 |         62.5 |                33.5 |             36.0 |             58.0 |
-|             magicoder:7b-s-cl-q6_K |    15.6 |           15.8 |  59.9 |         60.0 |                29.9 |             18.0 |             35.0 |
-|      codellama:13b-instruct-q4_K_M |     3.2 |            3.0 |  56.4 |         54.6 |                33.0 |             56.0 |             61.0 |
-| deepseek-coder:33b-instruct-q4_K_M |    46.7 |           44.6 |  55.0 |         50.0 |                36.8 |             62.0 |             68.0 |
-|                          magicoder |    12.8 |           10.7 |  53.7 |         50.0 |                33.2 |             49.0 |             52.0 |
-|         nous-hermes2:34b-yi-q4_K_M |    56.8 |           52.8 |  50.7 |         50.0 |                34.7 |             78.0 |             56.0 |
-|             codellama:13b-instruct |    18.1 |           16.7 |  50.0 |         50.0 |                34.4 |             65.0 |             44.0 |
-|       openchat:7b-v3.5-1210-q4_K_M |    14.4 |           13.7 |  49.4 |         50.0 |                30.3 |             48.0 |             23.0 |
-|              openhermes2.5-mistral |    12.9 |           12.2 |  48.9 |         50.0 |                31.3 |             55.0 |             27.0 |
-|                 starling-lm:latest |    13.7 |           12.5 |  48.4 |         50.0 |                30.2 |             58.0 |             26.0 |
-|       codellama:7b-instruct-q4_K_M |     2.1 |            2.0 |  47.8 |         50.0 |                35.3 |             95.0 |             38.0 |
-|                        yi:34b-chat |    43.9 |           41.3 |  45.6 |         50.0 |                30.5 |             45.0 |             34.0 |
-|      mistral:7b-instruct-v0.2-q6_K |    21.7 |           20.9 |  45.4 |         50.0 |                31.3 |             44.0 |             23.0 |
-|      mistral:7b-instruct-v0.2-q4_0 |    12.4 |           12.3 |  44.3 |         50.0 |                30.6 |             75.0 |             32.0 |
-|    mistral:7b-instruct-v0.2-q4_K_M |    15.6 |           15.1 |  42.6 |         50.0 |                28.6 |             71.0 |             23.0 |
-|      codellama:34b-instruct-q4_K_M |     7.5 |            6.8 |  39.7 |         50.0 |                36.1 |            127.0 |             35.0 |
-|      codellama:70b-instruct-q4_K_M |    16.3 |           13.8 |  36.4 |          0.0 |                41.2 |            179.0 |             58.0 |
-|     solar:10.7b-instruct-v1-q4_K_M |    18.8 |           17.7 |  35.2 |         50.0 |                31.1 |            107.0 |             10.0 |
-|         mistral:7b-instruct-q4_K_M |    13.9 |           13.0 |  34.8 |         50.0 |                26.5 |             80.0 |              0.0 |
-|        codellama:70b-instruct-q2_K |    11.2 |            9.4 |  29.8 |          0.0 |                37.7 |            198.0 |             29.0 |
-|                             llama2 |    17.1 |           16.3 |  26.5 |         25.0 |                26.5 |            131.0 |              0.0 |
-|             gemma:7b-instruct-q6_K |    20.9 |           22.1 |  25.9 |         25.0 |                25.2 |            147.0 |              2.0 |
-|                          orca2:13b |    20.1 |           18.3 |  23.1 |          0.0 |                30.6 |            166.0 |             11.0 |
-|                    stablelm-zephyr |     9.9 |            7.7 |  15.4 |          0.0 |                23.5 |            192.0 |              1.0 |
-|         dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.4 |  14.9 |          0.0 |                22.9 |            188.0 |              0.0 |
-|               codellama:13b-python |    12.5 |           10.7 |  12.8 |          0.0 |                22.1 |            155.0 |              0.0 |
-|              phi:2.7b-chat-v2-q6_K |    13.0 |           11.6 |   8.9 |          0.0 |                19.4 |            222.0 |              0.0 |
+| Model                                    | Elapsed | Elapsed Median | Score | Score Median | Score Std Deviation | Count Zero Score | Count Full Score |
+|------------------------------------------|---------|----------------|-------|--------------|---------------------|------------------|------------------|
+| Mixtral-8x22B-Instruct-v0.1(Together.ai) |    14.1 |           11.0 |  77.6 |         90.0 |                25.8 |              5.0 |            151.0 |
+|         Llama-3-70b-chat-hf(Together.ai) |     4.3 |            4.1 |  76.8 |         88.3 |                25.2 |              0.0 |            160.0 |
+|          Llama-3-8b-chat-hf(Together.ai) |     1.5 |            1.4 |  67.7 |         66.7 |                26.4 |              5.0 |             70.0 |
+|            WizardLM-2-8x22B(Together.ai) |    34.7 |           31.0 |  62.7 |         60.0 |                33.8 |             33.0 |            118.0 |
+|                   phind-codellama:34b-v2 |    37.1 |           36.4 |  61.8 |         62.5 |                33.5 |             36.0 |             58.0 |
+|                   magicoder:7b-s-cl-q6_K |    15.6 |           15.8 |  59.9 |         60.0 |                29.9 |             18.0 |             35.0 |
+|            codellama:13b-instruct-q4_K_M |     3.2 |            3.0 |  56.4 |         54.6 |                33.0 |             56.0 |             61.0 |
+|       deepseek-coder:33b-instruct-q4_K_M |    46.7 |           44.6 |  55.0 |         50.0 |                36.8 |             62.0 |             68.0 |
+|                                magicoder |    12.8 |           10.7 |  53.7 |         50.0 |                33.2 |             49.0 |             52.0 |
+|               nous-hermes2:34b-yi-q4_K_M |    56.8 |           52.8 |  50.7 |         50.0 |                34.7 |             78.0 |             56.0 |
+|              dbrx-instruct(Fireworks.ai) |     3.7 |            3.6 |  50.0 |         50.0 |                41.2 |            121.0 |             75.0 |
+|                   codellama:13b-instruct |    18.1 |           16.7 |  50.0 |         50.0 |                34.4 |             65.0 |             44.0 |
+|             openchat:7b-v3.5-1210-q4_K_M |    14.4 |           13.7 |  49.4 |         50.0 |                30.3 |             48.0 |             23.0 |
+|                    openhermes2.5-mistral |    12.9 |           12.2 |  48.9 |         50.0 |                31.3 |             55.0 |             27.0 |
+|                       starling-lm:latest |    13.7 |           12.5 |  48.4 |         50.0 |                30.2 |             58.0 |             26.0 |
+|             codellama:7b-instruct-q4_K_M |     2.1 |            2.0 |  47.8 |         50.0 |                35.3 |             95.0 |             38.0 |
+|              qwen-72b-chat(Fireworks.ai) |     3.2 |            3.8 |  45.9 |         50.0 |                38.8 |            117.0 |             63.0 |
+|                              yi:34b-chat |    43.9 |           41.3 |  45.6 |         50.0 |                30.5 |             45.0 |             34.0 |
+|            mistral:7b-instruct-v0.2-q6_K |    21.7 |           20.9 |  45.4 |         50.0 |                31.3 |             44.0 |             23.0 |
+|            mistral:7b-instruct-v0.2-q4_0 |    12.4 |           12.3 |  44.3 |         50.0 |                30.6 |             75.0 |             32.0 |
+|          mistral:7b-instruct-v0.2-q4_K_M |    15.6 |           15.1 |  42.6 |         50.0 |                28.6 |             71.0 |             23.0 |
+|            codellama:34b-instruct-q4_K_M |     7.5 |            6.8 |  39.7 |         50.0 |                36.1 |            127.0 |             35.0 |
+|            codellama:70b-instruct-q4_K_M |    16.3 |           13.8 |  36.4 |          0.0 |                41.2 |            179.0 |             58.0 |
+|           solar:10.7b-instruct-v1-q4_K_M |    18.8 |           17.7 |  35.2 |         50.0 |                31.1 |            107.0 |             10.0 |
+|               mistral:7b-instruct-q4_K_M |    13.9 |           13.0 |  34.8 |         50.0 |                26.5 |             80.0 |              0.0 |
+|              codellama:70b-instruct-q2_K |    11.2 |            9.4 |  29.8 |          0.0 |                37.7 |            198.0 |             29.0 |
+|                                   llama2 |    17.1 |           16.3 |  26.5 |         25.0 |                26.5 |            131.0 |              0.0 |
+|                   gemma:7b-instruct-q6_K |    20.9 |           22.1 |  25.9 |         25.0 |                25.2 |            147.0 |              2.0 |
+|                                orca2:13b |    20.1 |           18.3 |  23.1 |          0.0 |                30.6 |            166.0 |             11.0 |
+|                          stablelm-zephyr |     9.9 |            7.7 |  15.4 |          0.0 |                23.5 |            192.0 |              1.0 |
+|               dolphin-phi:2.7b-v2.6-q6_K |     8.9 |            8.4 |  14.9 |          0.0 |                22.9 |            188.0 |              0.0 |
+|                     codellama:13b-python |    12.5 |           10.7 |  12.8 |          0.0 |                22.1 |            155.0 |              0.0 |
+|                    phi:2.7b-chat-v2-q6_K |    13.0 |           11.6 |   8.9 |          0.0 |                19.4 |            222.0 |              0.0 |
+
 
 Same information, but as a bar chart:
 
@@ -158,16 +167,16 @@ Learnings so far:
 - Never use the "AsIs" prompt (ie, raw task definition). ALWAYS add some context around the language, situation, etc.
 - Even a simple "In Julia, answer XYZ" prompt can be quite effective. Note that the bigger prompts ("CoT" stands for Chain of Thought) might be confusing the smaller models, hence why this prompt is so effective on average.
 
-| Prompt Template       | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
-|-----------------------|----------------------|---------------------|--------------------------|----------------------------|
-|               InJulia |                 14.4 |                10.0 |                     53.4 |                       50.0 |
-|        JuliaExpertAsk |                 10.0 |                 6.7 |                     50.6 |                       50.0 |
-|        JuliaRecapTask |                 17.5 |                12.6 |                     50.1 |                       50.0 |
-|    JuliaExpertCoTTask |                 15.9 |                11.1 |                     46.7 |                       50.0 |
-|     JuliaRecapCoTTask |                 16.7 |                11.9 |                     45.7 |                       50.0 |
+| Prompt Template    | Elapsed (s, average) | Elapsed (s, median) | Avg. Score (Max 100 pts) | Median Score (Max 100 pts) |
+|--------------------|----------------------|---------------------|--------------------------|----------------------------|
+|            InJulia |                 14.0 |                 9.6 |                     55.2 |                       50.0 |
+|     JuliaExpertAsk |                  9.9 |                 6.4 |                     53.8 |                       50.0 |
+|     JuliaRecapTask |                 16.7 |                11.5 |                     52.0 |                       50.0 |
+| JuliaExpertCoTTask |                 15.4 |                10.4 |                     49.5 |                       50.0 |
+|  JuliaRecapCoTTask |                 16.1 |                11.3 |                     48.6 |                       50.0 |
 
 
-Note: The XML-based templates are tested only for Claude 3 models (Haiku and Sonnet), that's why we remove them from the comparison.
+Note: The XML-based templates are tested only for Claude 3 models (Haiku and Sonnet), that's why we removed them from the comparison.
 
 Make your own analysis with `examples/summarize_results.jl`!
 

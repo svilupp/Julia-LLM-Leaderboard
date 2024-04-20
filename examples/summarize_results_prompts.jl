@@ -20,6 +20,7 @@ PAID_MODELS_DEFAULT = [
     "gpt-3.5-turbo-0125",
     "gpt-4-1106-preview",
     "gpt-4-0125-preview",
+    "gpt-4-turbo-2024-04-09",
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
@@ -48,7 +49,7 @@ df = @chain begin
     @rsubset :prompt_label in PROMPTS
     ## remove qwen models as they are not correct!
     @rsubset !occursin("qwen", :model)
-end
+end;
 
 # ## Overview of Prompt Templates
 # We've added an "AsIs" prompt template, which is just the raw task definition (nothing added). 

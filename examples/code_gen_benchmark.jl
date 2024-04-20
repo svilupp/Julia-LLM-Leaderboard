@@ -14,10 +14,10 @@ const PT = PromptingTools
 ## using GoogleGenAI # needed if you want to run Gemini!
 
 # ## Run for a single test case
-device = "Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
+device = "HOSTED:Together.ai" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
-num_samples = 10
+num_samples = 5
 
 # Select models to run
 #
@@ -28,6 +28,7 @@ model_options = [
     "gpt-3.5-turbo-0125",
     "gpt-4-1106-preview",
     "gpt-4-0125-preview",
+    "gpt-4-turbo-2024-04-09",
     "mistral-tiny",
     "mistral-small-2402",
     "mistral-medium-2312",
@@ -48,7 +49,8 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
     "mistral:7b-instruct-v0.2-q6_K", "dolphin-phi:2.7b-v2.6-q6_K",
     "nous-hermes2:34b-yi-q4_K_M", "mistral:7b-instruct-v0.2-q4_0",
     "mistral:7b-instruct-v0.2-q4_K_M", "gemma:7b-instruct-q6_K"]
-
+model_options = ["meta-llama/Llama-3-8b-chat-hf", "meta-llama/Llama-3-70b-chat-hf"]
+model_options = ["mistralai/Mixtral-8x22B-Instruct-v0.1", "microsoft/WizardLM-2-8x22B"]
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
     "JuliaExpertCoTTask",
@@ -67,6 +69,7 @@ schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
 ##         "claude-3-sonnet-20240229",
 ##         "claude-3-haiku-20240307",
 ##         "claude-2.1"] .=> Ref(PT.AnthropicSchema())))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.TogetherOpenAISchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
@@ -76,7 +79,7 @@ fn_definitions = find_definitions("code_generation/")
 evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
-    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 100));
+    num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
 # Note: On Mac M1 with Ollama, you want to set api_kwargs=(; options=(; num_gpu=99)) for Ollama to have normal performance
 
 # Voila! You can now find the results in the `temp/` folder or in the vector `evals`!
