@@ -12,7 +12,7 @@
 - REMOVED: Comparison of several Qwen-1.5 models (removed due to poor scores caused by invalid GGUF)
 - Added benchmark evals for Google Gemini 1.0 Pro (latest version as of 17th Feb 2024)
 - Added benchmark evals for Claude 3 models and MistralAI "mistral-large"
-- Add 3 new test cases to the waitlist: `find_mean`, `find_median`, `find_mode` (see `code_generation_waitlist/`).
+- Add 3 new test cases to the waitlist: `find_mean`, `find_median` (see `code_generation_waitlist/`).
 
 ### Fixed
 - Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)
