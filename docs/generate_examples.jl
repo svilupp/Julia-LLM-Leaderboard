@@ -6,7 +6,9 @@ example_files = [
     joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_paid.jl"),
     joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_prompts.jl"),
     joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "summarize_results_test_cases.jl"),
-    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "compare_paid_vs_local.jl"),
+    joinpath(pkgdir(JuliaLLMLeaderboard), "examples",
+        "summarize_results_test_cases_waitlist.jl"),
+    joinpath(pkgdir(JuliaLLMLeaderboard), "examples", "compare_paid_vs_local.jl")
 ]
 output_dir = joinpath(@__DIR__, "src", "examples")
 

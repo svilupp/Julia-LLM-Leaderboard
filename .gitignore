@@ -29,3 +29,6 @@ Manifest.toml
 
 ## scratch files
 **/_*
+
+# but not test case definitions
+!code_generation_waitlist/*/*/*.toml
