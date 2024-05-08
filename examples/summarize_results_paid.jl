@@ -35,7 +35,9 @@ PAID_MODELS_DEFAULT = [
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
     "claude-2.1",
-    "gemini-1.0-pro-latest"
+    "gemini-1.0-pro-latest",
+    "deepseek-chat",
+    "deepseek-coder"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
@@ -68,7 +70,7 @@ fig = @chain df begin
     mapping(:model => sorter(order_) => "Model",
         :score => "Avg. Score (Max 100 pts)") *
     visual(BarPlot; bar_labels = :y,
-        label_offset = 0)
+        label_offset = 0, label_rotation = 1)
     draw(;
         axis = (limits = (nothing, nothing, 0, 100),
             xticklabelrotation = 45,

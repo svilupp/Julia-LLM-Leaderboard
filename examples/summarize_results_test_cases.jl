@@ -33,7 +33,9 @@ PAID_MODELS_DEFAULT = [
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
-    "gemini-1.0-pro-latest"
+    "gemini-1.0-pro-latest",
+    "deepseek-chat",
+    "deepseek-coder"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",

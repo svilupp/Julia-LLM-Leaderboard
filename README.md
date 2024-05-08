@@ -66,7 +66,9 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |  claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
 |       gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
 |       gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
+|           deepseek-coder |    13.0 |  71.6 |                32.6 |               39 |              115 |       0.01 |
 |       mistral-large-2402 |     8.5 |  71.6 |                27.2 |               13 |              223 |        0.0 |
+|            deepseek-chat |    17.9 |  71.3 |                32.9 |               30 |              140 |       0.01 |
 |               claude-2.1 |    10.1 |  67.9 |                30.8 |               47 |              229 |        0.8 |
 |       gpt-3.5-turbo-0125 |     1.2 |  61.7 |                36.6 |              125 |              192 |       0.03 |
 |           mistral-medium |    18.1 |  60.8 |                33.2 |               22 |               90 |       0.41 |
@@ -76,7 +78,6 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |             mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |            gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |    gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
-
 
 
 
