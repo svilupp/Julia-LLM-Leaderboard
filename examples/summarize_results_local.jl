@@ -35,7 +35,9 @@ PAID_MODELS_DEFAULT = [
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
     "claude-2.1",
-    "gemini-1.0-pro-latest"
+    "gemini-1.0-pro-latest",
+    "deepseek-chat",
+    "deepseek-coder"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "mistral:7b-instruct-v0.2-q4_0" => "4-9",

@@ -14,7 +14,7 @@ const PT = PromptingTools
 ## using GoogleGenAI # needed if you want to run Gemini!
 
 # ## Run for a single test case
-device = "HOSTED:Together.ai" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
+device = "Apple-MacBook-Pro-M1" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
 num_samples = 5
@@ -36,7 +36,9 @@ model_options = [
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
-    "claude-2.1"
+    "claude-2.1",
+    "deepseek-chat",
+    "deepseek-coder"
 ]
 ## "gemini-1.0-pro-latest"
 
@@ -48,9 +50,9 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
     "mistral:7b-instruct-q4_K_M", "openchat:7b-v3.5-1210-q4_K_M", "phi:2.7b-chat-v2-q6_K",
     "mistral:7b-instruct-v0.2-q6_K", "dolphin-phi:2.7b-v2.6-q6_K",
     "nous-hermes2:34b-yi-q4_K_M", "mistral:7b-instruct-v0.2-q4_0",
-    "mistral:7b-instruct-v0.2-q4_K_M", "gemma:7b-instruct-q6_K"]
-model_options = ["meta-llama/Llama-3-8b-chat-hf", "meta-llama/Llama-3-70b-chat-hf"]
-model_options = ["mistralai/Mixtral-8x22B-Instruct-v0.1", "microsoft/WizardLM-2-8x22B"]
+    "mistral:7b-instruct-v0.2-q4_K_M", "gemma:7b-instruct-q6_K",
+    "meta-llama/Llama-3-8b-chat-hf", "meta-llama/Llama-3-70b-chat-hf",
+    "mistralai/Mixtral-8x22B-Instruct-v0.1", "microsoft/WizardLM-2-8x22B"]
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
     "JuliaExpertCoTTask",
@@ -63,20 +65,13 @@ prompt_options = [
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
 schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
-## schema_lookup = merge(schema_lookup, Dict("gemini-1.0-pro-latest" => PT.GoogleSchema()))
-## schema_lookup = merge(schema_lookup,
-##     Dict(["claude-3-opus-20240229",
-##         "claude-3-sonnet-20240229",
-##         "claude-3-haiku-20240307",
-##         "claude-2.1"] .=> Ref(PT.AnthropicSchema())))
-schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.TogetherOpenAISchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[15:16],
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
