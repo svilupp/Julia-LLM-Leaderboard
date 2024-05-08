@@ -17,7 +17,7 @@ const PT = PromptingTools
 device = "Apple-MacBook-Pro-M1" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
-num_samples = 5
+num_samples = 10
 
 # Select models to run
 #
@@ -71,7 +71,7 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[15:16],
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
