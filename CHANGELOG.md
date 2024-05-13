@@ -16,6 +16,7 @@
 - Added benchmarks for several open-weights models hosted on Fireworks.ai: Qwen-72b, Mixtral 8x22b (instruct preview), DBRX Instruct
 - Added benchmarks for Llama3 models and Mistral's own Mixtral-8x22b
 - Add 2 new test cases to the waitlist: `find_mean`, `find_median` (see `code_generation_waitlist/`).
+- Added a new model from OpenAI: `gpt-4o-2024-05-13`
 
 ### Fixed
 - Changed the wording from "open-source" models to "locally-hosted" models (a more appropriate description)
