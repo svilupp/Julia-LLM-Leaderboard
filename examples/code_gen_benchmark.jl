@@ -39,7 +39,8 @@ model_options = [
     "claude-3-haiku-20240307",
     "claude-2.1",
     "deepseek-chat",
-    "deepseek-coder"
+    "deepseek-coder",
+    "codestral-2405"
 ]
 ## "gemini-1.0-pro-latest"
 
@@ -65,14 +66,15 @@ prompt_options = [
 ]
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
-schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
+## schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.MistralOpenAISchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[[end]],
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
