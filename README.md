@@ -55,13 +55,13 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 ### Paid APIs
 
 Across the board, Claude 3 and GPT-4 are the best-performing models. The real surprise is the performance of Claude 3 Haiku which is 50-100x cheaper than Claude 3 Opus but still beats GPT-4.
-The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as GPT-4 Turbo, yet it's much cheaper and faster (see the deep-dive in the docs)!
-"mistral-small" ("Mixtral 8x7B" model) is quite impressive, as it beats many of the GPT-3.5 Turbo in many cases.
+The latest Mistral model - codestral - is quite impressive (it's very fast as well).
 
 | Model                    | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
 |--------------------------|---------|-------|---------------------|------------------|------------------|------------|
 |   claude-3-opus-20240229 |    20.3 |  83.2 |                19.6 |                2 |              329 |        3.9 |
 | claude-3-sonnet-20240229 |     8.7 |  78.8 |                26.2 |               22 |              308 |       0.73 |
+|           codestral-2405 |     1.9 |  76.3 |                29.3 |               33 |              276 |        0.0 |
 |   gpt-4-turbo-2024-04-09 |    10.8 |  75.3 |                29.6 |               38 |              290 |       1.38 |
 |  claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
 |       gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
@@ -79,7 +79,6 @@ The latest GPT3.5-Turbo (0125) scores very well - in many cases, it's as good as
 |             mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |            gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |    gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
-
 
 
 

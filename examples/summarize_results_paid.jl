@@ -38,7 +38,8 @@ PAID_MODELS_DEFAULT = [
     "claude-2.1",
     "gemini-1.0-pro-latest",
     "deepseek-chat",
-    "deepseek-coder"
+    "deepseek-coder",
+    "codestral-2405"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",

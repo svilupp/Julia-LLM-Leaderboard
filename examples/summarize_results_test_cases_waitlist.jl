@@ -35,7 +35,8 @@ PAID_MODELS_DEFAULT = [
     "claude-3-haiku-20240307",
     "gemini-1.0-pro-latest",
     "deepseek-chat",
-    "deepseek-coder"
+    "deepseek-coder",
+    "codestral-2405"
 ];
 PROMPTS = [
     "JuliaExpertCoTTask",
