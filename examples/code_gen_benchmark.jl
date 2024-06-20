@@ -37,6 +37,7 @@ model_options = [
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
     "claude-2.1",
     "deepseek-chat",
     "deepseek-coder",
@@ -74,7 +75,7 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[[end]],
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[[15]],
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
