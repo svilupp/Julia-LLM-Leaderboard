@@ -32,6 +32,7 @@ PAID_MODELS_DEFAULT = [
     "claude-3-opus-20240229",
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
+    "claude-3-5-sonnet-20240620",
     "claude-2.1",
     "gemini-1.0-pro-latest",
     "deepseek-chat",
