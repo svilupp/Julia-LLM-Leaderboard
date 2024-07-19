@@ -30,6 +30,7 @@ model_options = [
     "gpt-4-0125-preview",
     "gpt-4-turbo-2024-04-09",
     "gpt-4o-2024-05-13",
+    "gpt-4o-mini-2024-07-18",
     "mistral-tiny",
     "mistral-small-2402",
     "mistral-medium-2312",
@@ -75,7 +76,7 @@ fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[[15]],
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
