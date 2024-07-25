@@ -17,7 +17,7 @@ const PT = PromptingTools
 device = "Apple-MacBook-Pro-M1" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
-num_samples = 10
+num_samples = 5
 
 # Select models to run
 #
@@ -42,7 +42,8 @@ model_options = [
     "claude-2.1",
     "deepseek-chat",
     "deepseek-coder",
-    "codestral-2405"
+    "codestral-2405",
+    "mistral-large-2407"
 ]
 ## "gemini-1.0-pro-latest"
 

@@ -54,8 +54,7 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 
 ### Paid APIs
 
-Across the board, Claude 3 and GPT-4 are the best-performing models. The real surprise is the performance of Claude 3 Haiku which is 50-100x cheaper than Claude 3 Opus but still beats GPT-4.
-The latest Mistral model - codestral - is quite impressive (it's very fast as well).
+Claude 3.5 Sonnet is the highest performing model. For good value-for-money, look to Mistral Codestral, Claude 3 Haiku and, recently released, GPT 4o mini (60% cheaper than GPT3.5!!!).
 
 | Model                      | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
 |----------------------------|---------|-------|---------------------|------------------|------------------|------------|
@@ -68,6 +67,7 @@ The latest Mistral model - codestral - is quite impressive (it's very fast as we
 |         gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
 |         gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |
 |     gpt-4o-mini-2024-07-18 |     5.1 |  74.0 |                29.4 |               32 |              276 |       0.03 |
+|         mistral-large-2407 |    11.3 |  73.6 |                29.5 |               15 |              137 |       0.49 |
 |          gpt-4o-2024-05-13 |     4.3 |  72.9 |                29.1 |               29 |              257 |        0.0 |
 |             deepseek-coder |    13.0 |  71.6 |                32.6 |               39 |              115 |       0.01 |
 |         mistral-large-2402 |     8.5 |  71.6 |                27.2 |               13 |              223 |        0.0 |
@@ -81,8 +81,6 @@ The latest Mistral model - codestral - is quite impressive (it's very fast as we
 |               mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |              gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |      gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
-
-
 
 
 
