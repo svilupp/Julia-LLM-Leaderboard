@@ -40,7 +40,8 @@ PAID_MODELS_DEFAULT = [
     "claude-2.1",
     "gemini-1.0-pro-latest",
     "deepseek-chat",
-    "deepseek-coder"
+    "deepseek-coder",
+    "codestral-2405"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "mistral:7b-instruct-v0.2-q4_0" => "4-9",
@@ -82,8 +83,20 @@ MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "meta-llama/Llama-3-8b-chat-hf" => "4-9",
     "meta-llama/Llama-3-70b-chat-hf" => ">70",
     "microsoft/WizardLM-2-8x22B" => ">70",
-    "mistralai/Mixtral-8x22B-Instruct-v0.1" => ">70"
-)
+    "mistralai/Mixtral-8x22B-Instruct-v0.1" => ">70",
+    ### New llama models
+    "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo" => "4-9",
+    "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo" => ">70",
+    "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo" => ">70",
+    ## Groq hosted
+    "gemma2-9b-it" => "4-9",
+    "llama-3.1-8b-instant" => "4-9",
+    "llama-3.1-70b-versatile" => ">70",
+    "llama-3.1-405b-reasoning" => ">70",
+    ## Fireworks
+    "accounts/fireworks/models/llama-v3p1-8b-instruct" => "4-9",
+    "accounts/fireworks/models/llama-v3p1-70b-instruct" => ">70",
+    "accounts/fireworks/models/llama-v3p1-405b-instruct" => ">70")
 PROMPTS = [
     "JuliaExpertCoTTask",
     "JuliaExpertAsk",
@@ -111,6 +124,11 @@ df = @chain begin
     ## remove qwen models as they are not correct! But allow the accounts/fireworks models
     @rsubset !occursin("qwen", :model) || occursin("accounts", :model)
 end;
+
+# @chain df begin
+#     @by :model :cnt=$nrow
+#     @orderby -:cnt
+# end
 
 # ## Model Comparison
 

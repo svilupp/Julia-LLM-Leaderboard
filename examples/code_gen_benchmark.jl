@@ -17,7 +17,7 @@ const PT = PromptingTools
 device = "Apple-MacBook-Pro-M1" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
-num_samples = 10
+num_samples = 5
 
 # Select models to run
 #
@@ -56,7 +56,21 @@ model_options = ["llama2", "openhermes2.5-mistral", "starling-lm:latest", "yi:34
     "nous-hermes2:34b-yi-q4_K_M", "mistral:7b-instruct-v0.2-q4_0",
     "mistral:7b-instruct-v0.2-q4_K_M", "gemma:7b-instruct-q6_K",
     "meta-llama/Llama-3-8b-chat-hf", "meta-llama/Llama-3-70b-chat-hf",
-    "mistralai/Mixtral-8x22B-Instruct-v0.1", "microsoft/WizardLM-2-8x22B"]
+    "mistralai/Mixtral-8x22B-Instruct-v0.1", "microsoft/WizardLM-2-8x22B",
+    ### New llama models
+    "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+    "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+    "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+    ## Groq hosted
+    "gemma2-9b-it",
+    "llama-3.1-8b-instant",
+    "llama-3.1-70b-versatile",
+    "llama-3.1-405b-reasoning",
+    ## Fireworks
+    "accounts/fireworks/models/llama-v3p1-8b-instruct",
+    "accounts/fireworks/models/llama-v3p1-70b-instruct",
+    "accounts/fireworks/models/llama-v3p1-405b-instruct"
+]
 # Select prompt templates to run (for reference check: `aitemplates("Julia")`)
 prompt_options = [
     "JuliaExpertCoTTask",
@@ -69,14 +83,15 @@ prompt_options = [
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
 ## schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
-schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.MistralOpenAISchema()))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.FireworksOpenAISchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
+evals = run_benchmark(;
+    fn_definitions = fn_definitions, models = model_options[32:34],
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
@@ -177,7 +192,7 @@ end
 using DataFramesMeta
 using Statistics
 df_all = allcombinations(DataFrame,
-    "model" => model_options,
+    "model" => model_options[[30]],
     "prompt_label" => prompt_options,
     "fn_definitions" => fn_definitions)
 @rtransform!(df_all, :name=split(:fn_definitions, "/")[end - 1])
@@ -211,5 +226,5 @@ for row in eachrow(df_missing)
         device,
         ## save_dir = "yi-quantization-effects",
         num_samples = row.count_missing, schema_lookup,
-        http_kwargs = (; readtimeout = 200))
+        http_kwargs = (; readtimeout = 20))
 end
