@@ -40,7 +40,8 @@ PAID_MODELS_DEFAULT = [
     "claude-2.1",
     "gemini-1.0-pro-latest",
     "deepseek-chat",
-    "deepseek-coder"
+    "deepseek-coder",
+    "mistral-large-2407"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",
     "mistral:7b-instruct-v0.2-q4_0" => "4-9",
