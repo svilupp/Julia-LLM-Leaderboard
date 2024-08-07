@@ -17,7 +17,7 @@ const PT = PromptingTools
 device = "Apple-MacBook-Pro-M1" #Apple-MacBook-Pro-M1" # "Apple-MacBook-Pro-M1" or "NVIDIA-GTX-1080Ti", broadly "manufacturer-model"
 
 # How many samples to generate for each model/prompt combination
-num_samples = 5
+num_samples = 10
 
 # Select models to run
 #
@@ -31,6 +31,7 @@ model_options = [
     "gpt-4-turbo-2024-04-09",
     "gpt-4o-2024-05-13",
     "gpt-4o-mini-2024-07-18",
+    "gpt-4o-2024-08-06",
     "mistral-tiny",
     "mistral-small-2402",
     "mistral-medium-2312",
@@ -70,14 +71,14 @@ prompt_options = [
 
 # Define the schema for unknown models, eg, needed if you use non-OpenAI models, provide a key for each model you use
 ## schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OllamaSchema()))
-schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.MistralOpenAISchema()))
+schema_lookup = Dict{String, Any}(model_options .=> Ref(PT.OpenAISchema()))
 
 # ## Run Benchmark - High-level Interface
 fn_definitions = find_definitions("code_generation/")
 
 # or if you want only one test case:
 # fn_definitions = [joinpath("code_generation", "utility_functions", "event_scheduler", "definition.toml")]
-evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options,
+evals = run_benchmark(; fn_definitions = fn_definitions, models = model_options[[9]],
     prompt_labels = prompt_options,
     experiment = "", auto_save = true, verbose = true, device,
     num_samples = num_samples, schema_lookup, http_kwargs = (; readtimeout = 150));
