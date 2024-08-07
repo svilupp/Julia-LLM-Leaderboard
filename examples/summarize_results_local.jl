@@ -26,6 +26,7 @@ PAID_MODELS_DEFAULT = [
     "gpt-4-turbo-2024-04-09",
     "gpt-4o-2024-05-13",
     "gpt-4o-mini-2024-07-18",
+    "gpt-4o-2024-08-06",
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
@@ -41,6 +42,7 @@ PAID_MODELS_DEFAULT = [
     "gemini-1.0-pro-latest",
     "deepseek-chat",
     "deepseek-coder",
+    "codestral-2405",
     "mistral-large-2407"
 ];
 MODEL_SIZES = Dict("orca2:13b" => "10-29",

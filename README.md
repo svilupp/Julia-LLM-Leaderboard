@@ -61,6 +61,7 @@ Claude 3.5 Sonnet is the highest performing model. For good value-for-money, loo
 | claude-3-5-sonnet-20240620 |     6.3 |  85.8 |                21.1 |               13 |              355 |       0.73 |
 |     claude-3-opus-20240229 |    20.3 |  83.2 |                19.6 |                2 |              329 |        3.9 |
 |   claude-3-sonnet-20240229 |     8.7 |  78.8 |                26.2 |               22 |              308 |       0.73 |
+|          gpt-4o-2024-08-06 |     4.6 |  76.6 |                27.9 |               26 |              310 |        0.0 |
 |             codestral-2405 |     1.9 |  76.3 |                29.3 |               33 |              276 |        0.0 |
 |     gpt-4-turbo-2024-04-09 |    10.8 |  75.3 |                29.6 |               38 |              290 |       1.38 |
 |    claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
@@ -81,6 +82,7 @@ Claude 3.5 Sonnet is the highest performing model. For good value-for-money, loo
 |               mistral-tiny |     4.6 |  46.9 |                32.0 |               75 |               42 |       0.02 |
 |              gpt-3.5-turbo |     3.6 |  42.3 |                38.2 |              132 |               54 |       0.04 |
 |      gemini-1.0-pro-latest |     4.2 |  34.8 |                27.4 |              181 |               25 |        0.0 |
+
 
 
 
