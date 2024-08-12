@@ -18,7 +18,7 @@ df = load_evals("code_generation"; max_history = 0)
 # end
 
 # select which row to inspect
-row_idx = 2
+row_idx = 1
 
 # take the evaluation filename and use it to load up the conversation
 conv = df.filename[row_idx] |> load_conversation_from_eval
