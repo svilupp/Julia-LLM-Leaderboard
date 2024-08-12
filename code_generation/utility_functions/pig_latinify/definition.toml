@@ -4,7 +4,7 @@ name = "pig_latinify"
 contributor = "svilupp"
 examples = ["pig_latinify([\"hello\", \"apple\", \"strong\", \"world\"])", "pig_latinify([strip(\" hello\")])", "pig_latinify([strip(\" hello\"),\"Apple\", \"Strong\", \"World\"])", "pig_latinify(String[])"]
 imports = ["Base.Threads"]
-prompt = "Write a pig latin transformer called `pig_latinify` that operates on a vector of strings. It iterates over each string and changes it to pig latin. Each iteration should run on a separate thread."
+prompt = "Write a pig latin transformer called `pig_latinify` that operates on a vector of strings. It iterates over each string and changes it to pig latin, so add the \"ay\" accordingly. Each iteration should run on a separate thread."
 reference_solution = "function to_pig_latin(word::AbstractString)\n    vowels = \"aeiouAEIOU\"\n    first_vowel_idx = findfirst(c -> c in vowels, word)\n    if isnothing(first_vowel_idx) || first_vowel_idx == 1\n        return word * \"ay\"\n    else\n        return word[first_vowel_idx:end] * word[1:first_vowel_idx-1] * \"ay\"\n    end\nend\n\nfunction pig_latinify(words::Vector{<:AbstractString})\n    transform = similar(words)\n    Threads.@threads for i in 1:length(words)\n        transform[i] = to_pig_latin(words[i])\n    end\n    return transform\nend\n"
 unit_tests = ["@test pig_latinify([\"hello\"]) == [\"ellohay\"]", "@test pig_latinify([\"apple\"]) == [\"appleay\"]", "@test pig_latinify([strip(\" hello\")]) == [\"ellohay\"]", "@test pig_latinify(String[]) == String[]", "@test pig_latinify([strip(\" hello\"),\"Apple\"]) == [\"ellohay\", \"Appleay\"]"]
-version = "1.0"
+version = "1.1"
