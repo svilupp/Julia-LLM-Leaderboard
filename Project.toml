@@ -1,7 +1,7 @@
 name = "JuliaLLMLeaderboard"
 uuid = "d2e0caaf-b708-450d-8925-7705cdc6ef9e"
 authors = ["J S <49557684+svilupp@users.noreply.github.com>"]
-version = "0.3.0"
+version = "0.4.0"
 
 [deps]
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"

@@ -6,6 +6,11 @@
 
 ### Fixed
 
+## [0.4.0]
+
+### Fixed
+- Fixed the bug that caused the `include_string` to fail when the code contains a lot of double quotes. It negatively impacted test cases like `q_and_a_extractor` and `extract_julia_code`. This potentially changes some scores, so versioning up.
+
 ## [0.3.0]
 
 ### Added

@@ -74,7 +74,7 @@ function run_code_main(msg::PT.AIMessage; verbose::Bool = true,
                 unique
         !isempty(lines) && (append!(failing_lines,
             sources[[err for err in lines
-                         if err <= length(sources)]]))
+                     if err <= length(sources)]]))
         verbose &&
             @warn "Main Run Failure:\nError: $(cb.error)\nStdOut: $(cb.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
         return_debug && (push!(debugs,
@@ -119,7 +119,8 @@ run_code_blocks(cb, [code])
 # Output: 1 (= 1 example executed without an error thrown)
 ```
 """
-function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:AbstractString};
+function run_code_blocks_additive(
+        cb::AICode, code_blocks::AbstractVector{<:AbstractString};
         verbose::Bool = false,
         setup_code::AbstractString = "", teardown_code::AbstractString = "",
         capture_stdout::Bool = true, execution_timeout::Int = 60,
@@ -133,7 +134,8 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
     for (i, code) in enumerate(code_blocks)
         # Prepare the code to evaluate and evaluate it in the same module as the original code
         code_joined = string(setup_code, "\n\n", code, "\n\n", teardown_code)
-        code_include = "include_string(identity, $eval_module,\"\"\"$(escape_string(code_joined,'$'))\"\"\", \"__code_string_eval_additive\")\n"
+        code_escaped = escape_string(code_joined, ['"', '$'])
+        code_include = "include_string(identity, $eval_module,\"\"\"$(code_escaped)\"\"\", \"__code_string_eval_additive\")\n"
         code_expr = Meta.parseall(code_include)
         # We run with timeout to avoid infinite loops
         out = PT.@timeout execution_timeout begin
@@ -150,13 +152,13 @@ function run_code_blocks_additive(cb::AICode, code_blocks::AbstractVector{<:Abst
                     unique
             !isempty(lines) && (append!(failing_lines,
                 sources[[err for err in lines
-                             if err <= length(sources)]]))
+                         if err <= length(sources)]]))
             sources = split(cb.code, '\n')
             lines = PT.extract_stacktrace_lines("__code_string_eval", cb_copy.stdout) |>
                     unique
             !isempty(lines) && (append!(failing_lines,
                 sources[[err for err in lines
-                             if err <= length(sources)]]))
+                         if err <= length(sources)]]))
             verbose &&
                 @warn "Run Failure (i: $i):\nError: $(cb_copy.error)\nStdOut: $(cb_copy.stdout)\n\nFailing lines:\n- $(join(failing_lines, "\n- "))"
             return_debug && (push!(debugs,
@@ -385,7 +387,7 @@ function load_evals(base_dir::AbstractString;
         :version_prompt,
         :parameters,
         :experiment,
-        new_columns...,
+        new_columns...
     ]
 
     df = DataFrame([Dict(c => get(row, c, missing) for c in eval_cols) for row in output])
@@ -404,7 +406,7 @@ function load_evals(base_dir::AbstractString;
     if "parameters" in names(df) && all(!ismissing, df.parameters)
         unique_params = df.parameters .|> keys .|> collect |> Base.Splat(vcat) |> unique
         @rtransform! df $AsTable=Dict(param => get(:parameters, param, missing)
-                                      for param in unique_params)
+        for param in unique_params)
     end
     return df
 end
@@ -463,7 +465,7 @@ function score_eval(parsed,
         parsed,
         executed,
         unit_tests_success_ratio,
-        examples_success_ratio,
+        examples_success_ratio
     ]
         !ismissing(category_score) && (total_score += category_score * points_per_category)
     end
