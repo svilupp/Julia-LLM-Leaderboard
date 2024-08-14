@@ -8,6 +8,9 @@
 
 ## [0.4.0]
 
+### Added
+- Added benchmark for ChatGPT-4o-latest
+
 ### Fixed
 - Fixed the bug that caused the `include_string` to fail when the code contains a lot of double quotes. It negatively impacted test cases like `q_and_a_extractor` and `extract_julia_code`. This potentially changes some scores, so versioning up.
 
