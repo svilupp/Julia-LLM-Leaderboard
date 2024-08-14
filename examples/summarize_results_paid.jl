@@ -27,6 +27,7 @@ PAID_MODELS_DEFAULT = [
     "gpt-4o-2024-05-13",
     "gpt-4o-mini-2024-07-18",
     "gpt-4o-2024-08-06",
+    "chatgpt-4o-latest", # on 14th Aug
     "mistral-tiny",
     "mistral-small",
     "mistral-medium",
@@ -106,7 +107,7 @@ end
 ## markdown_table(output, String) |> clipboard
 markdown_table(output)
 
-# While the victory of GPT-4 is not surprising, note that the our sample size is small and the standard deviation is quite high.
+# Sonnet 3.5 is the king of most coding benchmarks these days.
 
 # ## Overview by Prompt Template
 
@@ -166,6 +167,7 @@ fig = @chain df begin
         color = :model => "Model")
     draw(;
         axis = (xticklabelrotation = 45,
+            limits = (nothing, nothing, 50, 100),
             title = "Cost vs Score for Paid APIs"))
 end
 SAVE_PLOTS && save("assets/cost-vs-score-scatter-paid.png", fig)
@@ -196,7 +198,7 @@ markdown_table(output)
 
 # Comparison of Time-to-generate vs Average Score
 fig = @chain df begin
-    @aside local xlims = quantile(df.elapsed_seconds, [0.01, 0.99])
+    @aside local xlims = quantile(_.elapsed_seconds, [0.01, 0.99])
     @by [:model, :prompt_label] begin
         :elapsed = mean(:elapsed_seconds)
         :elapsed_median = median(:elapsed_seconds)
@@ -210,7 +212,7 @@ fig = @chain df begin
     draw(; figure = (size = (600, 600),),
         axis = (xticklabelrotation = 45,
             title = "Elapsed Time vs Score for Paid APIs",
-            limits = (xlims..., nothing, nothing)),
+            limits = (xlims..., 50, 100)),
         palettes = (; color = Makie.ColorSchemes.tab20.colors))
 end
 SAVE_PLOTS && save("assets/elapsed-vs-score-scatter-paid.png", fig)
