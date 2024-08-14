@@ -54,7 +54,7 @@ Remember that the benchmark is quite challenging for any model - a single extra 
 
 ### Paid APIs
 
-Claude 3.5 Sonnet is the highest performing model. For good value-for-money, look to Mistral Codestral, Claude 3 Haiku and, recently released, GPT 4o mini (60% cheaper than GPT3.5!!!).
+Claude 3.5 Sonnet is the highest-performing model. For the best value-for-money, look to Mistral Codestral, Claude 3 Haiku and, recently released, GPT 4o mini (60% cheaper than GPT3.5!!!).
 
 | Model                      | Elapsed | Score | Score Std Deviation | Count Zero Score | Count Full Score | Cost Cents |
 |----------------------------|---------|-------|---------------------|------------------|------------------|------------|
@@ -64,6 +64,7 @@ Claude 3.5 Sonnet is the highest performing model. For good value-for-money, loo
 |          gpt-4o-2024-08-06 |     4.6 |  76.6 |                27.9 |               26 |              310 |        0.0 |
 |             codestral-2405 |     1.9 |  76.3 |                29.3 |               33 |              276 |        0.0 |
 |     gpt-4-turbo-2024-04-09 |    10.8 |  75.3 |                29.6 |               38 |              290 |       1.38 |
+|          chatgpt-4o-latest |     4.8 |  75.0 |                27.9 |               25 |              263 |        0.0 |
 |    claude-3-haiku-20240307 |     4.0 |  74.9 |                27.2 |                9 |              261 |       0.05 |
 |         gpt-4-0125-preview |    30.3 |  74.4 |                30.3 |               39 |              284 |       1.29 |
 |         gpt-4-1106-preview |    22.4 |  74.4 |                29.9 |               19 |              142 |       1.21 |

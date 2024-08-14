@@ -32,6 +32,7 @@ model_options = [
     "gpt-4o-2024-05-13",
     "gpt-4o-mini-2024-07-18",
     "gpt-4o-2024-08-06",
+    "chatgpt-4o-latest", # on 14th Aug
     "mistral-tiny",
     "mistral-small-2402",
     "mistral-medium-2312",
